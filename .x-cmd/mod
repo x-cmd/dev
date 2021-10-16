@@ -1,0 +1,45 @@
+
+mod_list="
+xrc
+x-cmd
+hub
+
+# basic modules: non dependency
+str
+list
+dict
+assert
+json
+
+# basic modules: dependencies
+param
+http
+advise
+ui
+
+# modules
+static-build
+ccmd
+
+# web clients
+ali
+gitee
+proxy
+"
+
+mod_ls(){
+    local IFS=
+    while read -r line; do
+        [ "${line#\#}" != "$line" ] && continue
+        [ "$line" = "" ] && continue
+        printf "%s${IFS:-\n}" "$line"
+        # ls lib/$line/latest lib/$line/v* lib/$line/_v*/* | grep -v _test
+    done 2>/dev/null <<<"$mod_list"
+}
+
+if [ "$#" -gt 0 ]; then
+    op="$1"
+    shift
+    "mod_$op" "$@"
+fi
+
