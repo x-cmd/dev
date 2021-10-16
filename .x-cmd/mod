@@ -45,6 +45,17 @@ mod_clone()(
     done
 )
 
+mod_comit()(
+    mkdir -p mod
+    cd mod &&
+    for i in $(mod_ls); do
+        (
+            cd "$i"
+            git commit -m "${1:-...}"
+        )
+    done
+)
+
 if [ "$#" -gt 0 ]; then
     op="$1"
     shift
