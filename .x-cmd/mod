@@ -41,7 +41,7 @@ mod_clone()(
     mkdir -p mod
     cd mod &&
     for i in $(mod_ls); do
-        git clone "git@gitee.com:x-bash/$i.git"
+        git clone "git@gitee.com:x-bash/$i.git" -b main
     done
 )
 
@@ -52,6 +52,28 @@ mod_comit()(
         (
             cd "$i"
             git commit -m "${1:-...}"
+        )
+    done
+)
+
+mod_comit()(
+    mkdir -p mod
+    cd mod &&
+    for i in $(mod_ls); do
+        (
+            cd "$i"
+            git push origin main
+        )
+    done
+)
+
+mod_gitadd()(
+    mkdir -p mod
+    cd mod &&
+    for i in $(mod_ls); do
+        (
+            cd "$i"
+            git add .
         )
     done
 )
