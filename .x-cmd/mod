@@ -37,6 +37,14 @@ mod_ls(){
     done 2>/dev/null <<<"$mod_list"
 }
 
+mod_clone()(
+    mkdir -p mod
+    cd mod &&
+    for i in $(mod_ls); do
+        git clone "git@gitee.com:x-bash/$i.git"
+    done
+)
+
 if [ "$#" -gt 0 ]; then
     op="$1"
     shift
