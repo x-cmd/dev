@@ -68,6 +68,16 @@ ghclone(){
 gtclone(){
     git clone "git@gitee.com:${1:?Provide url}.git"
 }
+
+gtrm(){
+    if [ -z "$FORCE" ]; then
+        git filter-branch --index-filter "git rm -r --cached --ignore-unmatch ${1:-Provide file path}" -- --all
+    else
+        git filter-branch -f --index-filter "git rm -r --cached --ignore-unmatch ${1:-Provide file path}" -- --all
+    fi
+
+}
+
 # EndSection
 
 
