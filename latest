@@ -169,4 +169,4 @@ ___x_cmd_log_completer(){
 # EndSection
 
 
-xrc srcmain ___x_cmd_log
+xrc setmain ___x_cmd_log
