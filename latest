@@ -192,4 +192,4 @@ $d2"
     esac
 }
 
-xrc srcmain ___x_cmd_boot
+xrc setmain ___x_cmd_boot
