@@ -1,6 +1,6 @@
 # shellcheck shell=sh disable=SC3043
 
-# Section: initrc, consider external module.
+# Section: bootrc consider external module.
 ___x_cmd_boot(){
     local subcmd="$1";  shift
     if ! mkdir -p "$HOME/.x-cmd/.boot"; then
@@ -179,7 +179,14 @@ $d2"
                                 ;;
                     which)      printf "%s\n" "$___X_CMD_ROOT_MOD" ;;
                     cat)        cat "$___X_CMD_ROOT_MOD" 2>/dev/null ;;
-                    ls|*)       awk '$1~/[A-Za-z0-9_\-]+/{ print $1;  }'<"$___X_CMD_ROOT_MOD" ;;
+                    ls|*)
+                                if [ -e "$___X_CMD_ROOT_MOD" ]; then
+                                    awk '$1~/[A-Za-z0-9_\-]+/{ print $1;  }'<"$___X_CMD_ROOT_MOD"
+                                else
+                                    touch "$___X_CMD_ROOT_MOD"
+                                    return 0
+                                fi
+                                ;;
                 esac
                 ;;
     esac
