@@ -2,8 +2,8 @@ name: 'github actions publish x-cmd/x-cmd nightly'
 
 on:
   workflow_dispatch:
-  schedule:
-    - cron: '30 11 * * *'
+  # schedule:
+  #   - cron: '30 11 * * *'
 
 jobs:
   bot:
