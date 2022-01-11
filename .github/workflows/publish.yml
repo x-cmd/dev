@@ -1,6 +1,7 @@
 name: 'github actions publish x-cmd/x-cmd nightly'
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '30 11 * * *'
 
@@ -30,10 +31,8 @@ jobs:
         run: |
           git config --global user.name 'agent-zero'
           git config --global user.email '0@x-cmd.com'
-          git remote add gitee "git@gitee.com:x-cmd/dev.git"
-          git remote add github "git@github.com:x-cmd/dev.git"
           git remote -v
       - name: install x-cmd && push code
         run: |
-          eval "$(curl https://get.x-cmd.com/dev)"
+          eval "$(curl https://get.x-cmd.com/dev)" || true
           x ws pub || true

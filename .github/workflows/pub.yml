@@ -1,6 +1,7 @@
 name: 'github actions publish x-cmd/dev'
 
 on:
+  workflow_dispatch:
   schedule:
     - cron: '30 11 * * *'
 
@@ -9,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: install x-cmd
-        run:  eval "$(curl https://get.x-cmd.com/dev)"
+        run:  eval "$(curl https://get.x-cmd.com/dev)" || true
       - name: git checkout
         uses: actions/checkout@v2
         with:
