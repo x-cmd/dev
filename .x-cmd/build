@@ -1,0 +1,22 @@
+# shellcheck shell=sh disable=SC2039,3043 # source
+
+for i in debian centos alpine ; do
+    echo "Building $i"
+
+    case "$i" in
+        debian|alpine)
+            docker buildx build \
+                --no-cache \
+                --platform linux/arm,linux/arm64,linux/amd64 \
+                -f "./docker/$i/Dockerfile" \
+                -t "xcmd/$i-dev:latest" . --push
+            ;;
+        centos)
+            docker buildx build \
+                --no-cache \
+                --platform linux/arm64,linux/amd64 \
+                -f "./docker/$i/Dockerfile" \
+                -t "xcmd/$i-dev:latest" . --push
+            ;;
+    esac
+done
