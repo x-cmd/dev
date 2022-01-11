@@ -170,14 +170,12 @@ function tokenize_argument_into_TOKEN_ARRAY(astr,
     _len, _tmp ){
 
     original_astr = astr
-
     gsub(/\\\\/,    "\001", astr)
     gsub(/\\"/,     "\002", astr) # "
     gsub("\"",      "\003", astr) # "
     gsub(/\\ /,    "\004", astr)
 
     astr = str_trim(astr)
-
     TOKEN_ARRAY[LEN] = 0
     while (length(astr) > 0){
 
@@ -480,8 +478,6 @@ function handle_optarg_declaration(optarg_definition, optarg_id,
     tokenize_argument_into_TOKEN_ARRAY( optarg_definition )
     optarg_definition_token1 = TOKEN_ARRAY[ 1 ]
 
-    # debug( "handle_optarg_definition:\t" optarg_definition )
-    # debug( "handle_optarg_declaration:\t" optarg_definition_token1 )
 
     if (! match( optarg_definition_token1, /^<[-_A-Za-z0-9]*>/) ) {
         panic_param_define_error("Unexpected optarg declaration: \n" optarg_definition)
@@ -563,7 +559,7 @@ function parse_param_dsl_for_positional_argument(line,
     if ( TOKEN_ARRAY[ LEN ] >= 3) {
         tmp = ""
         for ( _index=3; _index<=TOKEN_ARRAY[LEN]; ++_index ) {
-            tmp = tmp " " TOKEN_ARRAY[ _index ]
+            tmp = tmp " " quote_string(TOKEN_ARRAY[ _index ])
         }
 
         option_arr[ option_id ] = tmp
@@ -597,7 +593,7 @@ function parse_param_dsl_for_all_positional_argument(line,
     if ( TOKEN_ARRAY[ LEN ] >= 3) {
         tmp = ""
         for (i=3; i<=TOKEN_ARRAY[LEN]; ++i) {
-            tmp = tmp " " TOKEN_ARRAY[i]
+            tmp = tmp " " quote_string(TOKEN_ARRAY[i])
         }
 
         option_arr[ option_id ] = tmp
@@ -695,7 +691,7 @@ function parse_param_dsl(line,
 
                     tmp = ""
                     for (k=3; k<=TOKEN_ARRAY[LEN]; ++k) {
-                        tmp = tmp " " TOKEN_ARRAY[k]
+                        tmp = tmp " " quote_string(TOKEN_ARRAY[k])
                     }
 
                     j = j + 1
@@ -1141,7 +1137,6 @@ function generate_advise_json(      indent, indent_str,
     }
 
     ADVISE_JSON = "{"
-
     for (i=1; i<=advise_arr[ LEN ]; ++i) {
         # TODO: Can be optimalize.
         tmp_len=split(advise_arr[ i ], tmp)
@@ -1185,17 +1180,15 @@ function generate_advise_json(      indent, indent_str,
     # Rules for rest options
     for (i=1; i <= rest_option_id_list[ LEN ]; ++i) {
         option_id       = rest_option_id_list[ i ]
-        if (advise_map[ option_id ] != "") continue
+
+        # Rules in DSL's advise section
+        if (advise_map[ option_id ] != "") {
+            ADVISE_JSON = ADVISE_JSON "\n" indent_str "  \"" option_id "\": \"" advise_map[option_id] "\","
+            continue
+        }
         oparr_keyprefix = option_id KSEP OPTARG_OPARR
         oparr_string    = generate_advise_json_value_candidates(oparr_keyprefix)
         ADVISE_JSON     = ADVISE_JSON "\n" indent_str "  \"" option_id "\": " oparr_string
-    }
-
-    # Rules in DSL's advise section
-    for (key in advise_map) {
-        if ( advise_map[ key ] != "") {
-            ADVISE_JSON = ADVISE_JSON "\n" indent_str "  \"" key "\": \"" advise_map[key] "\","
-        }
     }
 
     for (i=1; i <= subcmd_arr[ LEN ]; ++i) {
@@ -1212,7 +1205,6 @@ function generate_advise_json(      indent, indent_str,
         key = quote_string( subcmd_arr[ i ] )
         ADVISE_JSON = ADVISE_JSON "\n  " indent_str key ": {\n"  indent_str "    \"#desc\": " subcmd_map[ subcmd_arr[ i ] ] value ","
     }
-
     if (ADVISE_JSON != "{"){
         ADVISE_JSON = substr(ADVISE_JSON, 1, length(ADVISE_JSON)-1)
     }

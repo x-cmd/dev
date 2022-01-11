@@ -84,10 +84,9 @@ test_advise_json(){
     },
     "--flag1|-f": "--- Flag1 that you can use $\{flag1:-false} to get the bool value ",
     "--flag1222|-g": "--- Flag1222 that you can use $\{flag1222:-false} to get the bool value ",
-    "#1": [  ],
+    "#1": "list_repo",
     "#222222": [  ],
-    "#3": [  ],
-    "repo": "list_repo"
+    "#3": [  ]
   },
   "subcmd": {
     "#desc": "Test subcommand",
@@ -145,10 +144,9 @@ test_advise_json(){
     },
     "--flag1|-f": "--- Flag1 that you can use $\{flag1:-false} to get the bool value ",
     "--flag1222|-g": "--- Flag1222 that you can use $\{flag1222:-false} to get the bool value ",
-    "#1|--mul_line_arg|-m": [  ],
+    "#1|--mul_line_arg|-m": "list_repo",
     "#3|--regex_arg2": [  ],
-    "#2|--regex_arg1": [  ],
-    "repo": "list_repo"
+    "#2|--regex_arg1": [  ]
   },
   "snl": {
     "#desc": "Test small name list",
