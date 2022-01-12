@@ -1,7 +1,7 @@
 name: 'docker build'
 
 on:
-  # push:
+  push:
   workflow_dispatch:
 
 jobs:
