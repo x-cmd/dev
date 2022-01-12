@@ -10,6 +10,8 @@
 # Section : ui major function and facilities and init
 ui(){
     local f=$1
+    local IFS="
+"
     case "$f" in
         http://* | https://* | ftp://* |ftps://* | git://* )    ui_url "$f"             ;;
         :)                                                      ui_print_var "$@"       ;; # TODO

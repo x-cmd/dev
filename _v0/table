@@ -94,7 +94,7 @@ ___ui_table_json(){
 
     local line
     ui table -
-    IFS="
+    local IFS="
 "
     eval ui table + "$title"
     for line in $(x jq -r ".[] | [ $args ] | map( . | @json) | join(\" \") "); do
