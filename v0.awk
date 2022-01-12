@@ -141,7 +141,9 @@ function append_code_assignment(varname, value) {
 
 function append_query_code(varname, description, typestr){
     append_code( "local " varname " >/dev/null 2>&1" )
-    append_code( "ui prompt main " quote_string(description) " " varname " " typestr )
+    # append_code( "ui prompt main " quote_string(description) " " varname " " typestr )
+    # append_query_code( quote_string(description) " " varname " " "\"\"" " " typestr )
+    QUERY_CODE=QUERY_CODE " \"--\" \\" "\n" quote_string(description) " " varname " " "\"\"" " " typestr
 }
 
 # EndSection
@@ -1591,15 +1593,17 @@ function handle_arguments(          i, j, arg_name, arg_name_short, arg_val, opt
 }
 
 END{
+
     if (EXIT_CODE == "000") {
         print_code()
     }
-
-    # print "--------------------------"
     if (EXIT_CODE == 0) {
         handle_arguments()
+        if (QUERY_CODE != ""){
+            QUERY_CODE="ui form " substr(QUERY_CODE, 9)
+            append_code(QUERY_CODE)
+        }
         print_code()
-        # debug(CODE)
     }
 }
 # EndSection
