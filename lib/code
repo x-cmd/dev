@@ -1,6 +1,7 @@
 
 
 cox(){
+    local COX_TGT="${COX_TGT:-x-bash}"
 
     if [ -z "$1" ]; then
         code ~/$COX_TGT
