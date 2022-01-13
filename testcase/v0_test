@@ -1,12 +1,14 @@
 #! /bin/sh
 
-cp -r ./* ~/.x-cmd/proxy/
+x ws install
 
 # as import
 xrc assert
 x log init proxy
 x log proxy
+ ___X_CMD_XRC_MODULE_IMPORTED=
 xrc proxy
+
 
 if [ -n "${BASH_VERSION}${ZSH_VERSION}" ]; then
     xrc advise/latest
@@ -18,17 +20,17 @@ fi
 # Section: Run test
 
 case $1 in
-    apt|apk|yum)
+    apt|apk|yum|pacman|dnf)
         . ./testcase/v0_test_"${1}"
         test_cross_env
         ;;
-    go|brew|gem|cargo|npm|pip|maven)
+    go|brew|gem|cargo|npm|pip|maven|yarn|docker)
         . ./testcase/v0_test_"${1}"
         ;;  
     base)
         ;;
     *)
-        printf "Usage: x test {brew|apt|yum|apk|npm|pip|gem|cargo|go|maven|base}"
+        printf "Usage: x test {brew|apt|yum|apk|npm|pip|gem|cargo|go|maven|base|yarn|docker|pacman|dnf}"
         return 1
         ;;
 esac

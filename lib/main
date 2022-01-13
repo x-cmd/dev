@@ -3,6 +3,8 @@
 # author:       Li Junhao           l@x-cmd.com    edwinjhlee.github.io
 # maintainer:   Li Junhao
 
+x log init proxy
+
 ___X_CMD_PROXY_BACKUP_DIR="$___X_CMD_ROOT/proxy/.backup"
 xrc param
 ___x_cmd_proxy(){
@@ -24,6 +26,9 @@ subcommands:
     brew                    "setting the homebrew mirror"
     apk                     "setting the apk mirror for alpine"
     pacman                  "setting the pacman mirror"
+    yarn                    "setting the yarn mirror"
+    docker                  "setting the docker mirror"
+    dnf                     "setting the dnf mirror"
 A
     param:run
 
@@ -44,7 +49,7 @@ A
 # Section: plugins
 
 # TODO: It is unnecessary to source the plugin file at the first time.
-for i in brew apt pip npm go apk yum cargo gem pacman; do
+for i in brew apt pip npm go apk yum cargo gem pacman yarn docker dnf; do
     xrc "proxy/lib/$i"
 done
 
