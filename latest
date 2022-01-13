@@ -3,14 +3,6 @@
 # author:       Li Junhao           l@x-cmd.com
 # maintainer:   Li Junhao
 
-___x_cmd_list_resource(){
-    printf "%s" "proxy
-cowsay
-theme
-tldr
-advise
-install"
-}
 
 # Section : Unfinished ___x_cmd_official_which
 
@@ -1025,7 +1017,13 @@ ___x_cmd_main(){
 
     local subcmd=$1; [ $# -gt 0 ] && shift
     case "$subcmd" in
-        ""|help)                                printf "%s\n" "Show help" >&2; return 1 ;;
+        ""|help)                                printf "x     x-bash core function.
+    Uasge:  x <subcommand> [<subcommand>...]
+    Please visit our homepage for more information: https://x-cmd.com
+" >&2;
+                                                ___x_cmd_x_cmd_help
+                                                return 0
+;;
 
         alias)                                  ___x_cmd_alias      ___x_cmd "$@"   ;;
         unalias)                                ___x_cmd_unalias    ___x_cmd "$@"   ;;
@@ -1144,6 +1142,13 @@ ___x_cmd_main(){
 ___x_cmd_x_cmd_advise_json(){
     xrc cat x-cmd/_v0/x.json
     return 126
+}
+# EndSection
+
+# Section : help
+___x_cmd_x_cmd_help(){
+    xrc advise/lib/advise_get
+    ___x_cmd_advise_get_help "$(xrc which x-cmd/_v0/x.json)"
 }
 # EndSection
 
