@@ -43,10 +43,10 @@ ___x_cmd_xrc_run(){
     local fp="${1:?filepath}"; shift
 
     local main
-    if ! main="$(___x_cmd_ldict_get ___X_CMD_XRC_SET_MAIN_DICT "$fp")"; then
+    if ! main="$(___x_cmd_ldict get ___X_CMD_XRC_SET_MAIN_DICT "$fp")"; then
         ___x_cmd_xrc_source_file "$fp" # xrc
         local code=$?
-        if ! main="$(___x_cmd_ldict_get ___X_CMD_XRC_SET_MAIN_DICT "$fp")"; then
+        if ! main="$(___x_cmd_ldict get ___X_CMD_XRC_SET_MAIN_DICT "$fp")"; then
             return "$code"
         fi
     fi
