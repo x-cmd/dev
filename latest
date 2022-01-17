@@ -8,7 +8,6 @@
 # Section 1: utils: search_path
 ___x_cmd_search_path(){
     local cur="${1:?Provide starting path}"
-
     cur="$(cd "$cur" 1>/dev/null 2>&1 && pwd)"
 
     local relative_filepath="${2:?Provide relative filepath}"
@@ -52,6 +51,8 @@ if [ -n "$BASH_VERSION" ]; then
     shopt -s expand_aliases
 elif [ -n "$ZSH_VERSION" ]; then
     ___X_CMD_SHELL=zsh
+    # The same as 'shopt -s expand_aliases' in bash, refer: https://stackoverflow.com/questions/23258413/expand-aliases-in-non-interactive-shells
+    setopt aliases
 elif [ -n "$KSH_VERSION" ]; then
     ___X_CMD_SHELL=ksh
     alias local=typeset
@@ -98,13 +99,31 @@ fi
 # EndSection
 
 # Section 3: httpget: using curl, wget, and x-curl
+
+___x_cmd_httpget_handle_resp_header(){
+    local url="${1:?Provide url}"
+    local code="${2:?Provide exit code of function ___x_cmd_httpget_inner}"
+
+    local http_code
+    http_code="$(awk 'NR==1{ printf("%s", $2); }')"
+    case "$http_code" in
+        20*)    return 0 ;;
+        40*)    ___xrc_log debug "HTTP_CODE: $http_code. Fail to retrieve file from: $url"
+                return 4 ;;     # TODO: consider using exit code 70
+        "")     ___xrc_log debug "Return code: $code. HTTP_CODE Unavialable. Fail to retrieve file from: $url"
+                return 1 ;;
+        5*)     ___xrc_log debug "Return code: $code. Server internal error. Fail to retrieve file from: $url"
+                return 5 ;;     # TODO: consider using exit code 69
+        *)      ___xrc_log debug "Unknow error. HTTP_CODE: $http_code. Fail to retrieve file from: $url"
+                return 2 ;;
+    esac
+}
+
 if command -v curl >/dev/null; then
     ___x_cmd_httpget_inner(){
         local url="${1:?Provide url}"
         local cache="${2}"
         ___xrc_log debug curl --dump - --output "$cache" --speed-time 5 --speed-limit 10 "$url"
-
-        # TODO: --speed-time 3
 
         if [ -z "$cache" ]; then
             exec 3>&1
@@ -115,45 +134,23 @@ if command -v curl >/dev/null; then
         fi
 
         local code=$?
-        local http_code
-        http_code="$(printf "%s" "$___X_CMD_HTTP_GET_INNER_HEADER" | awk 'NR==1{ printf("%s", $2); }')"
-
-        case "$http_code" in
-            20*)   return 0 ;;
-            40*)    ___xrc_log debug "HTTP_CODE: $http_code. Fail to retrieve file from: $1"
-                    return 4 ;;
-            "")     ___xrc_log debug "Return code: $code. HTTP_CODE Unavialable. Fail to retrieve file from: $1"
-                    return 1 ;;
-            *)      ___xrc_log debug "Unknow error. HTTP_CODE: $http_code. Fail to retrieve file from: $1"
-                    return 2 ;;
-        esac
+        printf "%s" "$___X_CMD_HTTP_GET_INNER_HEADER" | ___x_cmd_httpget_handle_resp_header "$url" "$code"
     }
-elif command -v wget >/dev/null; then
+elif command -v wget >/dev/null && command -v ssl_client 1>/dev/null; then
     ___x_cmd_httpget_inner(){
         local url="${1:?Provide url}"
         local cache="${2}"
 
         if [ -z "$cache" ]; then
             exec 3>&1
-            ___X_CMD_HTTP_GET_INNER_HEADER="$(wget -T 5 -qS "$url" 2>&3 1>/dev/stdout)"
+            ___X_CMD_HTTP_GET_INNER_HEADER="$(wget -T 5 -qS "$url" 1>&3 2>/dev/stdout)"
             exec 3>&-
         else
-            ___X_CMD_HTTP_GET_INNER_HEADER="$(wget -T 5 -O "$cache" -qS "$url" 2>&3)"
+            ___X_CMD_HTTP_GET_INNER_HEADER="$(wget -T 5 -O "$cache" -qS "$url" 2>/dev/stdout)"
         fi
 
         local code=$?
-        local http_code
-        http_code="$(printf "%s" "$___X_CMD_HTTP_GET_INNER_HEADER" | awk 'NR==1{ printf("%s", $2); }')"
-
-        case "$http_code" in
-            20*)   return 0 ;;
-            40*)    ___xrc_log debug "HTTP_CODE: $http_code. Fail to retrieve file from: $1"
-                    return 4 ;;
-            "")     ___xrc_log debug "Return code: $code. HTTP_CODE Unavialable. Fail to retrieve file from: $1"
-                    return 1 ;;
-            *)      ___xrc_log debug "Unknow error. HTTP_CODE: $http_code. Fail to retrieve file from: $1"
-                    return 2 ;;
-        esac
+        printf "%s" "$___X_CMD_HTTP_GET_INNER_HEADER" | ___x_cmd_httpget_handle_resp_header "$url" "$code"
     }
 else
     ___x_cmd_httpget_inner(){
@@ -191,6 +188,8 @@ ___x_cmd_httpget() {
         # First make sure it works before webservice. Fail fast.
         mkdir -p "$(dirname "$cache")"
         redirect_path="$TMPDIR/x-bash-temp-download.$RANDOM"
+        # TODO: Consider using following code
+        # redirect_path="$(dirname "$cache")/x-bash-temp-download.$RANDOM"
     fi
 
     printf "URL is %s\n" "$url" >&2
@@ -232,7 +231,7 @@ ___x_cmd_httpget_gitx(){   # Simple strategy
         case $? in
             0)  if [ "$lineno" -ne 1 ]; then
                     ___xrc_log debug "Current default mirror is $mirror"
-                    ___x_cmd_mirror "$mirror" "$(echo "$mirror_list" | awk "NR!=$lineno{ print \$0 }" )"
+                    ___x_cmd_mirror "$mirror" "$(printf "%s" "$mirror_list" | awk "NR!=$lineno{ print \$0 }" )"
 
                     # Set CHINA_NET FLAG
                     case "$mirror" in
@@ -258,7 +257,7 @@ A
 
 # rename to ___x_cmd_httpget_gitx_official
 ___x_cmd_httpget_gitx_official(){
-    ___x_cmd_httpget_gitx x-cmd "$___X_CMD_CODESORUCE_REPO" "${___X_CMD_CODESORUCE_REPO_BRANCH}" "${1:?Provide url}" "$2" "$3"
+    ___x_cmd_httpget_gitx x-cmd "$___X_CMD_CODESORUCE_REPO" "${___X_CMD_CODESORUCE_REPO_BRANCH}" "${1:?Provide resource path}" "$2" "$3"
 }
 
 
@@ -275,8 +274,8 @@ ___x_cmd_curl_gitx_official(){
     ___x_cmd_httpget_gitx_official "$@"
 }
 
-___x_cmd_ldict(){
-    xrc xrc/lib/ldict && ___x_cmd_ldict "$@" ;
+___x_cmd_llist(){
+    xrc xrc/lib/llist && ___x_cmd_llist "$@" ;
 }
 
 ___x_cmd_awk(){
@@ -326,60 +325,88 @@ case "$(___x_cmd_mirror | head -n1)" in
 esac
 # EndSection
 
-# Section 5: llist: include to speed up for it is used in which_one.
-___x_cmd_llist(){
+# Section 5: ldict
+___x_cmd_ldict(){
     local op="$1"; shift
     case "$op" in
-        init)           ___x_cmd_llist_init "$@" ;;
-        shift)          ___x_cmd_llist_shift "$@" ;;
-        unshift)        ___x_cmd_llist_unshift "$@" ;;
-        push)           ___x_cmd_llist_push "$@" ;;
-        pop)            ___x_cmd_llist_pop "$@" ;;
-        has)            ___x_cmd_llist_has "$@" ;;
-        print)          ___x_cmd_llist_print "$@" ;;
+        put)        ___x_cmd_ldict_put "$@" ;;
+        get)        ___x_cmd_ldict_get "$@" ;;
+        keys)       ___x_cmd_ldict_keys "$@" ;;
+        print)      ___x_cmd_ldict_print "$@" ;;
         *)
-            printf "Show help for llist\n" >&2
+            printf "Show help for ldict\n" >&2
             return 1
     esac
 }
 
-alias llist="___x_cmd_llist"
+alias ldict="___x_cmd_ldict"
 
-___x_cmd_llist_init(){
-    local name="${1:?Provide list name}"
-    eval "___x_cmd_llist_$name=\"\${___X_CMD_LDICT_SEP}\""
-}
+___X_CMD_LDICT_SEP="$(printf "\001")"
+___X_CMD_LDICT_KVSEP="$(printf "\002")"
 
-___x_cmd_llist_push(){
-    local name="${1:?Provide list name}"
-    local value="${2:?Provide value}"
-
-    eval "___X_CMD_LLIST_${name}=\"\${___X_CMD_LLIST_${name}:-\${___X_CMD_LDICT_SEP}}\${value}\${___X_CMD_LDICT_SEP}\""
-}
-
-___x_cmd_llist_unshift(){
-    local name="${1:?Provide list name}"
-    local value="${2:?Provide value}"
-
-    eval "___X_CMD_LLIST_${name}=\"\${___X_CMD_LDICT_SEP}\${value}\${___X_CMD_LLIST_${name}:-\${___X_CMD_LDICT_SEP}}\""
-}
-
-___x_cmd_llist_has(){
+___x_cmd_ldict_put(){
     local name="${1:?Provide dict name}"
-    local value="${2:?Provide key}"
+    local key="${2:?Provide key}"
+    local value="${3:?Provide value}"
 
-    local part1
-    eval "part1=\"\${___X_CMD_LLIST_${name}#*\${___X_CMD_LDICT_SEP}\${value}\${___X_CMD_LDICT_SEP}}\""
-    eval [ \"\$part1\" != \"\$"___X_CMD_LLIST_${name}"\" ]
+    ___x_cmd_ldict_rm "$name" "$key"
+
+    eval "___X_CMD_LDICT_${name}=\"\${___X_CMD_LDICT_${name}:-\${___X_CMD_LDICT_SEP}}\${key}\${___X_CMD_LDICT_KVSEP}\${value}\${___X_CMD_LDICT_SEP}\""
 }
 
-___x_cmd_llist_print(){
+___x_cmd_ldict_rm(){
     local name="${1:?Provide dict name}"
-    eval printf \"%s\" \"\$"___X_CMD_LLIST_${name}"\" | awk -v RS="$___X_CMD_LDICT_SEP" '
+    local key="${2:?Provide key}"
+
+    local tmp
+    eval "tmp=\"\${___X_CMD_LDICT_${name}#*\${___X_CMD_LDICT_SEP}\${key}\${___X_CMD_LDICT_KVSEP}*\${___X_CMD_LDICT_SEP}}\""
+    if eval [ \"\$tmp\" != \"\$"___X_CMD_LDICT_${name}"\" ]; then
+        eval "___X_CMD_LDICT_${name}=\"\${___X_CMD_LDICT_${name}%%\${___X_CMD_LDICT_SEP}\${key}\${___X_CMD_LDICT_KVSEP}*}\${___X_CMD_LDICT_SEP}\${tmp}\""
+        return 0
+    fi
+    return 1
+}
+
+___x_cmd_ldict_has(){
+    local name="${1:?Provide dict name}"
+    local key="${2:?Provide key}"
+
+    local tmp
+    eval "tmp=\"\${___X_CMD_LDICT_${name}#*\${___X_CMD_LDICT_SEP}\${key}\${___X_CMD_LDICT_KVSEP}*\${___X_CMD_LDICT_SEP}}\""
+    eval [ \"\$tmp\" != \"\$"___X_CMD_LDICT_${name}"\" ]
+}
+
+___x_cmd_ldict_get(){
+    local name="${1:?Provide dict name}"
+    local key="${2:?Provide key}"
+
+    local tmp
+
+    eval "tmp=\"\${___X_CMD_LDICT_${name}#*\${___X_CMD_LDICT_SEP}\${key}\${___X_CMD_LDICT_KVSEP}}\""
+
+    if eval [ \"\$tmp\" != \"\$"___X_CMD_LDICT_${name}"\" ]; then
+        printf "%s" "${tmp%%${___X_CMD_LDICT_SEP}*}"
+    else
+        return 1
+    fi
+}
+
+___x_cmd_ldict_keys(){
+    local name="${1:?Provide dict name}"
+    eval printf \"%s\" \"\$"___X_CMD_LDICT_${name}"\" | awk -v RS="$___X_CMD_LDICT_SEP" -v FS="${___X_CMD_LDICT_KVSEP}" '
 NR!=1{
     print $1
 }'
 }
+
+___x_cmd_ldict_print(){
+    local name="${1:?Provide dict name}"
+    eval printf \"%s\" \"\$"___X_CMD_LDICT_${name}"\" | awk -v RS="$___X_CMD_LDICT_SEP" -v FS="${___X_CMD_LDICT_KVSEP}" '
+NR!=1{
+    print $1 " = " $2
+}'
+}
+
 # EndSection
 
 # Section 6: main entrance helper: xrc_set_main, which_one, which_one_with_naming
@@ -410,9 +437,7 @@ ___x_cmd_which_one_with_naming(){
             return
     esac
 
-
     ___X_CMD_WHICH_ONE_NAMING="${RESOURCE_NAME%%=*}"
-
     ___x_cmd_which_one "${RESOURCE_NAME#*=}"
 }
 
@@ -420,14 +445,14 @@ ___x_cmd_which_one_with_naming(){
 ___x_cmd_which_one(){
     local RESOURCE_NAME="${1:?Provide resource name for ___x_cmd_which_one}"
 
+    ___X_CMD_WHICH_ONE_RESOURCE_TYPE=
     ___X_CMD_WHICH_ONE_RESULT=
-    ___X_CMD_WHICH_ONE_RESOURCE_TYPE=official
 
     local TGT
     case "$RESOURCE_NAME" in
         /*)
-            ___X_CMD_WHICH_ONE_RESOURCE_TYPE=local
             ___xrc_log debug "Resource recognized as local file: $RESOURCE_NAME"
+            ___X_CMD_WHICH_ONE_RESOURCE_TYPE=local
             ___X_CMD_WHICH_ONE_RESULT="$RESOURCE_NAME"
             return 0
             ;;
@@ -462,7 +487,11 @@ ___x_cmd_which_one(){
         *)
             if [ -z "$___X_CMD_NO_LOCAL" ]; then
                 # This is ONLY for x-cmd
-                [ -f "$RESOURCE_NAME" ] && ___X_CMD_WHICH_ONE_RESULT="$RESOURCE_NAME" && return      # local file
+                if [ -f "$RESOURCE_NAME" ]; then
+                    ___X_CMD_WHICH_ONE_RESULT="$RESOURCE_NAME"
+                    ___X_CMD_WHICH_ONE_RESOURCE_TYPE=local
+                    return      # local file
+                fi
 
                 if TGT="$(___x_cmd_search_path . ".x-cmd/$RESOURCE_NAME")"; then
                     ___X_CMD_WHICH_ONE_RESOURCE_TYPE=workspace
@@ -471,6 +500,7 @@ ___x_cmd_which_one(){
                 fi
             fi
 
+            ___X_CMD_WHICH_ONE_RESOURCE_TYPE=official
             # x-bash module
             ___xrc_log debug "Resource recognized as x-bash module: $RESOURCE_NAME"
             local module="$RESOURCE_NAME"
@@ -480,13 +510,18 @@ ___x_cmd_which_one(){
             fi
 
             TGT="$___X_CMD_ROOT/$module"
-            [ -f "$TGT" ] && ___X_CMD_WHICH_ONE_RESULT="$TGT" && return 0
+            if [ -f "$TGT" ]; then
+                ___X_CMD_WHICH_ONE_RESULT="$TGT"
+                return 0
+            fi
             # ___xrc_log debug "Module not found: $module"
             # return 1
 
             ___xrc_log info "Downloading resource=$RESOURCE_NAME to local cache: $TGT"
-            ___x_cmd_httpget_gitx_official "mod/$module" "$TGT" \
-                && ___X_CMD_WHICH_ONE_RESULT="$TGT" && return 0
+            if ___x_cmd_httpget_gitx_official "mod/$module" "$TGT"; then
+                ___X_CMD_WHICH_ONE_RESULT="$TGT"
+                return 0
+            fi
 
             ___xrc_log warn "ERROR: Fail to load module due to network error or other: $RESOURCE_NAME"
             return 1
@@ -551,6 +586,20 @@ A
     done
 }
 
+___x_cmd_xrc_source_file_main_define_by_setmain(){
+    if [ -n "$___X_CMD_WHICH_ONE_NAMING" ] && [ "$___X_CMD_WHICH_ONE_NAMING" != "$___X_CMD_XRC_SET_MAIN" ]; then
+        eval "
+        $___X_CMD_WHICH_ONE_NAMING(){
+            \"$___X_CMD_XRC_SET_MAIN\" \"\$@\"
+        }"
+
+        if ___x_cmd_is_suitable_advise_env; then
+            # TODO: fix it ...
+            advise "$___X_CMD_XRC_SET_MAIN" "" "$___X_CMD_WHICH_ONE_NAMING"
+        fi
+    fi
+}
+
 ___x_cmd_xrc_source_file_main(){
     ___X_CMD_WHICH_ONE_RESULT="${1:?Provide exact file}"
 
@@ -558,15 +607,10 @@ ___x_cmd_xrc_source_file_main(){
         if [ "${___X_CMD_XRC_MODULE_IMPORTED#*
 "$___X_CMD_WHICH_ONE_RESULT"
 *}" != "${___X_CMD_XRC_MODULE_IMPORTED}" ]; then
-            ___X_CMD_XRC_SET_MAIN="$(___x_cmd_ldict get ___X_CMD_XRC_SET_MAIN_DICT "${___X_CMD_WHICH_ONE_RESULT}")"
+            local ___X_CMD_XRC_SET_MAIN
+            ___X_CMD_XRC_SET_MAIN="$(___x_cmd_ldict_get ___X_CMD_XRC_SET_MAIN_DICT "${___X_CMD_WHICH_ONE_RESULT}")"
 
-            if [ -n "$___X_CMD_WHICH_ONE_NAMING" ] && [ "$___X_CMD_WHICH_ONE_NAMING" != "$___X_CMD_XRC_SET_MAIN" ]; then
-                eval "
-                $___X_CMD_WHICH_ONE_NAMING(){
-                    \"$___X_CMD_XRC_SET_MAIN\" \"\$@\"
-                }"
-            fi
-            ___X_CMD_XRC_SET_MAIN=
+            ___x_cmd_xrc_source_file_main_define_by_setmain
             return    # exited already. skip
         fi
     fi
@@ -574,20 +618,12 @@ ___x_cmd_xrc_source_file_main(){
     ___X_CMD_XRC_MODULE_IMPORTED="
 ${___X_CMD_WHICH_ONE_RESULT}${___X_CMD_XRC_MODULE_IMPORTED}"
 
-    ___X_CMD_XRC_SET_MAIN=
+    local ___X_CMD_XRC_SET_MAIN
     ___x_cmd_source "$___X_CMD_WHICH_ONE_RESULT"
 
     if [ -n "$___X_CMD_XRC_SET_MAIN" ]; then
-        ___x_cmd_ldict put ___X_CMD_XRC_SET_MAIN_DICT "${___X_CMD_WHICH_ONE_RESULT}" "${___X_CMD_XRC_SET_MAIN}"
-        # TODO: rename module
-        if [ -n "$___X_CMD_WHICH_ONE_NAMING" ] && [ "$___X_CMD_WHICH_ONE_NAMING" != "$___X_CMD_XRC_SET_MAIN" ]; then
-            eval "
-            $___X_CMD_WHICH_ONE_NAMING(){
-                \"$___X_CMD_XRC_SET_MAIN\" \"\$@\"
-            }"
-        fi
-
-        ___X_CMD_XRC_SET_MAIN=
+        ___x_cmd_ldict_put ___X_CMD_XRC_SET_MAIN_DICT "${___X_CMD_WHICH_ONE_RESULT}" "${___X_CMD_XRC_SET_MAIN}"
+        ___x_cmd_xrc_source_file_main_define_by_setmain
     fi
 }
 
@@ -624,7 +660,8 @@ xrc cat         Show the script in text form
     Uasge:  xrc  cat <lib> [<lib>...]
     Example: eval "$(xrc cat str)"
 A
-            return 1;;
+            return 1
+            ;;
         w|which)
             if [ $# -gt 0 ]; then
                 ___X_CMD_NO_LOCAL=1 ___x_cmd_which_one "$@"
@@ -636,13 +673,17 @@ xrc which       Download lib files and print the local path.
     Uasge:  xrc which <lib> [<lib>...]
     Example: source "$(xrc which str)"
 A
-            return 1 ;;
+            return 1
+            ;;
         root)
-            printf "%s" "$___X_CMD_ROOT" ;;
+            printf "%s" "$___X_CMD_ROOT"
+            ;;
         mirror)
-            ___x_cmd_mirror "$@" ;;
+            ___x_cmd_mirror "$@"
+            ;;
         export-all)
-            ( xrc x-bash/xrc/lib/export &&  ___x_cmd_xrc_export_all "$@" ) ;;
+            ( xrc x-bash/xrc/lib/export &&  ___x_cmd_xrc_export_all "$@" )
+            ;;
         update)
             local CACHE="$___X_CMD_ROOT/all.tgz"
             # rm -rf "$___X_CMD_ROOT" # Dangerous.
@@ -655,30 +696,32 @@ A
             if ___x_cmd_httpget_gitx x-cmd "$codesrc" main "dist/all.tgz" "$CACHE" -; then
                 (cd "$___X_CMD_ROOT" && tar xvf "$CACHE")
                 rm "$CACHE"
-                ___XRC_UDPATE=1
                 ___X_CMD_XRC_MODULE_IMPORTED=
                 ___x_cmd_source "$___X_CMD_ROOT"/xrc/latest
             fi
             ;;
         upgrade)
-            ___XRC_UDPATE=1
             ___X_CMD_XRC_MODULE_IMPORTED=
-            rm -rf "$___X_CMD_ROOT/.boot/boot" && eval "$(curl https://get.x-cmd.com)"
+            rm -f "$___X_CMD_ROOT/.boot/boot" && eval "$(curl https://get.x-cmd.com)"
             ;;
         log)
             printf "WARN: xrc log deprecated, you should using 'x log' instead\n" >&2
-            x log "$@" ;;
+            x log "$@"
+            ;;
         ls)
-            ls "$___X_CMD_ROOT" ;;  # If tar.gz, using tar ls. If folder, ls $folder
+            ls "$___X_CMD_ROOT"
+            ;;  # If tar.gz, using tar ls. If folder, ls $folder
         setmain)
-            ___x_cmd_xrc_set_main "$@" ;;
+            ___x_cmd_xrc_set_main "$@"
+            ;;
         reload)
+            local ___X_CMD_XRC_RELOAD=1
             if [ "$#" -gt 0 ]; then
-                local ___X_CMD_XRC_RELOAD=1
                 ___x_cmd_xrc_source_file "$@"
-                return
+            else
+                ___x_cmd_xrc_source_file xrc/latest
             fi
-            RELOAD=1 xrc xrc/latest; return ;;
+            ;;
         _x_cmd_advise_json)
             xrc cat xrc/lib/xrc.json
             return 126
@@ -691,12 +734,11 @@ A
 # EndSection
 
 # Section 9: other initialization: advise, lazy loading: x, ldict, awk
-x(){    unset -f x; xrc reload x-cmd/latest && x ${1:+"$@"};    }
+x(){    unset -f x; xrc reload x-cmd/latest && x "$@";    }
 if ___x_cmd_is_suitable_advise_env; then
     ___xrc_log debug "Using module advise for completion."
     xrc advise/latest && advise init xrc && advise init x
 fi
-
 
 alias xws="x ws"
 alias xdev="x dev"
@@ -706,7 +748,6 @@ if [ -n "$ZSH_VERSION" ]; then
 else
     alias "+=xrc"
 fi
-
 # EndSection
 
 # Section: Instance management. will be extracted to a file
