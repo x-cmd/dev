@@ -17,7 +17,8 @@
             "cat": null,
             "ls": null,
             "#desc": "Modifiy module"
-        }
+        },
+        "#desc": "bootrc consider external module"
     },
     "config": {
         "tab": null,
@@ -26,7 +27,7 @@
     },
     "man": {},
     "env": {},
-    "login": {},
+    "login": "--- Login user account",
     "register": {},
     "token": {},
     "hub": {
@@ -39,7 +40,8 @@
         },
         "login": null,
         "register": null,
-        "token": null
+        "token": null,
+        "#desc": "Hub... "
     },
     "log": {
         "init": "--- Generate function \\'<module>_log\\'",
@@ -50,18 +52,21 @@
         },
         "#n": "xrc x-cmd/_v0/log && ___x_cmd_log_completer"
     },
-    "upgrade": null,
-    "update": ["nightly", "dev"],
+    "upgrade|update": {
+        "#1": ["nightly", "dev"],
+        "#desc": "Upgrade or Update x-cmd"
+    },
     "clear": {},
     "reinstall": {},
     "z|uz": null,
     "sh|bash|zsh|fish|ksh|dash|ash": {
-        "#desc": "Sh description",
+        "#desc": "Execute your script use the corresponding shell",
         "#1": "___advise_ls"
     },
     "nvm": null,
-    "jar|java|pip|py|js|node|npm|npx|ts|rb|lua": {
-        "#desc": "Use these environments to run scripts",
+    "pip|npm": null,
+    "jar|java|py|js|node|npx|ts|rb|lua": {
+        "#desc": "Execute your script use these environments",
         "#1": "___advise_ls"
     },
     "jq|yq": null,
@@ -80,30 +85,33 @@
     "args": null,
     "alias|unalias": "--- x alias or unalias",
     "dev": null,
-    "ws": "xrc advise/lib/advise_get && ___x_cmd_advise_get_complete \"$(x advise which dev)\" mod ''",
+    "ws": {
+        "#1": "xrc advise/lib/advise_get && ___x_cmd_advise_get_complete \"$(x advise which dev)\" mod ''",
+        "#desc": "Execute a file in workspace, usually the .x-cmd directory in the repository"
+    },
     "advise": {
-        "#n": "___advise_get_result 1",
-        "#desc": "Command line complete"
+        "#n": "___x_cmd_advise_get_result",
+        "#desc": "Generate command completion based on advise json"
     },
     "theme": {
-        "#n": "___advise_get_result 1",
+        "#n": "___x_cmd_advise_get_result",
         "#desc": "Change terminal theme"
     },
     "tldr": {
-        "#n": "___advise_get_result 1",
-        "#desc": "Too Long, Didn't Read"
+        "#n": "___x_cmd_advise_get_result",
+        "#desc": "Collaborative cheatsheets for console commands"
     },
     "install": {
-        "#n": "___advise_get_result 1",
+        "#n": "___x_cmd_advise_get_result",
         "#desc": "Install Command-line tools"
     },
     "proxy": {
-        "#n": "___advise_get_result 1",
-        "#desc": "Change proxy"
+        "#n": "___x_cmd_advise_get_result",
+        "#desc": "Setting up mirror sources for various package management"
     },
     "cowsay": {
-        "#n": "___advise_get_result 1",
-        "#desc": "Use cowsay"
+        "#n": "___x_cmd_advise_get_result",
+        "#desc": "Generates ASCII art pictures of a cow with a message"
     },
-    "#n": "___advise_get_result 1"
+    "#n": "___x_cmd_advise_get_result"
 }
