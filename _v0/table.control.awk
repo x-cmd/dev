@@ -13,6 +13,10 @@ BEGIN {
         available_row = 10
     }
 
+    if (available_cols_len == "") {
+        available_cols_len = 30
+    }
+
     max_row_in_page = available_row
 
     start_row = 1
@@ -65,7 +69,12 @@ function update_view_print_cell(logic_row_i, row_i, col_i,       h, _size){
     if (logic_row_i == cur_row) {
         buffer_append( sprintf("%s", UI_FG_GREEN UI_TEXT_REV) )
     }
-    buffer_append( sprintf( "%s", str_pad_right( data[ cord ], col_max[ col_i ], data_wlen[ cord ] ) ) )
+    if (col_max[ col_i ] > available_cols_len) {
+        if (data_wlen[ cord ] > available_cols_len){ buffer_append( sprintf( "%s", str_pad_right( substr(data[ cord ], 1, available_cols_len) "...", available_cols_len + 3, available_cols_len + 3) ) )}
+        else {buffer_append( sprintf( "%s", str_pad_right( data[ cord ], available_cols_len + 3, data_wlen[ cord ] ) ) )}
+    } else{
+        buffer_append( sprintf( "%s", str_pad_right( data[ cord ], col_max[ col_i ], data_wlen[ cord ] ) ) )
+    }
     buffer_append( sprintf( "%s", "  " ) )
 
     # if ((h == 1) && (highrow[ row_i ] != 1)) printf( UI_END )
@@ -143,7 +152,12 @@ function update_logic_view(           logic_row_i, row_i, col_i, start_row){
     # buffer_append( sprintf("%s %s %s" NEWLINE, counter++, cur_row, cur_col) )
     buffer_append( sprintf("%s     ", UI_TEXT_UNDERLINE UI_TEXT_BOLD) )
     for (col_i=1; col_i<=table_col; col_i++) {
-        buffer_append( sprintf( "%s  ", str_pad_right( data[ 1 KSEP col_i ], col_max[ col_i ], data_wlen[ 1 KSEP col_i ] ) ) )
+        if (col_max[ col_i ] > available_cols_len) {
+            buffer_append( sprintf( "%s", str_pad_right( data[ 1 KSEP col_i ], available_cols_len + 6, data_wlen[ 1 KSEP col_i ] ) ) )
+        }else{
+            buffer_append( sprintf( "%s  ", str_pad_right( data[ 1 KSEP col_i ], col_max[ col_i ], data_wlen[ 1 KSEP col_i ] ) ) )
+        }
+        # buffer_append( sprintf( "%s  ", str_pad_right( data[ 1 KSEP col_i ], col_max[ col_i ], data_wlen[ 1 KSEP col_i ] ) ) )
     }
     buffer_append( sprintf("%s", UI_END) )
     buffer_append( sprintf( NEWLINE ) )
@@ -158,6 +172,7 @@ function update_logic_view(           logic_row_i, row_i, col_i, start_row){
         }
         buffer_append( sprintf("%s" NEWLINE, UI_END) )
     }
+    buffer_append( sprintf("SELECT: %s" NEWLINE, data[ cur_row KSEP cur_col ]) )
     # printf( NEWLINE )
 
     send_msg_update( buffer_clear() )
@@ -189,8 +204,8 @@ function parse_data(text,
                 data_highlight[ row_i KSEP col_i ] = 1
             }
 
-            data[ row_i KSEP col_i ] = elem
             elem_wlen = wcswidth( elem )
+            data[ row_i KSEP col_i ] = elem
             data_wlen [ row_i KSEP col_i ] = elem_wlen
 
             if (col_max[ col_i ] == "") col_max[ col_i ] = elem_wlen

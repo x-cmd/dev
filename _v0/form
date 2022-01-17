@@ -4,8 +4,6 @@
 
 xrc assert/latest
 xrc ui/_v0/region
-
-
 # dict
 
 # dict @x_ui_prompt_form put selected 3
@@ -128,7 +126,7 @@ ___x_cmd_ui_prompt_form_main(){
     local arg_count=0
     local arg
 
-    xrc dict
+    xrc dict/latest
 
     for arg in "$@"; do
         case "$arg" in
@@ -283,7 +281,7 @@ ___x_cmd_ui_prompt_form(){
 }
 
 # ___x_cmd_ui_prompt_form \
-#     "Accesstype" atype public = private public "--" \
+#     "Accesstype" atype public "=" private public "--" \
 #     "RepoName" repo "" "=~" "abc1[0-9]+"   "--" \
 #     "Username" user "" "=~" "12[0-9]+"
 

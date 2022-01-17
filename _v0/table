@@ -239,8 +239,8 @@ ___ui_table_out_func(){
         printf "VIEW %s %s\n" "$(ui rows)" "$(ui cols)" | ___x_cmd_ui_region_send
         
         local SPACE=
-        printf "UPDATE\n"
-        printf "VIEW %s %s\n" "$(ui rows)" "$(ui cols)" 
+        # printf "UPDATE\n"
+        # printf "VIEW %s %s\n" "$(ui rows)" "$(ui cols)" 
 
         while region_getchar; do
 
@@ -270,6 +270,7 @@ ___ui_table_out_func(){
                         printf "CREATE\n"
                         if ___ui_table_out3_contain_exit_op CREATE; then
                             printf "END\n"
+                            printf "VIEW %s %s\n" "$(ui rows)" "$(ui cols)" 
                             break
                         fi
                         ;;
@@ -277,6 +278,7 @@ ___ui_table_out_func(){
                         printf "UPDATE\n"
                         if ___ui_table_out3_contain_exit_op UPDATE; then
                             printf "END\n"
+                            printf "VIEW %s %s\n" "$(ui rows)" "$(ui cols)" 
                             break
                         fi
                         ;;
@@ -284,6 +286,7 @@ ___ui_table_out_func(){
                         printf "DELETE\n"
                         if ___ui_table_out3_contain_exit_op DELETE; then
                             printf "END\n"
+                            printf "VIEW %s %s\n" "$(ui rows)" "$(ui cols)" 
                             break
                         fi
                         ;;
@@ -291,6 +294,7 @@ ___ui_table_out_func(){
                         printf "REFRESH\n"
                         if ___ui_table_out3_contain_exit_op REFRESH; then
                             printf "END\n"
+                            printf "VIEW %s %s\n" "$(ui rows)" "$(ui cols)" 
                             break
                         fi
                         ;;
@@ -298,6 +302,7 @@ ___ui_table_out_func(){
                         printf "ENTER\n"
                         if ___ui_table_out3_contain_exit_op ENTER; then
                             printf "END\n"
+                            printf "VIEW %s %s\n" "$(ui rows)" "$(ui cols)" 
                             break
                         fi
                         ;;
@@ -317,7 +322,7 @@ ___ui_table_out_func(){
         # Notice: Meaningless but important.
         printf "\n"
 
-    } | ___x_cmd_ui_table_control | ___x_cmd_ui_region_update_awk
+    } | ( ___x_cmd_ui_table_control ) | ( ___x_cmd_ui_region_update_awk )
 
     exec 3>&-
 
@@ -330,7 +335,7 @@ ___ui_table_out_func(){
 # EndSection
 # ui table -
 # ui table + B%USER               PID  %CPU %MEM      VSZ    RSS   TT  STAT STARTED      TIME COMMAND
-# for i in $(seq 6); do
+# for i in $(seq 12); do
 #     ui table + edwinjhlee       45694  69.7  3.2 12906080 542124   "??"  R    "三02下午" 2171:02.57 "com.docker.hyperkit -A -u -F vms/0/hyperkit.pid -c 4 -m 8192M -s 0:0,hostbridge -s"
 #     ui table + _windowserver    24773   9.6  0.9  9289004 146772   "??"  Ss   "29 521"  2827:26.66 "/System/Library/PrivateFrameworks/SkyLight.framework/Resources/WindowServer -daemo"
 #     ui table + edwinjhlee       40627   9.1  0.8  9704844 133228   "??"  Ss   "25 621"  351:58.88 "/Applications/Visual Studio Code.app/Contents/MacOS/Electron /Users/edwinjhlee/x-b"
@@ -425,8 +430,8 @@ ___ui_table_out_func(){
 # A
 # }
 
-# # ___ui_table_out_jsonsource data .table.abc name age gender math=score.math
 # printf "$(___ui_table_out_jsonsource data .table.abc name age gender math=score.math)\n"
+# ___ui_table_out_jsonsource data .table.abc name age gender math=score.math
 
 # EndSection
 

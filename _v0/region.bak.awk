@@ -5,14 +5,6 @@ BEGIN{
     printf(UI_CURSOR_HIDE) > "/dev/stderr"
 }
 
-function ui_cursor_goup_n_line(n){
-    return "\033[" n "A"
-}
-
-function ui_cursor_godown_n_line(n){
-    return "\033[" n "B"
-}
-
 function cal_empty_line(line_count, width, 
     i, ret){
 
@@ -26,30 +18,38 @@ function cal_empty_line(line_count, width,
 BEGIN{
     LAST_OUTPUT_LINE_COUNT = 0
     OUTPUT_LINE_COUNT = 0
-
-    UI_LINEWRAP_DISABLE="\033[?7l"
-    UI_LINEWRAP_ENABLE="\033[?7h"
 }
 function output(text, width, 
-    line_arr, line_arr_len, return_text, i, blank_line){
+    line_arr, line_arr_len, return_text, i){
     
-    return_text = "" UI_LINEWRAP_DISABLE
-    
+    return_text = ""
 
     line_arr_len = split(text, line_arr, "\n")
     OUTPUT_LINE_COUNT = 0
-    blank_line = str_rep(" ", width) "\r"
     for (i=1; i<=line_arr_len; i++) {
-        line = line_arr[i]
-        return_text = return_text blank_line line "\n"
+        line = line_arr[i] 
+        return_text = return_text str_rep(" ", width) "\r" line "\n"
     }
     OUTPUT_LINE_COUNT=line_arr_len
+
+    # for (i=1; i<=line_arr_len; i++) {
+    #     line = line_arr[i]
+    #     line_len = wcswidth( str_remove_style(line) )
+    #     if (line_len == 0) {
+    #         OUTPUT_LINE_COUNT = OUTPUT_LINE_COUNT + 1
+    #         return_text = return_text str_rep(" ", width) "\n"
+    #     } else {
+    #         line_count = int(line_len / width)
+    #         rest = line_len - (line_count * width)
+    #         OUTPUT_LINE_COUNT = OUTPUT_LINE_COUNT + line_count
+    #         if (rest > 0) OUTPUT_LINE_COUNT = OUTPUT_LINE_COUNT + 1
+    #         return_text = return_text line str_rep(" ", width - rest) "\n"  # Fill with white space
+    #     }
+    # }
 
     if (OUTPUT_LINE_COUNT < LAST_OUTPUT_LINE_COUNT) {
         return_text = return_text cal_empty_line(LAST_OUTPUT_LINE_COUNT - OUTPUT_LINE_COUNT, width)
     }
-
-    return_text = return_text UI_LINEWRAP_ENABLE
 
     return return_text
 }
@@ -58,6 +58,7 @@ BEGIN {
     output_test = ""
     last_output_test = ""
 }
+
 
 function update(text, width){
     # printf(UI_CURSOR_RESTORE)
@@ -82,6 +83,7 @@ function update(text, width){
     }
 
     printf("%s", output_text) > "/dev/stderr"
+    
 }
 
 BEGIN{
