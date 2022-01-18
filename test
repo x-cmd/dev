@@ -1,0 +1,7 @@
+
+stty -echo
+while read -n 1 ch; do
+    printf "%s" "$ch"
+    sleep 0.1
+done
+stty +echo
