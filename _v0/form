@@ -168,10 +168,40 @@ ___x_cmd_ui_prompt_form_main(){
 
     local q_current=1
     local q_focus=0
+    local tmp_answer
 
     {
-        ___x_cmd_ui_prompt_form_draw
+        {
+            while true; do
+                printf "REFRESH\n"
+                sleep "${ANIMATE_INTERVAL:-0.2}" || break
+            done
+        } &
+
         while region_getchar; do
+            printf "C:%s:%s\n" "${___X_CMD_UI_GETCHAR_TYPE}" "${___X_CMD_UI_GETCHAR_CHAR}"
+            if [ "$___X_CMD_UI_GETCHAR_CHAR" = "$(printf "\004")" ]; then
+                break
+            fi
+        done
+        kill $!
+        sleep 0.1s
+    } | {
+        ___x_cmd_ui_prompt_form_draw
+        local ___line
+        while read -r ___line; do
+            case "$___line" in
+                REFRESH)        ___x_cmd_ui_prompt_form_draw
+                                ___X_CMD_UI_GETCHAR_TYPE=
+                                ___X_CMD_UI_GETCHAR_CHAR=
+                                ;;
+                C:*)            
+                    ___line="${___line#C:}"
+                    ___X_CMD_UI_GETCHAR_TYPE="${___line%%:*}"
+                    ___X_CMD_UI_GETCHAR_CHAR="${___line#*:}"
+                    ;;
+            esac
+
             case "$___X_CMD_UI_GETCHAR_CHAR" in
                 UP|DN)
                     if [ $q_focus -eq 0 ]; then
@@ -210,36 +240,34 @@ ___x_cmd_ui_prompt_form_main(){
                         q_focus=0
                     fi ;;
                 DELETE) 
-                    local tmp_answer
                     tmp_answer=$(dict @x_ui_prompt_form get "$q_current" "answer")
                     tmp_answer="${tmp_answer%?}"
                     dict @x_ui_prompt_form put "$q_current" "answer" "$tmp_answer"
                     ;;
                 *)
                     # TODO: using a significant OK to exit.
-                    if [ "$___X_CMD_UI_GETCHAR_CHAR" = "$(printf "\004")" ]; then
-                        break
-                    fi
-
-                    if [ "$q_focus" -ne 0 ]; then
-                        local tmp_answer
-                        tmp_answer=$(dict @x_ui_prompt_form get "$q_current" "answer")
-                        if [ "$(dict @x_ui_prompt_form get "$q_current" "4")" = = ]; then
-                            case "$___X_CMD_UI_GETCHAR_TYPE" in
-                                ascii-digit)   
-                                    tmp_answer="${tmp_answer}${___X_CMD_UI_GETCHAR_CHAR}" ;;
-                            esac
-                        else
-                            case "$___X_CMD_UI_GETCHAR_TYPE" in
-                                ascii-space|ascii-digit|ascii-letter-*|ascii-symbol-*|UTF8*)   
-                                    tmp_answer="${tmp_answer}${___X_CMD_UI_GETCHAR_CHAR}" ;;
-                            esac
+                    if [ -n "$___X_CMD_UI_GETCHAR_CHAR" ];then
+                        if [ "$___X_CMD_UI_GETCHAR_CHAR" = "$(printf "\004")" ]; then
+                            break
                         fi
-                        dict @x_ui_prompt_form put "$q_current" "answer" "$tmp_answer"
+
+                        if [ "$q_focus" -ne 0 ]; then
+                            tmp_answer=$(dict @x_ui_prompt_form get "$q_current" "answer") >&3
+                            if [ "$(dict @x_ui_prompt_form get "$q_current" "4")" = = ]; then
+                                case "$___X_CMD_UI_GETCHAR_TYPE" in
+                                    ascii-digit)   
+                                        tmp_answer="${tmp_answer}${___X_CMD_UI_GETCHAR_CHAR}" ;;
+                                esac
+                            else
+                                case "$___X_CMD_UI_GETCHAR_TYPE" in
+                                    ascii-space|ascii-digit|ascii-letter-*|ascii-symbol-*|UTF8*)   
+                                        tmp_answer="${tmp_answer}${___X_CMD_UI_GETCHAR_CHAR}" ;;
+                                esac
+                            fi
+                            dict @x_ui_prompt_form put "$q_current" "answer" "$tmp_answer"
+                        fi
                     fi
             esac
-
-            ___x_cmd_ui_prompt_form_draw
         done
         
         # Notice: Meaningless but important.

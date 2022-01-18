@@ -50,10 +50,86 @@ ___x_cmd_ui_region_update_awk(){
     LC_ALL=en_US.UTF-8 USE=str,wcwidth,ui ___x_cmd_awk file "$___X_CMD_UI_REGION_AWK"
 }
 
-region_run(){
+___x_cmd_ui_region_run(){
     exec 3>&1
     eval "$@" 2>&1 >&3 3>&- | ___x_cmd_ui_region_update
     exec 3>&-
+}
+
+
+case "$___X_CMD_SHELL" in
+    bash|zsh)
+___x_cmd_pidofsubshell(){
+    $SHELL -c 'printf $PPID'
+}   
+    ;;
+
+    dash)
+___x_cmd_pidofsubshell(){
+    /bin/dash -c 'printf $PPID'
+}  
+    ;;
+
+    ash)
+___x_cmd_pidofsubshell(){
+    ash -c 'printf $PPID'
+}  
+    ;;
+
+    *)
+___x_cmd_pidofsubshell(){
+    "$0" -c 'printf $PPID'
+}
+    ;;
+esac
+
+___x_cmd_ui_region_run_with_keyboard(){
+    local fun="${1:?Provide handler}"; shift
+
+    exec 3>&1
+    {
+        {
+            while true; do
+                printf "REFRESH\n"
+                sleep "${ANIMATE_INTERVAL:-0.2}" || break
+            done
+        } &
+        while region_getchar; do
+            printf "C:%s:%s\n" "${___X_CMD_UI_GETCHAR_TYPE}" "${___X_CMD_UI_GETCHAR_CHAR}"
+        done
+        kill $!
+    } | {
+        "$fun" "$@" >&3
+        kill -SIGPIPE "$(___x_cmd_pidofsubshell)"
+    } | ___x_cmd_ui_region_update
+    exec 3>&-
+}
+
+___x_cmd_ui_region_run_with_keyboard_controller_viewer_(){
+    local controller="${1:?Provide controller function}"
+    local viewer="${2:?Provide viewer function}"
+
+    local ___line
+    {
+        while read -r ___line; do
+            case "$___line" in
+                REFRESH)        
+                    # viewer
+                    "$viewer" ;;
+                C:*)            
+                    ___line="${___line#C:}"
+                    ___X_CMD_UI_GETCHAR_TYPE="${___line%%:*}"
+                    ___X_CMD_UI_GETCHAR_CHAR="${___line#*:}"
+            esac
+
+            "$controller" 2>&1 >&3 3>&-
+        done
+    }
+}
+
+___x_cmd_ui_region_run_with_keyboard_controller_viewer(){
+    ___x_cmd_ui_region_run_with_keyboard \
+        ___x_cmd_ui_region_run_with_keyboard_controller_viewer_ "$1" "$2" 
 }
 
 # EndSection
@@ -269,76 +345,3 @@ $(ui_seperator)
 }
 
 # EndSection
-
-# Section: question app
-___x_cmd_ui_prompt_question_draw(){
-    local question="$1"
-    local answer="$2"; 
-    local right="$3"
-    shift 3
-    {
-        printf "\033[34;1m%s: " "$question"
-        if [ -z "$right" ]; then
-            printf "  \033[31;7m%s\033[0m\n" "$answer"
-        else
-            printf "  \033[32;1m%s\033[0m\n" "$answer"
-        fi
-    } | ___x_cmd_ui_region_send
-}
-
-xrc assert/latest
-
-___x_cmd_ui_prompt_question_main(){
-    exec 3>&1
-
-    local question="${1:?Question}"
-    shift 1
-
-    local answer
-
-    {
-        ___x_cmd_ui_prompt_question_draw "$question" "$answer"
-        while region_getchar; do
-            case "$___X_CMD_UI_GETCHAR_CHAR" in
-                UP|DN)  continue ;;
-                ENTER)
-                    break ;;
-                DELETE)     
-                    answer="${answer%?}"
-                    ;;
-                *)
-                    case "$___X_CMD_UI_GETCHAR_TYPE" in
-                        ascii-space|ascii-digit|ascii-letter-*|ascii-symbol-*|UTF8*)   
-                            answer="${answer}${___X_CMD_UI_GETCHAR_CHAR}" ;;
-                        *)
-                            answer="${answer}${___X_CMD_UI_GETCHAR_CHAR}" ;;
-                    esac
-                    
-            esac
-
-            if assert "$answer" "$@" 2>/dev/null; then
-                ___x_cmd_ui_prompt_question_draw "$question" "$answer" 1
-            else
-                ___x_cmd_ui_prompt_question_draw "$question" "$answer"
-            fi
-        done
-        
-        # Notice: Meaningless but important.
-        ___x_cmd_ui_prompt_question_draw "$question" "$answer"
-
-        # printf "\n"
-        printf "%s" "$answer" >&3
-
-    } | ___x_cmd_ui_region_update
-
-    # tput cvvis
-    # stty echo
-    exec 3>&-
-}
-
-___x_cmd_ui_prompt_question(){
-    printf "%s" "$(___x_cmd_ui_prompt_question_main "$@")"
-}
-
-# EndSection
-
