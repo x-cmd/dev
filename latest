@@ -2,7 +2,7 @@
 
 # Section: bootrc consider external module.
 ___x_cmd_boot(){
-    local subcmd="$1";  shift
+    local subcmd="$1"; [ $# -gt 0 ] && shift
     if ! mkdir -p "$HOME/.x-cmd/.boot"; then
         printf "boot abort for mkdir fails: %s\n" "$HOME/.x-cmd/.boot" >/dev/stderr
         return 1
@@ -189,6 +189,8 @@ $d2"
                                 ;;
                 esac
                 ;;
+        *)  xrc advise/lib/advise_get
+            ___x_cmd_advise_get_help "$(xrc which x-cmd/_v0/x.json)" boot '' ;;
     esac
 }
 
