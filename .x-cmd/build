@@ -25,7 +25,7 @@ case "$image" in
             -t "xcmd/$image-dev:latest" . --push
         ;;
     *)
-        for i in debian centos alpine bash3 bash4 bash5; do
+        for i in debian centos ubuntu alpine bash3 bash4 bash5; do
             x build "$i"
         done
         return 1
