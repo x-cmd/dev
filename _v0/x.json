@@ -84,9 +84,12 @@
     "wsroot": {},
     "args": null,
     "alias|unalias": "--- x alias or unalias",
+    "ws": {
+        "#1": "xrc advise/lib/advise_get && ___x_cmd_advise_get_complete \"$(x advise which ___x_cmd_dev)\" mod ''",
+        "#desc": "Execute a file in workspace, usually the .x-cmd directory in the repository"
+    },
     "#1": [
         "dev",
-        "ws --- Execute a file in workspace, usually the .x-cmd directory in the repository",
         "advise --- Generate command completion based on advise json",
         "theme --- Change terminal theme",
         "tldr --- Collaborative cheatsheets for console commands",
