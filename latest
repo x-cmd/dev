@@ -167,7 +167,10 @@ ___x_cmd_run_by_file(){
 
     if [ -x "$filepath" ]; then
         "$filepath" "$@"
-        return
+        local code=$?
+        # In bash and dash. The file mount into the docker container using [ -x <path> ]
+        #   does not correctly determine whether the file has execute permissions or not.
+        [ $code != 126 ] && return $code
     fi
 
     local engine
