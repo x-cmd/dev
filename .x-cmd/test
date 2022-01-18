@@ -10,9 +10,9 @@ dbash() {
 }
 
 cross_env_test() {
-    for i in bash:3 bash:4 bash:5 ; do
+    for i in bash3 bash4 bash5 ; do
         param_log info "Testing : " "$i"
-        docker run -it -v  ~/.x-cmd/:/root/.x-cmd/ -v "$(pwd)":/pd "${i}" bash -c ". ~/.x-cmd/xrc/latest && cd pd && . ./testcase/v0_test"
+        docker run -it -v "$(pwd)":/pd "xcmd/${i}-dev" bash -i -c "cd pd && x test local"
     done
 
     for i in alpine ubuntu ; do
@@ -27,7 +27,7 @@ case "$1" in
         . ./testcase/v0_test
         ;;
     cross)
-        x test local
+        . ./testcase/v0_test
         cross_env_test
         ;;
     bash:3|bash:4|bash:5)
