@@ -1,30 +1,34 @@
 # shellcheck shell=sh disable=SC2039,3043 # source
 
-for i in debian centos alpine bash3 bash4 bash5; do
-    echo "Building $i"
+echo "Building $1"
+image="$1"
+case "$image" in
+    debian|alpine|ubuntu)
+        docker buildx build \
+            --no-cache \
+            --platform linux/arm,linux/arm64,linux/amd64 \
+            -f "./docker/$image/Dockerfile" \
+            -t "xcmd/$image-dev:latest" . --push
+        ;;
+    centos)
+        docker buildx build \
+            --no-cache \
+            --platform linux/arm64,linux/amd64 \
+            -f "./docker/$image/Dockerfile" \
+            -t "xcmd/$image-dev:latest" . --push
+        ;;
+    bash3|bash4|bash5)
+        docker buildx build \
+            --no-cache \
+            --platform linux/arm,linux/arm64,linux/amd64 \
+            -f "./docker/$image/Dockerfile" \
+            -t "xcmd/$image-dev:latest" . --push
+        ;;
+    *)
+        for i in debian centos alpine bash3 bash4 bash5; do
+            x build "$i"
+        done
+        return 1
+        ;;
+esac
 
-    case "$i" in
-        debian|alpine)
-            docker buildx build \
-                --no-cache \
-                --platform linux/arm,linux/arm64,linux/amd64 \
-                -f "./docker/$i/Dockerfile" \
-                -t "xcmd/$i-dev:latest" . --push
-            ;;
-        centos)
-            docker buildx build \
-                --no-cache \
-                --platform linux/arm64,linux/amd64 \
-                -f "./docker/$i/Dockerfile" \
-                -t "xcmd/$i-dev:latest" . --push
-            ;;
-        bash3|bash4|bash5)
-            docker buildx build \
-                --no-cache \
-                --platform linux/arm,linux/arm64,linux/amd64 \
-                -f "./docker/$i/Dockerfile" \
-                -t "xcmd/$i-dev:latest" . --push
-            ;;
-
-    esac
-done
