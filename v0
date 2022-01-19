@@ -90,7 +90,7 @@ A
 
 # using dict
 ___x_cmd_theme_control_env(){
-    xrc dict/v0
+    xrc dict/latest
     case "$#" in
         0)      dict @___x_cmd_theme_env dump           ;;
         1)      dict @___x_cmd_theme_env get "$1"       ;;
