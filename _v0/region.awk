@@ -97,6 +97,7 @@ function end(){
     printf( "%s", cal_empty_line(LAST_OUTPUT_LINE_COUNT, LAST_WIDTH)) > "/dev/stderr"
     printf(UI_CURSOR_RESTORE) > "/dev/stderr"
 
+    printf "\033[34h\033[?25h" > "/dev/stderr"
     printf(UI_CURSOR_NORM) > "/dev/stderr"
 
     print ":"
