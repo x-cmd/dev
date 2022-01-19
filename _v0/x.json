@@ -63,10 +63,7 @@
     },
     "nvm": null,
     "pip|npm": null,
-    "jar|java|py|js|node|npx|ts|rb|lua": {
-        "#desc": "Execute your script use these environments",
-        "#1": "___advise_ls"
-    },
+    "jar|java|python|js|node|npx|ts|rb|lua": "--- Execute your script use these environments",
     "jq|yq": null,
     "cat|du": "___advise_ls",
     "ls|ll|cd": "___advise_ls",
