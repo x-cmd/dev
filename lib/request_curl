@@ -65,33 +65,26 @@ ___x_cmd_http_not_secure_get(){
     fi
 
     local code=0
-    ___x_cmd_http_not_secure_request | ___x_cmd_http_not_secure_request_handler "$file"
+    ___x_cmd_http_not_secure_request | ___x_cmd_http_not_secure_request_handler "$file"| ___x_cmd_httpget_handle_resp_header "$file" "$code"
 }
 
 ___x_cmd_http_download_curl(){
-    local url="${1:?Provide url}"
-    local cache="${2}"
-    # xrc os
-    # local arch
-    # arch="$(os arch)"
-    # if [ "$arch" != "linux" ];then
-    #     return 1
-    # fi
-
-    if [ -z "$cache" ]; then
-        exec 3>&1
-        ___X_CMD_HTTP_GET_INNER_HEADER="$(___x_cmd_http_not_secure_get "$url" 1>&3 2>/dev/stdout)"
-        exec 3>&-
-    else
-        ___X_CMD_HTTP_GET_INNER_HEADER="$(___x_cmd_http_not_secure_get "$url" "$cache" 2>/dev/stdout)"
+    xrc os
+    local arch
+    arch="$(os arch)"
+    name="$(os name)"
+    if [ "$(os name)" != "linux" ];then
+        return 1
     fi
-    local code=$?
-    printf "%s" "$___X_CMD_HTTP_GET_INNER_HEADER" | ___x_cmd_httpget_handle_resp_header "$url" "$code"
-    # TODO: unzip
-    # TODO: check md5
-    # TODO
-
-    # ___x_cmd_httpget
-    # ___x_cmd_curl
-
+    local url="${1:-"static-build.gitee.io/curl/bin"}"
+    local app="${2:-"curl.$name.$arch"}"
+    local target="$HOME/.x-cmd/.bin/${app%%.*}"
+    local sha
+    sha="2e8196fae25ab2f2a5c0b117432ffb829be0ac785760ad7a35c58c1ab6d3ec65"
+    if [ ! -e "$app" ];then
+        mkdir -p "$target"
+        ___x_cmd_http_not_secure_get "http://$url/$app.tar.gz" "$target/$app.tar.gz" 2>/dev/stdout || return 1
+        tar zxvf "$target/$app.tar.gz" -C "$target"
+    fi
+    [ "$sha" != "$(sha256sum "$target"/"$app")" ] && return 1
 }
