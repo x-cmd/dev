@@ -1031,16 +1031,16 @@ ___x_cmd_main(){
 
         sh|bash|zsh|fish|ksh|dash|ash)          ___x_cmd_shell_exec "$subcmd" "$@" ;;
 
-        jar)                                    java -jar "$@" ;;
-        java)                                   java "$@" ;;
+        jar)                                    xrc java/latest && ___x_cmd_java -jar "$@" ;;
+        java)                                   xrc java/latest && ___x_cmd_java "$@" ;;
 
-        pip|pip3)                               xrc x-cmd/_v0/python && ___x_cmd_pip3 "$@" ;;
-        python|py|python3|py3)                  xrc x-cmd/_v0/python && ___x_cmd_python3 "$@" ;;
+        pip|pip3)                               xrc python/latest && ___x_cmd_pip3 "$@" ;;
+        python|py)                              xrc python/latest && ___x_cmd_python "$@" ;;
 
         nvm)                                    xrc nvm/v0;     nvm "$@" ;;
-        javascript|js|node)                     xrc x-cmd/_v0/node && ___x_cmd_node "$@" ;;
-        npm)                                    xrc x-cmd/_v0/node && ___x_cmd_npm "$@" ;;
-        npx)                                    xrc x-cmd/_v0/node && ___x_cmd_npx "$@" ;;
+        javascript|js|node)                     xrc node/latest && ___x_cmd_node "$@" ;;
+        npm)                                    xrc node/latest && ___x_cmd_npm "$@" ;;
+        npx)                                    xrc node/latest && ___x_cmd_npx "$@" ;;
         ts)                                     local arg
                                                 local argstr
                                                 while [ $# -ge 0 ]; do
