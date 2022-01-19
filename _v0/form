@@ -170,7 +170,7 @@ ___x_cmd_ui_prompt_form_controller(){
                 fi
 
                 if [ "$q_focus" -ne 0 ]; then
-                    tmp_answer=$(dict @x_ui_prompt_form get "$q_current" "answer") >&3
+                    tmp_answer=$(dict @x_ui_prompt_form get "$q_current" "answer")
                     if [ "$(dict @x_ui_prompt_form get "$q_current" "4")" = = ]; then
                         case "$___X_CMD_UI_GETCHAR_TYPE" in
                             ascii-digit)   
@@ -210,7 +210,7 @@ ___x_cmd_ui_prompt_form_function(){
                 ;;
         esac
 
-        ___x_cmd_ui_prompt_form_controller
+        ___x_cmd_ui_prompt_form_controller || break
     done
     
     # Notice: Meaningless but important.
@@ -246,6 +246,7 @@ ___x_cmd_ui_prompt_form_main(){
                 arg_count=$((arg_count + 1))
                 dict @x_ui_prompt_form put "$q_count" "$arg_count" "$arg"
         esac
+        dict @x_ui_prompt_form put "$q_count" "argc" "$arg_count"
     done
 
     local i
@@ -284,6 +285,10 @@ ___x_cmd_ui_prompt_form(){
 # ___x_cmd_ui_prompt_form \
 #     "Accesstype" atype public "=" private public "--" \
 #     "RepoName" repo "" "=~" "abc1[0-9]+"   "--" \
-#     "Username" user "" "=~" "12[0-9]+"
+#     "Username" user "" "=~" "12[0-9]+" "--" \
+#     "Test multiple line argument" mul_line_arg ""  "--" \
+#     "Provide repo name" repo ""  "=~" "abc" "cde" "def" "--" \
+#     "Provide two repo name" repo2_1_1 ""  "=" "abc" "cde" "def" "--" \
+#     "Provide two repo name" repo2_1_2 ""  "=" "cde" 
 
 # EndSection

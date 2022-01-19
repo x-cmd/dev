@@ -110,6 +110,80 @@ xrc ui/_v0/getchar
 
 # Section: table app 1: all data
 
+# CRUD
+___ui_table_out2(){
+
+    local O="${O:-___X_CMD_UI_TABLE_DEFAULT}"
+
+    echo hhh
+    stty -echo
+
+    local HIGHCOL=1
+    local HIGHROW=1
+
+    local COL_COUNT
+    eval "COL_COUNT=\"\$___X_CMD_UI_TABLE_DEFAULT_COL_$O\""
+    local ROW_COUNT
+    eval "ROW_COUNT=\"\$___X_CMD_UI_TABLE_DEFAULT_ROW_$O\""
+
+    {
+        ___ui_table_out | ___x_cmd_ui_region_send
+        while ___x_cmd_ui_getchar; do
+            case "$___X_CMD_UI_GETCHAR_CHAR" in
+                UP|DN)
+                    if [ "$___X_CMD_UI_GETCHAR_CHAR" = UP ]; then
+                        HIGHROW="$(___ui_prompt_ui_dec "$HIGHROW" "$ROW_COUNT")"
+                    else
+                        HIGHROW="$(___ui_prompt_ui_inc "$HIGHROW" "$ROW_COUNT")"
+                    fi
+                    ;;
+                LEFT|RIGHT)
+                    if [ "$___X_CMD_UI_GETCHAR_CHAR" = LEFT ]; then
+                        HIGHCOL="$(___ui_prompt_ui_dec "$HIGHCOL" "$COL_COUNT")"
+                    else
+                        HIGHCOL="$(___ui_prompt_ui_inc "$HIGHCOL" "$COL_COUNT")"
+                    fi
+                    ;;
+                c)
+                    printf "CREATE %s %s" "$HIGHCOL" "$HIGHROW" >&3
+                    break
+                    ;;
+                e|u)
+                    printf "UPDATE %s %s" "$HIGHCOL" "$HIGHROW" >&3
+                    break
+                    ;;
+                r)
+                    printf "REFRESH %s %s" "$HIGHCOL" "$HIGHROW" >&3
+                    break
+                    ;;
+                ENTER)
+                    printf "ENTER %s %s" "$HIGHCOL" "$HIGHROW" >&3
+                    break
+                    ;;
+                DELETE)
+                    printf "DELETE %s %s" "$HIGHCOL" "$HIGHROW" >&3
+                    break
+                    ;;
+            esac
+
+            ___ui_table_out | ___x_cmd_ui_region_send
+        done
+        
+        # Notice: Meaningless but important.
+        ___ui_table_out | ___x_cmd_ui_region_send
+
+    } | ___x_cmd_ui_region_update
+
+    exec 3>&-
+
+    tput cvvis
+    stty echo
+}
+
+# EndSection
+
+# Section: table app 1: all data
+
 
 # 1. Input data is primitive data
 # 2. Input json, then tranfer as primitive data to awk
