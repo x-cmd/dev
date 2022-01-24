@@ -100,19 +100,17 @@ function end(){
 }
 
 function env_code(VAR, text){
-    # text=$0
-    # TODO: Output env code after clearing the screen ?
-    end()
-    
-    time =0
+    time = 0
     time = time + gsub(/\\/, "\\\\", text)
     time = time + gsub(/"/, "\\\"", text)
     time = time + gsub("\n", "\\n", text)
-    if (time == 0) {
-        printf("%s", VAR "=\"" text "\"; ")
-    } else {
-        printf("%s", VAR "=\"$(printf \"" text "\")\"; ")
-    }
+    # print "time:" time >> "aaa" 
+    # if (time == 0) {
+    #     printf("%s", VAR "=\"" text "\"; ")
+    # } else {
+    #     printf("%s", VAR "=\"$(printf \"" text "\")\"; ")
+    # }
+    printf("%s", VAR "=\"$(printf \"" text "\")\"; ") 
 }
 
 BEGIN {
@@ -130,27 +128,31 @@ function update_width_height(w, h) {
 }
 
 {
-    if (op == "UPDATE") {
-        op = ""
-        gsub("\001", "\n", $0)
-        update($0)
-    } else if ($1 == "UPDATE") {
+    if ($1 == "UPDATE") {
         op = $1
         update_width_height($2, $3)
+    } else if ($1 == "ENV") {
+        op = "ENV"
+        op1 = $2
+    } else if (op == "UPDATE") {
+        op = ""
+        if (RS == "\n") {
+            gsub("\001", "\n", $0)
+        }
+        update($0)
+    } else if (op == "ENV") {
+        env_code(op1, $0)
+        op=""
     } else if (op == "STDOUT") {
         print $0
     } else if (op == "RESULT") {
-        end()
         print $0
-    } else if ($1 == "ENV") {
-        env_code($2, $3)
     } else if ($1 == "SIZE") {
         update_width_height($2, $3)
     } else {   
         op = $1
         op2 = $2
     }
-
 }
 
 END {

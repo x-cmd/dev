@@ -218,16 +218,31 @@ function parse_data(text,
 # }
 
 function send_msg_update(msg){
-    # gsub("\n", "\001", msg)
-    printf("%s %s %s\001", "UPDATE", max_col_size, max_row_size)
-    printf("%s\001", msg)
+    # mawk
+    if (RS == "\n") {
+        # gsub("\n", "\001", msg)
+        gsub(/\n/, "\001", msg)
+    }
+
+    printf("%s %s %s" RS, "UPDATE", max_col_size, max_row_size)
+    printf("%s" RS, msg)
+
     fflush()
 }
 
 function send_env(var, value){
-    # gsub("\n", "\001", msg)
-    printf("%s %s\n", "ENV", var)
-    printf("%s\001", value)
+    # mawk
+    if (RS == "\n") {
+        # gsub("\n", "\001", msg)
+        gsub(/\n/, "\001", value)
+        printf("%s %s\n", "ENV", var)
+        printf("%s\n", value)
+    } else{
+        printf("%s %s\001", "ENV", var)
+        printf("%s\001", value)
+    }
+    # printf("%s %s\001", "ENV", var)
+    # printf("%s\001", value)
     fflush()
 }
 
