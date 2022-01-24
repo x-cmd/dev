@@ -276,8 +276,7 @@ ___x_cmd_ui_prompt_form_main(){
 }
 
 ___x_cmd_ui_prompt_form(){
-    OUTPUT=1
-    ___x_cmd_ui_prompt_form_main "$@"
+    eval "$(OUTPUT=1 ___x_cmd_ui_prompt_form_main "$@")"
 }
 
 # ___x_cmd_ui_prompt_form \

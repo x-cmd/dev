@@ -242,7 +242,7 @@ ___x_cmd_ui_region_autorefresh_with_keyboard_(){
 }
 
 ___x_cmd_ui_region_autorefresh_with_keyboard(){
-    eval "$(___x_cmd_ui_region_autorefresh_with_keyboard_ "$@")"
+    ___x_cmd_ui_region_autorefresh_with_keyboard_ "$@"
 }
 # EndSection
 
