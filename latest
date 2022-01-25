@@ -14,7 +14,7 @@ else
 fi
 
 ___x_cmd_ls_app(){
-    if [ -t 1 ]; then
+    if [ ! -t 1 ]; then
         ___x_cmd_ls_bin "$@"
         return
     fi
@@ -24,7 +24,27 @@ ___x_cmd_ls_app(){
         # filter:
         # list of all items
         # select and show file info
-        ___x_cmd_ls_bin -G "$@"
+        CLICOLOR_FORCE=1 ls -G | awk '
+function str_remove_style(text){
+    gsub(/\033\[([0-9]+;)*[0-9]+m/, "", text)
+    return text
+}
+
+{
+    f[NR] = $1
+    a = str_remove_style($1)
+    len = length(a)
+    s[NR] = len
+    sum = sum + len
+}
+END {
+    avg = sum / NR + 1
+    print "avg: " avg >"/dev/stderr"
+    for (i=1; i<=NR; ++i) {
+        print f[i]
+    }
+}
+        '
     else
         # TODO: Add theme code
         ___x_cmd_ls_bin -G "$@"
