@@ -1,0 +1,47 @@
+# shellcheck shell=sh disable=SC3043,SC2164     # xrc
+
+# author:       Li Junhao           l@x-cmd.com
+# license:      GPLv3
+
+# 1. ls local device
+# 2. change to different arguments, like ls :ali/ip, means ali ip ls
+
+
+if [ -z "$ZSH_VERSION" ]; then
+    ___x_cmd_ls_bin(){ command ls "$@"; }
+else
+    ___x_cmd_ls_bin(){ builtin ls "$@"; }
+fi
+
+___x_cmd_ls_app(){
+    if [ -t 1 ]; then
+        ___x_cmd_ls_bin "$@"
+        return
+    fi
+
+    if ___x_cmd_is_interative_tty; then
+        # TODO: Add ui components: grid.
+        # filter:
+        # list of all items
+        # select and show file info
+        ___x_cmd_ls_bin -G "$@"
+    else
+        # TODO: Add theme code
+        ___x_cmd_ls_bin -G "$@"
+    fi
+
+}
+
+___x_cmd_ls(){
+    if [ "$#" -eq 1 ]; then
+        case "$1" in
+            :*.zip|:*.7z|:*.tar|:*.tar.Z|:*.tar.gz)     ___x_cmd_zuz_ls "${1#:}" ;;
+            :cpu)                                       x os cpu ;;
+            :mem)                                       x os mem ;;
+            :proc|:ps)                                  x os ps ;;
+            *)                                          ___x_cmd_ls_app "$@" ;;
+        esac
+    fi
+}
+
+xrc setmain ___x_cmd_ls
