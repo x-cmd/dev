@@ -998,7 +998,7 @@ ___x_cmd_main(){
         ruby|rb)                                ruby "$(___x_cmd_official_which "$2")" "$@"      ;;
         lua)            ;;
 
-        7zr)                                    ( xrc p7zr/v0   &&  p7zd "$@" ) ;;
+        7zd|7zr)                                    ( xrc p7zip/v0   &&  p7zd "$@" ) ;;
         7z)                                     ___x_cmd_static_build_file      p7zip 7za               "$@"    ;;
 
         ls)                                     ___x_cmd_ls         "$@"        ;;
