@@ -134,8 +134,10 @@ ___x_cmd_cd_choose(){
         return 1
     fi
 
+    local result
+
     local adir
-    local text="ui sel \"text\" \"Which to cd into:\""
+    local text="ui select ,result \"Which to cd into:\""
     local IFS="
 "
     while read -r adir; do
@@ -144,7 +146,9 @@ ___x_cmd_cd_choose(){
     done <<A
 $1
 A
-    ___x_cmd_cd_origin "$(eval "$text")"
+
+    eval "$text"
+    ___x_cmd_cd_origin "$result"
 }
 # EndSection
 
