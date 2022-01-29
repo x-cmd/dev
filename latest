@@ -13,44 +13,7 @@ else
     ___x_cmd_ls_bin(){ builtin ls "$@"; }
 fi
 
-___x_cmd_ls_app(){
-    if [ ! -t 1 ]; then
-        ___x_cmd_ls_bin "$@"
-        return
-    fi
-
-    if ___x_cmd_is_interative_tty; then
-        # TODO: Add ui components: grid.
-        # filter:
-        # list of all items
-        # select and show file info
-        CLICOLOR_FORCE=1 ls -G | awk '
-function str_remove_style(text){
-    gsub(/\033\[([0-9]+;)*[0-9]+m/, "", text)
-    return text
-}
-
-{
-    f[NR] = $1
-    a = str_remove_style($1)
-    len = length(a)
-    s[NR] = len
-    sum = sum + len
-}
-END {
-    avg = sum / NR + 1
-    print "avg: " avg >"/dev/stderr"
-    for (i=1; i<=NR; ++i) {
-        print f[i]
-    }
-}
-        '
-    else
-        # TODO: Add theme code
-        ___x_cmd_ls_bin -G "$@"
-    fi
-
-}
+___x_cmd_definelazyloader ___x_cmd_ls_app ls/lib/app
 
 ___x_cmd_ls(){
     if [ "$#" -eq 1 ]; then
@@ -59,7 +22,20 @@ ___x_cmd_ls(){
             :cpu)                                       x os cpu ;;
             :mem)                                       x os mem ;;
             :proc|:ps)                                  x os ps ;;
-            *)                                          ___x_cmd_ls_app "$@" ;;
+            *)
+
+            if [ ! -t 1 ]; then
+                ___x_cmd_ls_bin "$@"
+                return
+            fi
+
+            if ! ___x_cmd_is_interative_tty; then
+                ___x_cmd_ls_bin -G "$@"
+                return
+            fi
+
+            ___x_cmd_ls_app "$@"
+            ;;
         esac
     fi
 }
