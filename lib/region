@@ -19,6 +19,7 @@ ___x_cmd_ui_region(){
 xrc ui/lib/getchar
 xrc awk
 
+# ___X_CMD_UI_REGION_AWK="./lib/region.awk"
 ___X_CMD_UI_REGION_AWK="$(xrc which ui/lib/region.awk)"
 
 ___x_cmd_ui_region_send(){
