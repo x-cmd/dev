@@ -1,7 +1,6 @@
 # shellcheck shell=sh disable=SC2039,SC3043
 
-# author:       Li Junhao           l@x-cmd.com    edwinjhlee.github.io
-# maintainer:   Li Junhao
+# author:       Li Junhao           l@x-cmd.com
 
 JSON_AWK_PATH="$(xrc which json/v0_walk.awk)"
 
@@ -727,10 +726,7 @@ json_from_kv(){
 
 # Section: json facility using awk
 
-___X_CMD_JSON_AWK_SRC="$(xrc cat awk/_v0/json.awk)"
-___X_CMD_JSON_AWK_SRC="$(xrc cat awk/_v0/default.awk)
-$___X_CMD_JSON_AWK_SRC
-"
+___X_CMD_JSON_AWK_SRC="$(xrc cat awk/lib/default.awk awk/lib/json.awk awk/lib/jiter.awk)"
 
 ___json_awk_end(){
     local func=jiter_after_tokenize
