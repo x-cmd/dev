@@ -1,11 +1,27 @@
 
-
+# Section: jiter after tokenized
 function jiter_after_tokenize(jobj, text,       _arr, _arrl, _i){
     _arrl = split( json_to_machine_friendly(text), _arr, "\n" )
     for (_i=1; _i<=_arrl; ++_i) {
         jiter( jobj, _arr[_i] )
     }
 }
+
+function jiter_after_tokenize_(jobj, text) {
+    jiter_after_tokenize(_, text)
+}
+# EndSection
+
+# Section: jiter_
+function init_jiter_(){
+    init_jiter()
+}
+
+function jiter_( item ){
+    # efficiency defect 1%
+    jiter( _, item )
+}
+# EndSection
 
 # Section: jiter
 BEGIN{
@@ -58,6 +74,8 @@ function jiter( obj, item ){
         JITER_CURLEN = 0
 
         obj[ JITER_FA_KEYPATH ] = T_LIST
+        # TODO: consider it. so we can distinguish ...
+        # obj[ JITER_FA_KEYPATH T_KEY ] = \001
 
         JITER_STACK[ ++JITER_LEVEL ] = JITER_FA_KEYPATH
     } else if (item ~ /^\]$/) {
@@ -94,26 +112,6 @@ function jiter( obj, item ){
         JITER_STATE = obj[ JITER_FA_KEYPATH ]
         JITER_CURLEN = obj[ JITER_FA_KEYPATH T_LEN ]
     }
-}
-
-# EndSection
-
-# Section: jiter_
-
-function init_jiter_(){
-    JITER_FA_KEYPATH = ""
-    JITER_STATE = T_ROOT
-    JITER_LAST_KP = ""
-    JITER_LEVEL = 1
-    JITER_STACK[ 1 ] = ""
-    JITER_CURLEN = 0
-
-    JITER_LAST_KL = ""
-}
-
-function jiter_( item ){
-    # efficiency defect 1%
-    jiter( _, item )
 }
 
 # EndSection
@@ -262,3 +260,4 @@ function jiter_print_exact( obj, item, key ){
     }
 }
 # EndSection
+
