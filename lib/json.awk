@@ -8,8 +8,8 @@
 
 BEGIN {
     T = "\002"
-    T_DICT = "\003"
-    T_LIST = "\004"
+    T_DICT = "{" # "\003"
+    T_LIST = "[" # "\004"
     T_PRI = "\005"
     T_ROOT = "\006"
 
@@ -55,7 +55,16 @@ function jkey(a1, a2, a3, a4, a5, a6, a7, a8, a9,
     return ret
 }
 
+function jpathr(_jpath,     _ret ){
+    _ret = jpath(_jpath)
+
+    # \034 = S
+    gsub(/\*/, "[^\001]+", _ret)
+    return _ret
+}
+
 function jpath(_jpath,   _arr, _arrl, _i, _ret){
+    if (_jpath ~ S) return _jpath
     if (_jpath ~ /^\./) {
         _jpath = "1" _jpath
     }
@@ -66,6 +75,33 @@ function jpath(_jpath,   _arr, _arrl, _i, _ret){
         _ret = _ret S q(_arr[_i])
     }
     return _ret
+}
+
+function jpatharr(arr, a1, a2, a3, a4, a5, a6, a7, a8, a9,
+    a10, a11, a12, a13, a14, a15, a16, a17, a18, a19 ){
+
+    if (a1 == "")   return 0;   arr[1] = q(a1)
+    if (a2 == "")   return 1;   arr[2] = q(a2)
+    if (a3 == "")   return 2;   arr[3] = q(a3)
+    if (a4 == "")   return 3;   arr[4] = q(a4)
+    if (a5 == "")   return 4;   arr[5] = q(a5)
+    if (a6 == "")   return 5;   arr[6] = q(a6)
+    if (a7 == "")   return 6;   arr[7] = q(a7)
+    if (a8 == "")   return 7;   arr[8] = q(a8)
+
+    if (a9 == "")   return 8;   arr[9] = q(a9)
+    if (a10 == "")  return 9;   arr[10] = q(a10)
+    if (a11 == "")  return 10;  arr[11] = q(a11)
+    if (a12 == "")  return 11;  arr[12] = q(a12)
+    if (a13 == "")  return 12;  arr[13] = q(a13)
+    if (a14 == "")  return 13;  arr[14] = q(a14)
+    if (a15 == "")  return 14;  arr[15] = q(a15)
+    if (a16 == "")  return 15;  arr[16] = q(a16)
+    if (a17 == "")  return 16;  arr[17] = q(a17)
+    if (a18 == "")  return 17;  arr[18] = q(a18)
+    if (a19 == "")  return 18;  arr[19] = q(a19)
+
+    return 19
 }
 
 function jget(arr, _jpath){
@@ -231,7 +267,7 @@ function draw_space(num,     _i, _ret){
 
 # Section: jstr jstr0 jstr1
 # Human
-function jstr(){
+function jstr(arr, keypath){
     return json_stringify_format(arr, keypath)
 }
 
@@ -250,14 +286,11 @@ function jstr0(arr, keypath){
 # Section: Compact Stringify
 function ___json_stringify_compact_dict(arr, keypath,     _klist, _l, _i, _key, _val, _ret){
 
-    _l = json_dict_keys(arr, keypath, _klist)
+    _l = jdict_keys2arr(arr, keypath, _klist)
 
     if (_l == 0) return "{}"
-    _key = _klist[ 1 ]
-    _val = arr[ keypath S _key ]
-    _ret = _key ":" _val
 
-    for (_i=2; _i<=_l; _i++){
+    for (_i=1; _i<=_l; _i++){
         _key = _klist[ _i ]
         _val = arr[ keypath S _key ]
         _ret = _ret "," _key ":" ___json_stringify_compact_value( arr, keypath S _key )
@@ -307,19 +340,16 @@ function json_stringify_compact(arr, keypath,      _i, _len,_ret){
 # Section: Machine Stringify
 function ___json_stringify_machine_dict(arr, keypath,     _klist, _l, _i, _key, _val, _ret){
 
-    _l = json_dict_keys(arr, keypath, _klist)
+    _l = jdict_keys2arr(arr, keypath, _klist)
 
     if (_l == 0) return "{\n}"
-    _key = _klist[ 1 ]
-    _val = arr[ keypath S _key ]
-    _ret = _key "\n:\n" _val
 
-    for (_i=2; _i<=_l; _i++){
+    for (_i=1; _i<=_l; _i++){
         _key = _klist[ _i ]
         _val = arr[ keypath S _key ]
         _ret = _ret "\n,\n" _key "\n:\n" ___json_stringify_machine_value( arr, keypath S _key )
     }
-    _ret = substr(_ret, 7)
+    _ret = substr(_ret, 4)
     return "{\n" _ret "\n}"
 }
 
@@ -357,6 +387,8 @@ function json_stringify_machine(arr, keypath,    _i, _len,_ret){
     for (_i=1; _i<=_len; ++_i) {
         _ret = _ret "\n"___json_stringify_machine_value( arr,  S "\"" _i "\"")
     }
+
+    _ret = substr(_ret, 2)
     return _ret
 }
 # EndSection
@@ -364,11 +396,11 @@ function json_stringify_machine(arr, keypath,    _i, _len,_ret){
 # Section: Format Stringify
 function ___json_stringify_format_dict(arr, keypath, indent,    _klist, _l, _i, _key, _val, _ret){
 
-    _l = json_dict_keys(arr, keypath, _klist)
+    _l = jdict_keys2arr(arr, keypath, _klist)
 
     if (_l == 0) return "{ }"
 
-    for (_i=2; _i<=_l; _i++){
+    for (_i=1; _i<=_l; _i++){
         _key = _klist[ _i ]
         _val = arr[ keypath S _key ]
         _ret = _ret ",\n" draw_space(indent) _key ": " ___json_stringify_format_value( arr, keypath S _key, indent+INDENT_LEN )
@@ -401,6 +433,7 @@ function ___json_stringify_format_value(arr, keypath, indent,   _t, _klist, _i, 
 }
 
 function json_stringify_format(arr, keypath, indent,       _i, _len,_ret){
+    if (indent == "") indent=4
     INDENT_LEN = indent
 
     if (keypath != "") {
@@ -415,8 +448,44 @@ function json_stringify_format(arr, keypath, indent,       _i, _len,_ret){
         _ret =  _ret "\n" ___json_stringify_format_value( arr, S "\"" _i "\"", indent )
     }
 
+    _ret = substr(_ret, 2)
     return _ret
 }
 # EndSection
 
+function json_split2tokenarr(obj, text){
+    return split( json_to_machine_friendly(text), obj, "\n" )
+}
 
+function json_split2tokenarr_(text){
+    return json_split2tokenarr(_, text)
+}
+
+# Section: jiter init save load
+function jiter_save( obj ) {
+    obj[ "FA_KEYPATH" ] = JITER_FA_KEYPATH
+    obj[ "STATE" ]      = JITER_STATE
+    obj[ "LAST_KP" ]    = JITER_LAST_KP
+    obj[ "LEVEL" ]      = JITER_LEVEL
+    obj[ "CURLEN" ]     = JITER_CURLEN
+    obj[ "LAST_KL" ]    = JITER_LAST_KL
+}
+
+function jiter_init( ) {
+    JITER_FA_KEYPATH    = ""
+    JITER_STATE         = T_ROOT
+    JITER_LAST_KP       = ""
+    JITER_LEVEL         = 1
+    JITER_CURLEN        = 0
+    JITER_LAST_KL       = ""
+}
+
+function jiter_load( obj ){
+    JITER_FA_KEYPATH    = obj[ "FA_KEYPATH" ]
+    JITER_STATE         = obj[ "STATE" ]
+    JITER_LAST_KP       = obj[ "LAST_KP" ]
+    JITER_LEVEL         = obj[ "LEVEL" ]
+    JITER_CURLEN        = obj[ "CURLEN" ]
+    JITER_LAST_KL       = obj[ "LAST_KL" ]
+}
+# EndSection
