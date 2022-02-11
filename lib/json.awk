@@ -471,8 +471,8 @@ function jiter_save( obj ) {
     obj[ "LAST_KL" ]    = JITER_LAST_KL
 }
 
-function jiter_init( ) {
-    JITER_FA_KEYPATH    = ""
+function jiter_init( keypath_prefix ) {
+    JITER_FA_KEYPATH    = keypath_prefix
     JITER_STATE         = T_ROOT
     JITER_LAST_KP       = ""
     JITER_LEVEL         = 1

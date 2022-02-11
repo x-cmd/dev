@@ -36,14 +36,14 @@ function jiter_eqarr_parse( obj, item, arrl, arr ){
     return true
 }
 
-function jiter_eqarr( item, arrl, arr,    _ret ){
+function jiter_eqarr( item, arrl, arr,    _ret, _curkey ){
     if ( JITER_SKIP_LEVEL == 0 ) {
         _ret = jiter_for_current_key( item, JITER_STACK )
         if ( _ret == "" ) return false
+
+        _curkey = arr[ (JITER_CURLEN == 0) ? JITER_LEVEL : JITER_LEVEL + 1 ]
         if ( arr[ JITER_LEVEL ] == _ret ) {
-            if ( JITER_LEVEL == arrl ) {
-                return true
-            }
+            if ( JITER_LEVEL == arrl ) return true
             return false
         }
     }
@@ -88,7 +88,7 @@ function jiter_for_current_key( item, stack,  _res ) {
         stack[ ++JITER_LEVEL ] = item
         return _res
     } else {
-        JITER_STATE = stack[ -- JITER_LEVEL ]
+        JITER_STATE = stack[ JITER_LEVEL-- ]
         JITER_CURLEN = stack[ JITER_LEVEL T_LEN ]
     }
     return ""
@@ -199,12 +199,12 @@ function jiter( item, stack,  _res ) {
         JITER_CURLEN = 0
 
         stack[ JITER_FA_KEYPATH ] = item
-        stack[ ++JITER_LEVEL ] = JITER_FA_KEYPATH
+        stack[ ++ JITER_LEVEL ] = JITER_FA_KEYPATH
         return JITER_FA_KEYPATH
     } else {
         stack[ JITER_FA_KEYPATH T_LEN ] = JITER_CURLEN
 
-        JITER_FA_KEYPATH = stack[ -- JITER_LEVEL ]
+        JITER_FA_KEYPATH = stack[ JITER_LEVEL -- ]
         JITER_STATE = stack[ JITER_FA_KEYPATH ]
         JITER_CURLEN = stack[ JITER_FA_KEYPATH T_LEN ]
     }
