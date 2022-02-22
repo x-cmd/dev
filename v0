@@ -1,4 +1,5 @@
-# shellcheck shell=sh disable=SC3043 #xrc
+# shellcheck shell=sh disable=SC3043
+# shellcheck disable=SC2039
 
 # author:       Li Junhao           l@x-cmd.com    edwinjhlee.github.io
 # maintainer:   Li Junhao
@@ -9,6 +10,7 @@
 # example of dict
 #   dict put key1 value1
 #   dict :a put key2 value2
+x log init dict
 dict(){
     local op="${1:?Provide op}"
     local O=${op#@}
@@ -18,7 +20,7 @@ dict(){
         shift
     else
         op="${2:-help}"
-        [ $# -gt 1 ] && shift 2
+        shift 2 1>/dev/null 2>&1
     fi
 
     case "$op" in
@@ -74,6 +76,9 @@ A
     return 126
 
 }
+
+# EndSection
+
 
 # EndSection
 
@@ -390,6 +395,10 @@ else
     xrc dict/_v0/str
 fi
 
-xrc setmain dict
+if [ -z "$XRC_NO_ADVISE" ] && [ -n "${BASH_VERSION}${ZSH_VERSION}" ] && [ "${-#*i}" != "$-" ]; then
+    # if you use xrc that you must have advise
+    # xrc advise/v0
+    advise dict
+fi
 
 # EndSection
