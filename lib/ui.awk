@@ -2,7 +2,7 @@ BEGIN {
     UI_FG_BLACK = "\033[30m"
     UI_FG_RED = "\033[31m"
     UI_FG_GREEN = "\033[32m"
-    UI_FG_YUI_ELLOW = "\033[33m"
+    UI_FG_YELLOW = "\033[33m"
     UI_FG_BLUE = "\033[34m"
     UI_FG_MAGENTA = "\033[35m"
     UI_FG_CYAN = "\033[36m"
@@ -11,13 +11,14 @@ BEGIN {
     UI_BG_BLACK = "\033[40m"
     UI_BG_RED = "\033[41m"
     UI_BG_GREEN = "\033[42m"
-    UI_BG_YUI_ELLOW = "\033[43m"
+    UI_BG_YELLOW = "\033[43m"
     UI_BG_BLUE = "\033[44m"
     UI_BG_MAGENTA = "\033[45m"
     UI_BG_CYAN = "\033[46m"
     UI_BG_WHITE = "\033[47m"
 
     UI_TEXT_BOLD = "\033[1m"
+    UI_TEXT_DIM = "\033[2m"
     UI_TEXT_ITALIC = "\033[3m"
     UI_TEXT_UNDERLINE = "\033[4m"
     UI_TEXT_REV = "\033[7m"
@@ -58,6 +59,11 @@ function ui_goto_cursor0(){
 
 function ui_move_next_line(cur_row, cur_col){
     ui_goto_cursor(cur_row + 1, cur_col)
+}
+
+function ui_str_rep( str, time,   i, r ){
+    for (i=1; i<=time; ++i)     r = r str
+    return r
 }
 
 # BEGIN {
