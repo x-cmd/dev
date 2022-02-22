@@ -1,10 +1,12 @@
+
 # shellcheck shell=sh disable=SC3043
+
+# author:       Li Junhao           l@x-cmd.com
 
 # . ./lib/region
 xrc ui/lib/region
 xrc ui/lib/getchar
 xrc awk
-
 # Section: main
 ___x_cmd_ui_select(){
     local O="${O:-___X_CMD_UI_SELECT_DEFAULT}"
@@ -84,3 +86,40 @@ ___ui_select_out1(){
 }
 
 # ___ui_select_out
+
+f(){
+    ___X_CMD_UI_SELECT_MULTIPLE_LEN=0
+    ___x_cmd_ui_select -
+    ___x_cmd_ui_select func ___x_cmd_ui_select_control_display
+
+    # ___ui_select_out1 \
+    # "Please select the app you want to install:" \
+    # "Install docker" \
+    # "Install k8s" \
+    # "Install minikube" \
+    # "Install jvm" \
+    # "Install nvm" \
+    # "---" \
+    # "It's the 1 app descriptor." \
+    # "It's the 2 app descriptor." \
+    # "It's the 3 app descriptor." \
+    # "It's the 4 app descriptor." \
+    # "It's the 5 app descriptor." \
+    # "---"
+
+
+    echo "___X_CMD_UI_SELECT_FINAL_COMMAND:" "$___X_CMD_UI_SELECT_FINAL_COMMAND"
+    i=1
+    while [ "$i" -le "$___X_CMD_UI_SELECT_MULTIPLE_LEN" ];do
+
+        eval printf "\"___X_CMD_UI_SELECT_ITEM_INDEX$i:%s\n\"" "\"\$___X_CMD_UI_SELECT_ITEM_INDEX$i\""
+        eval printf "\"___X_CMD_UI_SELECT_ITEM$i:%s\n\"" "\"\$___X_CMD_UI_SELECT_ITEM$i\""
+        i=$((i+1))
+    done
+
+    echo "\n___X_CMD_UI_SELECT_CURRENT_ITEM_INDEX:" "$___X_CMD_UI_SELECT_CURRENT_ITEM_INDEX"
+    echo "___X_CMD_UI_SELECT_CURENT_ITEM:" "$___X_CMD_UI_SELECT_CURENT_ITEM"
+    echo "___X_CMD_UI_SELECT_MULTIPLE_LEN:" "$___X_CMD_UI_SELECT_MULTIPLE_LEN"
+}
+f
+
