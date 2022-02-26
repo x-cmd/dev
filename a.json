@@ -1,0 +1,40 @@
+{
+  "url": "https://api.github.com/orgs/x-bash/memberships/tzw-my",
+  "state": "active",
+  "role": "member",
+  "organization_url": "https://api.github.com/orgs/x-bash",
+  "user": {
+    "login": "tzw-my",
+    "id": 57086746,
+    "node_id": "MDQ6VXNlcjU3MDg2NzQ2",
+    "avatar_url": "https://avatars.githubusercontent.com/u/57086746?v=4",
+    "gravatar_id": "",
+    "url": "https://api.github.com/users/tzw-my",
+    "html_url": "https://github.com/tzw-my",
+    "followers_url": "https://api.github.com/users/tzw-my/followers",
+    "following_url": "https://api.github.com/users/tzw-my/following{/other_user}",
+    "gists_url": "https://api.github.com/users/tzw-my/gists{/gist_id}",
+    "starred_url": "https://api.github.com/users/tzw-my/starred{/owner}{/repo}",
+    "subscriptions_url": "https://api.github.com/users/tzw-my/subscriptions",
+    "organizations_url": "https://api.github.com/users/tzw-my/orgs",
+    "repos_url": "https://api.github.com/users/tzw-my/repos",
+    "events_url": "https://api.github.com/users/tzw-my/events{/privacy}",
+    "received_events_url": "https://api.github.com/users/tzw-my/received_events",
+    "type": "User",
+    "site_admin": false
+  },
+  "organization": {
+    "login": "x-bash",
+    "id": 58204353,
+    "node_id": "MDEyOk9yZ2FuaXphdGlvbjU4MjA0MzUz",
+    "url": "https://api.github.com/orgs/x-bash",
+    "repos_url": "https://api.github.com/orgs/x-bash/repos",
+    "events_url": "https://api.github.com/orgs/x-bash/events",
+    "hooks_url": "https://api.github.com/orgs/x-bash/hooks",
+    "issues_url": "https://api.github.com/orgs/x-bash/issues",
+    "members_url": "https://api.github.com/orgs/x-bash/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/x-bash/public_members{/member}",
+    "avatar_url": "https://avatars.githubusercontent.com/u/58204353?v=4",
+    "description": null
+  }
+}
