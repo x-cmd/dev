@@ -5,15 +5,15 @@
 ___x_cmd_gt_repo_pr(){
     param:dsl       '
 subcmd:
-    ls              "list pull requests"
-    info            "pull request info"
-    log             "pull requests log"
-    commit          "get pull requests commit"
+    ls              "List pull requests"
+    log             "List pull requests log"
+    commit          "List pull requests commit"
+    info            "Show pull request info"
     view            "open pull request in browser"
-    create          "create pull request"
-    update          "update pull requests"
-    merge           "merge pull requests"
-    assign          "assign request to somebody"
+    create          "Create pull request"
+    update          "Update pull requests"
+    merge           "Merge pull requests"
+    assign          "Assign request to somebody"
     testers         "Designation pull requests testers"
 '
     param:run
@@ -34,25 +34,37 @@ ___x_cmd_gt_repo_pr_ls() {
     param:scope     "gitee/$O"
     param:dsl       '
 type:
-    state = open merged closed all
-    sort  = created updated popularity long-running
-    direction = desc asc
+    State = open merged closed all
+    Sort  = created updated popularity long-running
+    Direction = desc asc
 options:
-    --repo              "Repo name"                                         <>
-    --state             "state"                                             <>:state="open"
-    --head              "source branch. Format: [username:]<branch>"        <>=""
-    --base              "target branch. Format: [username:]<branch>"        <>=""
-    --since             "since"                                             <>=""
-    --sort              "sort"                                              <>:sort="created"
-    --direction         "direction"                                         <>:direction="desc"
-    --milestone_number  "milestone id"                                      <>:numbers=""
-    --labels            "labels"                                            <>=""
+    --repo              "Provide owner name and repo name.(default:the current user repo)"   <>:RepoName
+    --state             "state"                                                              <>:State="open"
+    --head              "source branch. Format: [username:]<branch>"                         <>=""
+    --base              "target branch. Format: [username:]<branch>"                         <>=""
+    --since             "since"                                                              <>=""
+    --sort              "sort"                                                               <>:Sort="created"
+    --direction         "direction"                                                          <>:Direction="desc"
+    --milestone_number  "milestone id"                                                       <>:numbers=""
+    --labels            "labels"                                                             <>=""
 '
     param:run
-
     ___x_cmd_gt_param_init_owner_repo
-    ______x_cmd_gt_get "/v5/repos/$owner_repo/pulls" state head base sort since \
-        direction milestone_number labels page per_page
+
+    if [ -t 1 ]; then
+        if ___ui_table_json Id=.id Title=.title Body=.body User=.user.login TargetBranch=.base.ref SourceBranch=.head.ref \
+            CreateTime=.created_at UpdateTime=.updated_at Url=.html_url \
+            -- "______x_cmd_gt_get" "/v5/repos/$owner_repo/pulls" state head base sort since direction milestone_number \
+            labels page per_page; then
+            return 0
+        fi
+    else
+        ______x_cmd_gt_get "/v5/repos/$owner_repo/pulls" state head base sort since direction milestone_number \
+            labels page per_page && \
+            return 0
+    fi
+    gt_log error "Couldn't find any data by: $owner_repo"
+    return 1
 }
 
 # Assume pr and owner_repo are environments
@@ -87,10 +99,10 @@ ___x_cmd_gt_repo_pr_log() {
     param:scope     "gitee/$O"
     param:dsl       '
 type:
-    state  = desc asc
+    State  = desc asc
 options:
     #1|--pr             "pr id"                 <>:number
-    --sort              "sort"                  <>:state="desc"
+    --sort              "sort"                  <>:State="desc"
 '
     param:run
 
@@ -127,33 +139,46 @@ options:
 
 # Section: create update merge
 
+# shellcheck disable=SC2154,SC2181
 ___x_cmd_gt_repo_pr_create() {
     local O="${O:-GITEE_DEFAULT}"
     param:scope     "gitee/$O"
     param:dsl       '
 type:
-    bool = true false
+    Bool = true false
 options:
-    --repo                  "Repo name"                                                     <>:repo
-    --title                 "pr title"                                                      <>
-    --head                  "source branch. Format: [username:]<branch>"                    <>:name
-    --base                  "target branch. Format: [username:]<branch>"                    <>:name
-    --body                  "pull request content"                                          <>=""
-    --milestone_number      "milestone id"                                                  <>:numbers=""
-    --labels                "labels"                                                        <>=""
-    --issue                 "issue id"                                                      <>:numbers=""
-    --assignees             "reviewer username list. Format: <username>[,<username>]"       <>:name=""
-    --testers               "tester username list. Format: <username>[,<username>]"         <>:name=""
-    --assignees_number      "minimum number of reviewers"                                   <>:numbers=""
-    --testers_number        "minimum test number"                                           <>:numbers=""
-    --prune_source_branch   "prune_source_branch"                                           <>:bool=false
+    --repo                  "Provide owner name and repo name.(default:the current user repo)"   <>:RepoName
+    --title                 "pr title"                                                           <>
+    --head                  "source branch. Format: [username:]<branch>"                         <>:name
+    --base                  "target branch. Format: [username:]<branch>"                         <>:name
+    --body                  "pull request content"                                               <>=""
+    --milestone_number      "milestone id"                                                       <>:numbers=""
+    --labels                "labels"                                                             <>=""
+    --issue                 "issue id"                                                           <>:numbers=""
+    --assignees             "reviewer username list. Format: <username>[,<username>]"            <>:name=""
+    --testers               "tester username list. Format: <username>[,<username>]"              <>:name=""
+    --assignees_number      "minimum number of reviewers"                                        <>:numbers=""
+    --testers_number        "minimum test number"                                                <>:numbers=""
+    --prune_source_branch   "prune_source_branch"                                                <>:Bool=false
 '
     param:run
 
     ___x_cmd_gt_param_init_owner_repo
-
-    ______x_cmd_gt_post_json "/v5/repos/$owner_repo/pulls" title head base body milestone_number\
-        labels issue assignees testers assignees_number testers_number prune_source_branch
+    local data
+    local title
+    local state
+    local html_url
+    data="$(______x_cmd_gt_post_json "/v5/repos/$owner_repo/pulls" title head base body milestone_number \
+        labels issue assignees testers assignees_number testers_number prune_source_branch)"
+    ___x_cmd_gt_json_query_rename "$data" title=.title state=.state html_url=.html_url
+    if [ -n "$title" ];then
+        ___x_cmd_ui tf "true" "Success" "title: $title" "owner_repo: $owner_repo" "state: $state" \
+         "base: $base" "source branch: $head" "target branch: $base" "url: $html_url"
+        return 0
+    else
+        gt_log error "Create pull request failure: $title by $owner_repo $base"
+        return 1
+    fi
 }
 
 ___x_cmd_gt_repo_pr_update() {
@@ -162,7 +187,7 @@ ___x_cmd_gt_repo_pr_update() {
 ##TODO:state
     param:dsl       '
 type:
-    state = closed
+    State = closed
 options:
     #1|--pr                 "pr number"                                 <>:number
     --title                 "pr title"                                  <>
@@ -171,7 +196,7 @@ options:
     --labels                "labels"                                    <>=""
     --assignees_number      "minimum number of reviewers"               <>:numbers=""
     --testers_number        "minimum test number"                       <>:numbers=""
-    --state                 "state"                                     <>:state="closed"
+    --state                 "state"                                     <>:State="closed"
 '
     param:run
 
@@ -184,10 +209,10 @@ ___x_cmd_gt_repo_pr_merge() {
     param:scope     "gitee/$O"
     param:dsl       '
 type:
-    merge = squash  merge
+    Merge = squash  merge
 options:
     #1|--pr                 "pr id"                                     <>
-    --merge_method          "merge method(squash,merge)"                <>:merge="merge"
+    --merge_method          "merge method(squash,merge)"                <>:Merge="merge"
     --prune_source_branch   "prune source branch"                       <>:bool="false"
     --title                 "title"                                     <>=""
     --description           "description"                               <>=""

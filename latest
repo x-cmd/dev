@@ -8,7 +8,7 @@
 # TODO: wait ccmd fix
 # xrc http param json str ui ccmd
 xrc http param json str ui
-xrc ui/lib/table
+xrc ui/lib/table gh/lib/resource
 
 
 # TODO: Precompile it into one file.
@@ -19,8 +19,8 @@ ____x_cmd_gt_xrc(){
     done
 }
 
-____x_cmd_gt_xrc utils config token user current issue enterprise/main enterprise/member org/main org/member \
-    repo/utils repo/main repo/pr/main repo/release/main repo/member repo/tag repo/page
+____x_cmd_gt_xrc utils config token user current issue enterprise/main enterprise/member enterprise/team org/main org/member \
+    repo/utils repo/main repo/pr/main repo/release/main repo/member repo/tag repo/page repo/branch
 
 
 # define lazy loader TODO: advise fix it
@@ -62,8 +62,8 @@ subcmd:
     fi
 
     case "${PARAM_SUBCMD}" in
-        pr|release|member|tag)                                  "___x_cmd_gt_repo_${PARAM_SUBCMD}"   "$@"        ;;
-        *)                                                      "___x_cmd_gt_${PARAM_SUBCMD}"  "$@"              ;;
+        pr|release|member|tag)               "___x_cmd_gt_repo_${PARAM_SUBCMD}"   "$@"        ;;
+        *)                                   "___x_cmd_gt_${PARAM_SUBCMD}"  "$@"              ;;
     esac
 }
 
@@ -73,12 +73,18 @@ subcmd:
 ############################
 ___x_cmd_gt_make() {
     param:void
-    local O_ORIGINAL="${1:?Provide client name by O environment}"
 
+    local O_ORIGINAL="${1:-GITEE_DEFAULT}"
     local O="___x_cmd_gt_$O_ORIGINAL"
-    O=$O_ORIGINAL ___x_cmd_gt_config_load >/dev/null
 
-    if [ $? -eq 0 ] && [ -n "$(O="$O_ORIGINAL" ___x_cmd_gt_token)" ]; then
+    http "@$O" make         'https://gitee.com/api'
+    http "@$O" header type  "application/json;charset=utf-8"
+
+    local token
+    token="$(O="$O_ORIGINAL" ___x_cmd_gt_config_get "oauth_token")"
+
+    if [ -n "$token" ]; then
+        http "@___x_cmd_gt_$O_ORIGINAL" header put Authorization "token $token"
         local user
         user="$(O="$O_ORIGINAL" ___x_cmd_gt_current_owner)" || return 1
         gt_log info "Hi $user! You've successfully authenticated."

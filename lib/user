@@ -10,9 +10,9 @@ ___x_cmd_gt_user(){
 subcmd:
     info        "Show information"
     repo        "List all repos"
-    email       "get user email"
+    email       "Show user email"
     issue       "List all issues"
-    key         "key management"
+    key         "user key management"
 '
     param:run
     if [ -z "$PARAM_SUBCMD" ]; then
@@ -46,11 +46,16 @@ options:
     else
         data=$(______x_cmd_gt_get "/v5/users/$1")
     fi
-
-    # TODO: wait json_awk
-    ___x_cmd_gt_json_query_rename "$data" name=.login email=.email html_url=.html_url types=.type
-    [ -n "$name" ] && ___x_cmd_ui tf  "true" "Success" "Name: $name" "Email: $email" "Url: $html_url" "Type: $types" && return 0
-                      gt_log           "err" "Can't find any data"                                                             && return 1
+    printf "%s" "$data" | (
+        ___x_cmd_git_json_query_rename name=.login email=.email html_url=.html_url types=.type
+        if [ -n "$name" ]; then
+             ___x_cmd_ui_tf true    "Success" "name: $name" "email: $email" "url: $html_url" "type: $types"
+             return 0
+        else
+             ___x_cmd_ui_tf false   "Couldn't find any data"
+            return 1
+        fi
+    )
 }
 
 # https://gitee.com/api/v5/swagger#/getV5UserRepos
@@ -59,17 +64,19 @@ ___x_cmd_gt_user_repo() {
     param:scope     "gitee/$O"
     param:dsl       '
 type:
-    authority = all public private
-    group = owner collaborator organization_member enterprise_member admin
-    sort = created updated pushed full_name
-    direction = desc asc
+    Authority = all public private
+    Group = owner collaborator organization_member enterprise_member admin
+    Sort = created updated pushed full_name
+    Direction = desc asc
 subcmd:
     ls              "list repo of the designated user"
 options:
-    --visibility    "visibility"        <>:authority="all"
-    --affiliation   "affiliation"       <>:group="owner"
-    --sort          "sort"              <>:sort="created"
-    --direction     "direction"         <>:direction="desc"
+    --visibility    "visibility"        <>:Authority="all"
+    --affiliation   "affiliation"       <>:Group="owner"
+    --sort          "sort"              <>:Sort="created"
+    --direction     "direction"         <>:Direction="desc"
+    --page          "page"              <>:number=1
+    --per_page      "per_page"          <>:number=20
 '
     param:run
     if [ "$#" -gt 0 ]; then
@@ -80,34 +87,66 @@ options:
 
 # https://gitee.com/api/v5/swagger#/getV5Emails
 ___x_cmd_gt_user_email(){
-    param:void
-    [ -t 1 ] && ___ui_table_json "$(printf "%s" "______x_cmd_gt_get_multi \"/v5/emails\" || return 1" )" \
-        Email=.email State=.state && return 0
+    param:scope     "github/$O"
+    param:dsl       '
+options:
+    --page          "page"                        <>:number=1
+    --per_page      "per_page"                    <>:number=20
+'
+    param:run
+
+    if [ -t 1 ]; then
+        if ___ui_table_json Email=.email State=.state \
+            -- "______x_cmd_gt_get_multi" "/v5/emails" page per_page; then
+            return 0
+        fi
+    else
+        ______x_cmd_gt_get_multi "/v5/emails" page per_page && \
+            return 0
+    fi
+    gt_log error "Couldn't find any data"
+    return 1
 }
 
 ___x_cmd_gt_user_issue(){
     param:scope     "gitee/$O"
     param:dsl       '
 type:
-    screen = all assigned created
-    sort = open progerssing closed rejected
-    direction = desc asc
+    Screen = all assigned created
+    Sort = all open progerssing closed rejected
+    Direction = desc asc
 options:
-    --filter        "filter(assigned,created,all)"                 <>:screen="assigned"
-    --state         "state(open,progerssing,closed,rejected)"      <>:sort="open"
-    --labels        "labels"                                       <>=""
-    --direction     "direction(asc、desc)"                         <>:direction="desc"
-    --since         "since"                                        <>=""
+    --filter        "filter(assigned,created,all)"                 <>:Screen="assigned"
+    --state         "state(open,progerssing,closed,rejected)"      <>:Sort="open"
+    --direction     "direction(asc、desc)"                         <>:Direction="desc"
     --page          "page"                                         <>:numbers=""
     --per_page      "per_page"                                     <>:numbers=""
+
+    --page          "page"                                         <>:number=1
+    --per_page      "per_page"                                     <>:number=20
+    --labels        "labels"                                       <>=""
+    --since         "since"                                        <>=""
     --schedule      "schedule"                                     <>=""
     --deadline      "deadline"                                     <>=""
     --created_at    "create date"                                  <>=""
     --finished_at   "finish date"                                  <>=""
 '
     param:run
-    ___ui_table_json "$(printf "%s" "______x_cmd_gt_get_multi \"/v5/user/issues\" filter state labels direction since schedule deadline created_at finished_at  || return 1" )" \
-        ID=.number State=.issue_state Assigner=.assignee.name Repo=.repository.full_name Type=.issue_type Title=.title Url=.html_url && return 0
+
+    if [ -t 1 ]; then
+        if ___ui_table_json ID=.number State=.issue_state Assigner=.assignee.name \
+            Repo=.repository.full_name Type=.issue_type Title=.title Url=.html_url \
+            -- "______x_cmd_gt_get_multi" "/v5/user/issues" filter state labels direction\
+            since page per_page schedule deadline created_at finished_at; then
+            return 0
+        fi
+    else
+        ______x_cmd_gt_get_multi "/v5/user/issues" filter state labels direction \
+            since page per_page schedule deadline created_at finished_at && \
+            return 0
+    fi
+    gt_log error "Couldn't find any data"
+    return 1
 }
 
 # EndSection
@@ -146,8 +185,18 @@ options:
     --per_page    "per_page"                <>:number=20
 '
     param:run
-    ___ui_table_json "$(printf "%s" "______x_cmd_gt_get \"/v5/user/keys\" page per_page || return 1" )" \
-        Id=.id Title=.title Key=.key Url=.url && return 0
+
+    if [ -t 1 ]; then
+        if ___ui_table_json Id=.id Title=.title Key=.key Url=.url \
+            -- "______x_cmd_gt_get_multi" "/v5/user/keys" page per_page; then
+            return 0
+        fi
+    else
+        ______x_cmd_gt_get_multi "/v5/user/keys" page per_page && \
+            return 0
+    fi
+    gt_log error "Couldn't find any data"
+    return 1
 }
 
 # shellcheck disable=SC2154
@@ -158,12 +207,15 @@ options:
     --id        "provided key id"       <>:number
 '
     param:run
-    local data
-    data="$(______x_cmd_gt_get "v5/user/keys/$id")"
-    local key
-    key="$(___x_cmd_gt_json_query "$data" .key)"
-    [ -n "$key" ] && printf "%s" "$key"                     && return 0
-                     gt_log "err" "Can't find key by $id"   && return 1
+
+    ______x_cmd_gt_get "v5/user/keys/$id" | (
+        ___x_cmd_git_json_query_rename key=.key
+        if [ -n "$key" ]; then
+            printf "%s" "$key"                     && return 0
+        else
+            gt_log error "Couldn't find key by $id"   && return 1
+        fi
+    )
 }
 
 # shellcheck disable=SC2181
@@ -175,9 +227,13 @@ options:
 '
     param:run
 
-    ______x_cmd_gt_delete "/v5/user/keys/$id" 1>/dev/null 2>&1
-    [ $? -eq 0 ] && ___x_cmd_ui tf "true" "Deleted key successfully"  && return 0
-                    gt_log error "Deleting key failure by $id."       && return 1
+    # TODO:http handle，delete repo return data is null.Status: 204 No Content
+    if ______x_cmd_gt_delete "/v5/user/keys/$id" >/dev/null; then
+        ___x_cmd_ui_tf true  "Deleted key successfully"
+    else
+        ___x_cmd_ui_tf false "Deleting key failure by $id."
+        return 1
+    fi
 }
 
 # shellcheck disable=SC2154
@@ -190,10 +246,15 @@ options:
 '
     param:run
 
-    local data
-    data="$(______x_cmd_gt_post_json "/v5/user/keys" key title)"
-    ___x_cmd_gt_json_query_rename "$data" id=.id title=.title key=.key
-    [ -n "$id" ] && ___x_cmd_ui tf  "true" "Success" "Id: $id" "title: $title" "key: $key" && return 0                       && return 0
-                    gt_log "err" "Adding user key failure."                                && return 1
+    ______x_cmd_gt_post_json "/v5/user/keys" key title | (
+        ___x_cmd_git_json_query_rename "$data" id=.id title=.title key=.key
+        if [ -n "$id" ]; then
+            ___x_cmd_ui_tf true  "Success" "Id: $id" "title: $title" "key: $key"
+            return 0
+        else
+            ___x_cmd_ui_tf false "Add user key failure."
+            return 1
+        fi
+    )
 }
 
