@@ -8,7 +8,7 @@ subcmd:
     create          "create repo"
     ls              "list repo of owner"
     info            "Show detailed information of repo"
-    del             "Remove repo"
+    rm             "Remove repo"
     member          "manage member"
     pr              "manage pr"
 '
@@ -23,113 +23,7 @@ subcmd:
     "___x_cmd_gh_repo_${PARAM_SUBCMD}" "$@"
 }
 
-# arguments NAME
-___x_cmd_gh_repo_create() {
-    local O="${O:-GITHUB_DEFAULT}"
-
-    param:scope     "github/$O"
-    param:dsl       '
-type:
-    access  =   private public
-option:
-    --access                "private,public"                <>:access=private
-    --description           "description"                   <>=""
-    --homepage              "homepage"                      <>=""
-    --no_issues             "Provide issue"
-    --no_wiki               "Provide wiki"
-    --no_projects            "Provide has_projects"
-    --no_auto_init          "auto init README"
-    --gitignore_template    "Git Ignore"                    <>:Ignore=" "
-    --license_template      "license"                       <>:License=" "
-    --team_id               "the id of the team that will be granted access to this repository"   <>=""
-    #n                      "repo names"
-'
-    param:run
-
-    local private=true
-    [ "$access" = "public" ] && private=false
-
-    local has_issues=true
-    local has_wiki=true
-    local has_projects=true
-    local auto_init=true
-    [ -n "$no_issues" ] &&      has_issues=false
-    [ -n "$no_wiki" ] &&        has_wiki=false
-    [ -n "$no_projects" ] &&     has_projects=false
-    [ -n "$no_auto_init" ] &&   auto_init=false
-
-    [ $# -eq 0 ] && gh_log info "repo create name is null" && return
-    local name
-    for name in "$@"; do
-        {
-            local data
-            data="$(___x_cmd_gh_post_json "/user/repos" name="${name##*/}")"
-            [ $? -ne 0 ] && ___x_cmd_ui_tf "false" "Creating repo failure: $name." && return 1
-            local repo_id
-            local url
-            local repo_owner
-            ___x_cmd_gh_json_query_rename "$data" repo_id=.id url=.html_url repo_owner=.owner.login
-            ___x_cmd_ui_tf  "true" "Creating repo $name success" "repo_id: $repo_id" "repo_owner: $repo_owner" "url: $url"
-        }
-    done
-}
-
-___x_cmd_gh_org_repo_create() {
-# TODO:option lack
-    param:scope     "github/$O"
-    param:dsl       '
-type:
-    access  =   private public internal
-option:
-    --org                   "organization create repo"      <>:name
-    --description           "description"                   <>=""
-    --homepage              "homepage"                      <>:URL=""
-    --access                "private,public"                <>:access=private
-    --no_issues             "Provide issue"
-    --no_projects            "Provide has_projects"
-    --no_wiki               "Provide wiki"
-    --no_auto_init          "auto init README"
-    --is_template           "make this repo available as a template" <>:Bool=false
-    --gitignore_template    "Git Ignore"                    <>:Ignore=""
-    --license_template      "license"                       <>:License=""
-    --team_id               "the id of the team that will be granted access to this repository"   <>=""
-    #n                      "repo names"
-'
-    param:run
-
-    local private=true
-    [ "$access" = "public" ] && private=false
-
-    local has_issues=true
-    local has_wiki=true
-    local has_projects=true
-    local auto_init=true
-    [ -n "$no_issues" ] && has_issues=false
-    [ -n "$no_wiki" ] && has_wiki=false
-    [ -n "$no_projects" ] && has_projects=false
-    [ -n "$no_auto_init" ] && auto_init=false
-    # TODO:owner may be personal
-    local name
-    for name in "$@"; do
-        {
-            local data
-            data="$(___x_cmd_gh_post_json "/orgs/$org/repos" name description homepage has_issues \
-                has_wiki has_projects auto_init  visibility="$access" gitignore_template license_template)"
-            [ $? -ne 0 ] && ___x_cmd_ui_tf "false" "Creating repo failure: $name." && return 1
-            local repo_id
-            local url
-            local repo_owner
-            ___x_cmd_gh_json_query_rename "$data" repo_id=.id url=.html_url repo_owner=.owner.login
-            ___x_cmd_ui_tf  "true" "Creating repo $name success" "repo_id: $repo_id" "repo_owner: $repo_owner" "url: $url"
-        }
-    done
-}
-
-
-############################
-# Section 5: List Repos TODO:
-############################
-
+# Section: List Repos
 ___x_cmd_gh_repo_ls() {
     param:void
     local owner_type
@@ -140,37 +34,99 @@ ___x_cmd_gh_repo_ls() {
         owner_type="$(___x_cmd_gh_owner_type_query "$owner")"
     fi
 
-    ___ui_table_json "$(printf "%s" "___x_cmd_gh_${owner_type}_repo ls $@ || return 1" )" \
-        Id=.id Name=.name Owner=.owner.login Url=.html_url && return 0
-
-    ___x_cmd_ui_tf "false" "Please provide owner and owner_type"
-    return 1
+    ___x_cmd_gh_"${owner_type}"_repo ls "$@"
 }
+# EndSection
 
-############################
-# Section 7: Repo - Deletion & Info & Creation
-############################
+# Section: Info & Creation & Remove
 ___x_cmd_gh_repo_info() {
     param:scope     "github/$O"
     param:dsl       '
 options:
-    #1|--repo          "Repo name"         <>:repo
+    #1|--repo    "Provide owner name and repo name.(default:the current user repo)"      <>:RepName
 '
     param:run
 
     ___x_cmd_gh_param_init_owner_repo
-    local data
-    data="$(___x_cmd_gh_get "/repos/${owner_repo}")"
 
-    [ $? -ne 0 ] && ___x_cmd_ui_tf "false" "Fail. Couldn't find any repo: ${owner_repo}" && return 1
-    local id
-    local name
-    local html_url
-    ___x_cmd_gh_json_query_rename "$data" id=.id html_url=.html_url name=.full_name
-    ___x_cmd_ui_tf  "true" "Creating repo $name success" "repo_id: $id" "name: $name" "url: $html_url"
+    ___x_cmd_gh_get "/repos/${owner_repo}" | (
+        ___x_cmd_git_json_query_rename id=.id html_url=.html_url name=.full_name;
+        if [ -n "$id" ]; then
+            ___x_cmd_ui_tf true     "repo $name info:" "repo_id: $id" "name: $name" "url: $html_url"
+        else
+            ___x_cmd_ui_tf false    "Fail. Couldn't find any repo: ${owner_repo}"
+            return 1
+        fi
+    )
 }
 
-___x_cmd_gh_repo_del() {
+___x_cmd_gh_repo_create() {
+    local O="${O:-GITHUB_DEFAULT}"
+
+    param:scope     "github/$O"
+    param:dsl       '
+type:
+    access  =   private public
+option:
+    --access                    "private,public"                                                        <>:access=private
+    --description               "description"                                                           <>=""
+    --homepage                  "homepage"                                                              <>=""
+    --team_id                   "the id of the team that will be granted access to this repository"     <>=""
+    --gitignore_template        "The desired language or platform to apply to the .gitignore."          <>:Ignore=""
+    --license_template          "The license keyword of the open source license for this repository."   <>:License=""
+    --no_issues                 "Whether to disable issue"
+    --no_projects               "Whether to disable has_projects"
+    --no_wiki                   "Whether to disable wiki"
+    --no_auto_init              "auto init README"
+    --no_squash_merge           "Whether to allow squash merges for pull requests."
+    --no_merge_commit           "Whether to allow merge commits for pull requests."
+    --no_rebase_merge           "Whether to allow rebase merges for pull requests."
+    --allow_auto_merge          "Whether to allow Auto-merge to be used on pull requests,Default:false"
+    --delete_branch_on_merge    "Whether to delete head branches when pull requests are merged"
+    --has_downloads             "Whether downloads are enabled."
+    --is_template               "can be used to generate new repositories"
+    #n                          "repo names"
+'
+    param:run
+
+    local private=true
+    [ "$access" = "public" ] && private=false
+
+    local has_issues="${no_issues:+false}";      has_issues="${has_issue:-true}"
+    local has_wiki="${no_wiki:+false}";          has_wiki="${has_wiki:-true}"
+    local has_projects="${no_projects:+false}";  has_projects="${has_projects:-true}"
+    local auto_init="${no_auto_init:+false}";    auto_init="${auto_init:-true}"
+    local allow_squash_merge="${no_squash_merge:+false}";   allow_squash_merge="${allow_squash_merge:-true}"
+    local allow_merge_commit="${no_merge_commit:+false}";   allow_merge_commit="${allow_merge_commit:-true}"
+    local allow_rebase_merge="${no_rebase_merge:+false}";   allow_rebase_merge="${allow_rebase_merge:-true}"
+
+    if [ $# -eq 0  ];then
+        gh_log error "repo create name is null"
+        return 1
+    fi
+
+    local name
+    for name in "$@"; do
+        {
+            ___x_cmd_gh_post_json "/user/repos" name="${name##*/}" \
+                private description homepage team_id gitignore_template \
+                license_template has_issues has_wiki has_projects auto_init \
+                allow_squash_merge allow_merge_commit allow_rebase_merge \
+                allow_auto_merge delete_branch_on_merge has_downloads is_template \
+            | (
+            ___x_cmd_git_json_query_rename id=.id url=.html_url owner=.owner.login
+            if [ -n "$id" ];then
+                ___x_cmd_ui_tf true "Creating repo $name success" "repo_id: $id" "repo_owner: $owner" "url: $url"
+            else
+                ___x_cmd_ui_tf false "Creating repo failure: $name."
+                return 1
+            fi
+            )
+        }
+    done
+}
+
+___x_cmd_gh_repo_rm() {
     param:scope     "github/$O"
     param:dsl       '
 options:
@@ -184,11 +140,91 @@ options:
     local i
     for i in "$@"; do
         ___x_cmd_gh_param_normalize_repo "$i"
-        ___x_cmd_gh_delete "/repos/$owner_repo" >/dev/null
-
-        if [ $? -eq 0 ]; then
-                ___x_cmd_ui_tf "true"  "deleted repo $owner_repo"
-        else    ___x_cmd_ui_tf "false" "Deleting repo failure: $owner_repo. Probably because it desn't exists."
+        # TODO:http handle，delete repo return data is null
+        if ___x_cmd_gh_delete "/repos/$owner_repo" >/dev/null; then
+            ___x_cmd_ui_tf true  "deleted repo $owner_repo"
+        else
+            ___x_cmd_ui_tf false "Deleting repo failure: $owner_repo. Probably because it desn't exists."
         fi
     done
 }
+# EndSection
+
+# Section: Update
+___x_cmd_gh_repo_update() {
+    local O="${O:-GITHUB_DEFAULT}"
+
+    param:scope     "github/$O"
+    param:dsl       '
+type:
+    Access  =   private public
+option:
+    --access                    "private,public"                                                        <>:Access=private
+    --repo                      "Provide owner name and repo name.(default:the current user repo)"      <>:RepoName
+    --description               "description"                                                           <>=""
+    --homepage                  "homepage"                                                              <>=""
+    --team_id                   "the id of the team that will be granted access to this repository"     <>=""
+    --default_branch            "Updates the default branch for this repository."                       <>=""
+    --advanced_security         "enable or disable GitHub Advanced Security for this repository."       <>:Status=""
+    --scanning                  "enable or disable secret scanning for this repository"                 <>:Status=""
+    --scanning_push_protection  "enable or disable secret scanning push protection for this repository" <>:Status=""
+    --no_issues                 "Whether to disable issue"
+    --no_projects               "Whether to disable has_projects"
+    --no_wiki                   "Whether to disable wiki"
+    --no_squash_merge           "Whether to allow squash merges for pull requests."
+    --no_merge_commit           "Whether to allow merge commits for pull requests."
+    --no_rebase_merge           "Whether to allow rebase merges for pull requests."
+    --allow_auto_merge          "Whether to allow Auto-merge to be used on pull requests,Default:false"
+    --delete_branch_on_merge    "Whether to delete head branches when pull requests are merged"
+    --allow_forking             "allow private forks."
+    --archived                  "Mark this repository as archived and read-only."
+    --is_template               "can be used to generate new repositories"
+    #n                          "repo names"
+'
+    param:run
+
+    local private=true
+    [ "$access" = "public" ] && private=false
+
+    local has_issues="${no_issues:+false}";      has_issues="${has_issue:-true}"
+    local has_wiki="${no_wiki:+false}";          has_wiki="${has_wiki:-true}"
+    local has_projects="${no_projects:+false}";  has_projects="${has_projects:-true}"
+    local auto_init="${no_auto_init:+false}";    auto_init="${auto_init:-true}"
+    local allow_squash_merge="${no_squash_merge:+false}";   allow_squash_merge="${allow_squash_merge:-true}"
+    local allow_merge_commit="${no_merge_commit:+false}";   allow_merge_commit="${allow_merge_commit:-true}"
+    local allow_rebase_merge="${no_rebase_merge:+false}";   allow_rebase_merge="${allow_rebase_merge:-true}"
+
+    if [ $# -eq 0 ];then
+        gh_log error "repo name is null"
+        return 1
+    fi
+
+    # local tmp="{security_and_analysis:{}}"
+    # xrc json
+    # [ -n "$scanning" ] && ___x_cmd_json_put tmp.security_and_analysis.secret_scanning "{\"status\": \"$scanning\"}"
+    # [ -n "$advanced_security" ] && ___x_cmd_json_put tmp.security_and_analysis.advanced_security "{\"status\": \"$advanced_security\"}"
+    # [ -n "$secret_scanning_push_protection" ] && ___x_cmd_json_put tmp.security_and_analysis.secret_scanning_push_protection "{\"status\": \"$secret_scanning_push_protection\"}"
+    # [ "$tmp" = "{security_and_analysis:{}}" ] && tmp=""
+
+    ___x_cmd_gh_param_init_owner_repo
+    local name
+    for name in "$@"; do
+        {
+            ___x_cmd_gh_patch_json "/repos/${owner_repo}" private \
+                visibility="$access" description homepage team_id default_branch \
+                has_issues has_wiki has_projects \
+                allow_squash_merge allow_merge_commit allow_rebase_merge archived \
+                allow_auto_merge delete_branch_on_merge is_template allow_forking \
+            | (
+            ___x_cmd_git_json_query_rename id=.id url=.html_url owner=.owner.login
+            if [ -n "$id" ];then
+                ___x_cmd_ui_tf true "Creating repo $name success" "repo_id: $id" "repo_owner: $owner" "url: $url"
+            else
+                ___x_cmd_ui_tf false "Creating repo failure: $name."
+                return 1
+            fi
+            )
+        }
+    done
+}
+# EndSection
