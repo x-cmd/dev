@@ -1,34 +1,39 @@
 # shellcheck shell=sh disable=SC2039,3043 # source
 
-echo "Building $1"
-image="$1"
-case "$image" in
-    debian|alpine|ubuntu)
-        docker buildx build \
-            --no-cache \
-            --platform linux/arm,linux/arm64,linux/amd64 \
-            -f "./docker/$image/Dockerfile" \
-            -t "xcmd/$image-dev:latest" . --push
-        ;;
-    centos)
-        docker buildx build \
-            --no-cache \
-            --platform linux/arm64,linux/amd64 \
-            -f "./docker/$image/Dockerfile" \
-            -t "xcmd/$image-dev:latest" . --push
-        ;;
-    bash3|bash4|bash5)
-        docker buildx build \
-            --no-cache \
-            --platform linux/arm,linux/arm64,linux/amd64 \
-            -f "./docker/$image/Dockerfile" \
-            -t "xcmd/$image-dev:latest" . --push
-        ;;
-    *)
-        for i in debian centos ubuntu alpine bash3 bash4 bash5; do
-            x build "$i"
-        done
-        return 1
-        ;;
-esac
+main(){
+    echo "Building $1"
+    image="$1"
+    case "$image" in
+        debian|alpine|ubuntu)
+            docker buildx build \
+                --no-cache \
+                --platform linux/arm,linux/arm64,linux/amd64 \
+                -f "./docker/$image/Dockerfile" \
+                -t "xcmd/$image-dev:latest" . --push
+            ;;
+        centos)
+            docker buildx build \
+                --no-cache \
+                --platform linux/arm64,linux/amd64 \
+                -f "./docker/$image/Dockerfile" \
+                -t "xcmd/$image-dev:latest" . --push
+            ;;
+        bash3|bash4|bash5)
+            docker buildx build \
+                --no-cache \
+                --platform linux/arm,linux/arm64,linux/amd64 \
+                -f "./docker/$image/Dockerfile" \
+                -t "xcmd/$image-dev:latest" . --push
+            ;;
+        *)
+            for i in debian centos ubuntu alpine bash3 bash4 bash5; do
+                main "$i"
+            done
+            return 0
+            ;;
+    esac
+}
+
+main "$@"
+
 
