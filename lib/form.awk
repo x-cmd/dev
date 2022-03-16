@@ -1,15 +1,15 @@
 # Section: NR==1    DATA SOURCE parsing
 BEGIN {
-    ATT_DESC    = "\003"
+    ATT_DESC    = "\007"
     ATT_VAR     = "\004"
 
     ATT_DEFAULT = "\005"
     ATT_OP      = "\006"
-    ATT_OP_L    = "\007"
+    # ATT_OP_L    = "\007"
 
     ATT_ANS     = "\010"
 
-    FS="\001"
+    # FS="\001"/
 }
 
 NR==1{
@@ -22,8 +22,9 @@ NR==1{
     rulel = 0
     for (i=1; i<=argl; ++i) {
         rulel = rulel + 1
-        rule[ rulel ATT_DESC ]              = args[i]
-        l = wcswidth(args[i])
+        desc = str_trim(args[i])
+        rule[ rulel ATT_DESC ]              = desc
+        l = wcswidth(desc)
         if (question_width < l) question_width = l
         rule[ rulel ATT_VAR ]               = args[i+1]
         rule[ rulel ATT_DEFAULT ]           = args[i+2]
@@ -41,9 +42,9 @@ NR==1{
         i = i + 4
         for (j=i; j<=argl; ++j) {
             if (args[j] == "--") break
-            rule[ rulel ATT_OP (j-i+1) ] = args[j]
+            rule[ rulel L (j-i+1) ] = args[j]
         }
-        rule[ rulel ATT_OP_L ] = j-i
+        rule[ rulel L ] = j-i
         i=j
     }
 
@@ -53,11 +54,11 @@ NR==1{
             ctrl_lineedit_init( rule, i ATT_ANS  )
             ctrl_lineedit_put(  rule, rule[ i ATT_DEFAULT ], i ATT_ANS )
         } else {
-            ctrl_rstate_init( rule, 1, rule[ i ATT_OP_L ], i ATT_ANS )
+            ctrl_rstate_init( rule, 1, rule[ i L ], i ATT_ANS )
             tmp = rule[ i ATT_DEFAULT ]
             if ( tmp == "" ) continue
-            for (j=1; j<=rule[ i ATT_OP_L ]; ++j){
-                if ( tmp == rule[ i ATT_OP j ]) {
+            for (j=1; j<=rule[ i L ]; ++j){
+                if ( tmp == rule[ i L j ]) {
                     ctrl_rstate_set( rule, j, i ATT_ANS )
                     break
                 }
@@ -103,11 +104,11 @@ function ctrl( char_type, char_value,                   _ctrl_current ) {
 function view(            _ctrl_current, _component_help, _component_body, _component_exit  ){
     _ctrl_current = ctrl_rstate_get( CURRENT )
 
-    _component_help = view_help( _ctrl_current )
     _component_body = view_body( _ctrl_current )
     _component_exit = view_exit( _ctrl_current )
+    _component_help = view_help( _ctrl_current )
 
-    send_update(  _component_help "\n" _component_body "\n\n" _component_exit "\n"  )
+    send_update( _component_body "\n" _component_exit "\n\n" _component_help  )
 }
 
 function view_help( _ctrl_current, data ){
@@ -115,8 +116,9 @@ function view_help( _ctrl_current, data ){
     if (rule[ _ctrl_current ATT_OP ] == "=") {
         data = data "Press <Arrow-Left> and <Arrow-Right> to alternative choice, or input digit."
     }
-    return th_help_text( data )
+    return th( TH_FORM_Q_HELP, data )
 }
+
 
 function view_body( _ctrl_current,                          data, _question, _line, _tmp, _is_focused, _is_selected,  i, j ){
     for (i=1; i<=rulel; ++i) {
@@ -124,29 +126,31 @@ function view_body( _ctrl_current,                          data, _question, _li
         _is_focused     =  _ctrl_current == i
 
         if ( _is_focused ) {
-            STYLE_ANSWER_SELECTED       = TH_QA_A_FOCUSED_SELECTED
-            STYLE_ANSWER_UNSELECTED     = TH_QA_A_FOCUSED_NOTSELECTED
-            _line                       = th( TH_QA_Q_FOCUSED,   "> "_question ) th(UI_TEXT_DIM, ":") " "
+            STYLE_ANSWER_SELECTED       = TH_FORM_A_FOCUSED_SELECTED
+            STYLE_ANSWER_UNSELECTED     = TH_FORM_A_FOCUSED_NOTSELECTED
+            _line                       = th(TH_FORM_Q_ARROW, "> ") th( TH_FORM_Q_FOCUSED, _question  ": " )
         } else {
-            STYLE_ANSWER_SELECTED       = TH_QA_A_UNFOCUSED_SELECTED
-            STYLE_ANSWER_UNSELECTED     = TH_QA_A_UNFOCUSED_NOTSELECTED
-            _line                       = th( TH_QA_Q_UNFOCUSED,  "  " _question ) ": "
+            STYLE_ANSWER_SELECTED       = TH_FORM_A_UNFOCUSED_SELECTED
+            STYLE_ANSWER_UNSELECTED     = TH_FORM_A_UNFOCUSED_NOTSELECTED
+            _line                       = th( TH_FORM_Q_UNFOCUSED,  "  " _question  ": " )
         }
 
         op = rule[ i ATT_OP ]
         if (op != "=") {
-            _answer     = ctrl_lineedit_get( rule, i ATT_ANS )
-            _answer     = (op !~ /\*/) ? _answer : ui_str_rep( "*", length(_answer) )
-            _line       = _line th( "", _answer)
+            _answer       = ctrl_lineedit_get( rule, i ATT_ANS )
+            _answer_style = TH_FORM_Q_TRUE
+            if (op ~ "=~") _answer_style = (judgment_of_regexp( rule, i )) ? TH_FORM_Q_TRUE : TH_FORM_Q_FALSE
+            _answer       = (op !~ /\*/) ? _answer : ui_str_rep( "*", length(_answer) )
+            _line         = _line th( _answer_style, _answer)
         } else {
             _answer     = ctrl_rstate_get( rule, i ATT_ANS )
-            for (j=1; j<=rule[ i ATT_OP_L ]; ++j) {
+            for (j=1; j<=rule[ i L ]; ++j) {
                 # TODO: if it is too long, use multiple line
                 _is_selected    = _answer == j
-                _line           = _line th( _is_selected ? STYLE_ANSWER_SELECTED: STYLE_ANSWER_UNSELECTED, rule[ i ATT_OP j ] ) " "
+                _line           = _line th( _is_selected ? STYLE_ANSWER_SELECTED: STYLE_ANSWER_UNSELECTED, rule[ i L j ] ) " "
             }
         }
-        data = data "\n" _line
+        data = data _line "\n"
     }
     return data
 }
@@ -155,11 +159,11 @@ function view_body( _ctrl_current,                          data, _question, _li
 function view_exit( _ctrl_current,  data,           _is_focused, _is_selected ){
     _is_focused = _ctrl_current == rulel+1
     if ( _is_focused ) {
-        STYLE_EXIT      = TH_QA_A_FOCUSED_SELECTED
-        STYLE_EXIT_NOT  = TH_QA_A_FOCUSED_NOTSELECTED
+        STYLE_EXIT      = TH_FORM_A_FOCUSED_SELECTED
+        STYLE_EXIT_NOT  = TH_FORM_A_FOCUSED_NOTSELECTED
     } else {
-        STYLE_EXIT      = TH_QA_A_UNFOCUSED_SELECTED
-        STYLE_EXIT_NOT  = TH_QA_A_UNFOCUSED_NOTSELECTED
+        STYLE_EXIT      = TH_FORM_A_UNFOCUSED_SELECTED
+        STYLE_EXIT_NOT  = TH_FORM_A_UNFOCUSED_NOTSELECTED
     }
     _ctrl_exit_strategy = ctrl_rstate_get( EXIT )
     for (i=1; i<=exit_strategy_arrl; ++i) {
@@ -186,7 +190,7 @@ NR>1{
 END {
     for (i=1; i<=rulel; ++i) {
         var =       rule[ i ATT_VAR ]
-        if (rule[ i ATT_OP ] == "=")    _answer = rule[ i ATT_OP ctrl_rstate_get( rule, i ATT_ANS ) ]
+        if (rule[ i ATT_OP ] == "=")    _answer = rule[ i L ctrl_rstate_get( rule, i ATT_ANS ) ]
         else                            _answer = ctrl_lineedit_get( rule, i ATT_ANS )
         send_env( var, _answer )
     }

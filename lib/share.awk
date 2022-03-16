@@ -6,6 +6,7 @@ BEGIN{
     S = "\001"
     T = "\002"
     L = "\003"
+    A = "\004"
 }
 
 BEGIN{
@@ -71,29 +72,44 @@ function buffer_get(          buf){
 
 # Section: utilities
 
-function send_update(msg){
-    # mawk
-    if (ORS == "\n") {
-        # gsub("\n", "\001", msg)
-        gsub(/\n/, "\001", msg)
-    }
+# function send_update(msg){
+#     # mawk
+#     if (ORS == "\n") {
+#         # gsub("\n", "\001", msg)
+#         gsub(/\n/, "\001", msg)
+#     }
 
-    printf("%s %s %s" ORS, "UPDATE", max_col_size, max_row_size)
-    printf("%s" ORS, msg)
+#     printf("%s %s %s" ORS, "UPDATE", max_col_size, max_row_size)
+#     printf("%s" ORS, msg)
+
+#     fflush()
+# }
+
+function send_update(msg){
+    printf("%s %s %s\n", "UPDATE", max_col_size, max_row_size)
+    printf("%s" "\n" "\003\002\005" "\n", msg)
 
     fflush()
 }
+
+# function send_env(var, value){
+#     # mawk
+#     if (ORS == "\n") {
+#         gsub(/\n/, "\001", value)
+#     }
+
+#     printf("%s %s" ORS, "ENV", var)
+#     printf("%s" ORS, value)
+#     fflush()
+# }
 
 function send_env(var, value){
-    # mawk
-    if (ORS == "\n") {
-        gsub(/\n/, "\001", value)
-    }
+    printf("%s %s\n", "ENV", var)
+    printf("%s" "\n" "\003\002\005" "\n", value)
 
-    printf("%s %s" ORS, "ENV", var)
-    printf("%s" ORS, value)
     fflush()
 }
+
 # EndSection
 
 # Section: ctrl_help
@@ -362,7 +378,39 @@ function ctrl_win_dec( obj, _key_prefix,  _val, _min, _off, _size ) {
     _off = obj[ _key_prefix "off" ]
     _size = obj[ _key_prefix "size" ]
     _val -= 1
-    if (_val < _min)              _val = _min
+    if (_val < _min)             _val = _min
+    if (_val < _off)             obj[ _key_prefix "off" ] = _off - _size
+    obj[ _key_prefix "val" ] = _val
+    return _val
+}
+
+function ctrl_win_rinc( obj, _key_prefix,  _val, _max, _min, _off, _size ) {
+    _val = obj[ _key_prefix "val" ]
+    _min = obj[ _key_prefix "min" ]
+    _max = obj[ _key_prefix "max" ]
+    _off = obj[ _key_prefix "off" ]
+    _size = obj[ _key_prefix "size" ]
+    _val += 1
+    if (_val > _max) {
+        _val = _min
+        if (_val < _off)  obj[ _key_prefix size"off" ] = _min
+    }
+    if (_val >= _off+_size)             obj[ _key_prefix "off" ] = _off + _size
+    obj[ _key_prefix "val" ] = _val
+    return _val
+}
+
+function ctrl_win_rdec( obj, _key_prefix,  _val, _min, _max, _off, _size ) {
+    _val = obj[ _key_prefix "val" ]
+    _min = obj[ _key_prefix "min" ]
+    _max = obj[ _key_prefix "max" ]
+    _off = obj[ _key_prefix "off" ]
+    _size = obj[ _key_prefix "size" ]
+    _val -= 1
+    if (_val < _min) {
+        _val = _max
+        if (_val >= _off+_size)  obj[ _key_prefix size"off" ] = _max - _size
+    }
     if (_val < _off)             obj[ _key_prefix "off" ] = _off - _size
     obj[ _key_prefix "val" ] = _val
     return _val
@@ -379,6 +427,11 @@ function ctrl_win_begin( obj, _key_prefix ){
 function ctrl_win_end( obj, _key_prefix ){
     return obj[ _key_prefix "off" ] + obj[ _key_prefix "size" ] - 1
 }
+
+function ctrl_win_set( obj, val, _key_prefix ){
+    obj[ _key_prefix "val" ] = val
+}
+
 
 # EndSection
 
@@ -408,7 +461,7 @@ function exit_get_cmd(command, item){
 
 # TODO: not well designed
 # Maybe using some unseen character
-function exit_if_detected( char_value ){
+function exit_if_detected( char_value, EXIT_CHAR_LIST ){
     if (index(EXIT_CHAR_LIST, "," char_value ",") > 0) return exit_with_elegant( char_value )
 }
 
@@ -417,3 +470,73 @@ function exit_if_detected( char_value ){
 function th( style, text ){
     return style text UI_END
 }
+
+function judgment_of_regexp(obj, _key_prefix,      i){
+    for (i=1; i<=obj[ _key_prefix L]; ++i) {
+        if ( _answer ~ obj[ _key_prefix L i ] ) return true
+    }
+    return false
+}
+
+# Section: from awk
+
+BEGIN{
+    INPUT_STATE_STOP = 0
+    INPUT_STATE_ONGOING = 1
+    INPUT_STATE = 1 - INPUT_STATE_ONGOING
+
+    INPUT_SECTION = 0
+}
+
+function input_consume( ){
+    if (INPUT_STATE == INPUT_STATE_ONGOING) {
+        if ($0 == "\003\003\003") {
+            INPUT_STATE = INPUT_STATE_STOP
+        }
+        return ++state_idx
+    }
+    if ($0 == "\001\001\001") {
+        state_idx = 0
+        INPUT_STATE = INPUT_STATE_ONGOING
+        return state_idx
+    }
+    return ""
+}
+
+function input_consume_multi( _tmp ){
+    _tmp = input_consume()
+    if (_tmp == "" )     return ""
+    if ($0 == "\002\002\022") {
+        INPUT_SECTION += 1
+        state_idx = 0
+        return state_idx
+    }
+    return _tmp
+}
+
+# EndSection
+
+# Section: stack
+function stack_length( obj,     l ){
+    return obj[ L ] + 0
+}
+
+function stack_push( obj, elem,     l ){
+    l = obj[ L ] + 1
+    obj[ L ] = l
+    obj[ l ] = elem
+    return l
+}
+
+function stack_pop( obj,            l ){
+    l = obj[ L ]
+    if (l == 0) return
+    obj[ L ] = l - 1
+    return obj[ l ]
+}
+
+function stack_top( obj,     l ){
+    return obj[ obj[ L ] + 0 ]
+}
+
+# EndSection
