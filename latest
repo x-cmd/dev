@@ -870,7 +870,8 @@ ___x_cmd_main_otherwise(){
             hub)            ___x_cmd_run_by_file    "$p" "$@" ;;
             official)       ___x_cmd_run_by_file    "$p" "$@" ;;
         esac
-        printf "%s" "$p"
+        ___xrc_log debug "$p"
+        return 0
     else
         printf "%s" "Error" >&2
         return 1
