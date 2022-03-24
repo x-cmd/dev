@@ -34,17 +34,32 @@ ______x_cmd_gt_get_multi() {
 }
 
 ______x_cmd_gt_post_json() {
-    http header put Content-Type application/json
     http "@___x_cmd_gt_${O:-GITEE_DEFAULT}" post    json "$@"
 }
+
+______x_cmd_gt_post(){
+    http header put Content-Type application/json
+    http "@___x_cmd_gh_${O:-GITHUB_DEFAULT}" post "$@"
+}
+
 
 ______x_cmd_gt_put_json() {
     http "@___x_cmd_gt_${O:-GITEE_DEFAULT}" put     json "$@"
 }
 
+______x_cmd_gt_put(){
+    http header put Content-Type application/json
+    http "@___x_cmd_gh_${O:-GITHUB_DEFAULT}" put "$@"
+}
+
 ______x_cmd_gt_patch_json() {
     http "@___x_cmd_gt_${O:-GITEE_DEFAULT}" patch   json "$@"
 }
+______x_cmd_gt_post(){
+    http header put Content-Type application/json
+    http "@___x_cmd_gt_${O:-GITEE_DEFAULT}" patch "$@"
+}
+
 
 ______x_cmd_gt_delete() {
     http "@___x_cmd_gt_${O:-GITEE_DEFAULT}" delete "$@"

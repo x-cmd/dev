@@ -48,7 +48,7 @@ options:
     local gen_gt_json
     gen_gt_json="$(param:option2json security_hole=^^security issue_type=type -security -type)"
 
-    ______x_cmd_gt_post_json "/v5/repos/${repo##*/}/issues" "$gen_gt_json" | (
+    ______x_cmd_gt_post "/v5/repos/${repo##*/}/issues" "$gen_gt_json" | (
         ___x_cmd_git_json_query_rename id=.number title=.title html_url=.html_url
         if [ -n "$id" ]; then
             ___x_cmd_ui_tf true  "Success" "id: $id" "title: $title" "url: $html_url"
@@ -85,7 +85,7 @@ options:
     local gen_gt_json
     gen_gt_json="$(param:option2json security_hole=^^security  issue_type=type -security -type)"
 
-    ______x_cmd_gt_patch_json "/v5/repos/${owner##*/}/issues/${number}" "$gen_gt_json" | (
+    ______x_cmd_gt_patch "/v5/repos/${owner##*/}/issues/${number}" "$gen_gt_json" | (
         ___x_cmd_git_json_query_rename id=.number state=.state html_url=.html_url
         if [ -n "$id" ]; then
             ___x_cmd_ui_tf true  "Success" "id: $id" "state: $state" "url: $html_url"
