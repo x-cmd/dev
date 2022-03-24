@@ -37,6 +37,11 @@ ___x_cmd_gh_post_json() {
     http "@___x_cmd_gh_${O:-GITHUB_DEFAULT}" post  json "$@"
 }
 
+___x_cmd_gh_post() {
+    http header put Content-Type application/json
+    http "@___x_cmd_gh_${O:-GITHUB_DEFAULT}" post  "$@"
+}
+
 ___x_cmd_gh_put_json() {
     http "@___x_cmd_gh_${O:-GITHUB_DEFAULT}" put json "$@"
 }

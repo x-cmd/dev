@@ -73,9 +73,9 @@ options:
     param:run
 
     ___x_cmd_gh_param_init_owner_repo
-
-    ___x_cmd_gh_post_json "/repos/${owner_repo}/releases" \
-        tag_name="$tag" name body prerelease target_commitish
+    local gen_gh_json
+    gen_gh_json="$(param:option2json tag_name=tag)"
+    ___x_cmd_gh_post_json "/repos/${owner_repo}/releases" "$gen_gh_json"
 }
 
 
@@ -99,17 +99,20 @@ ___x_cmd_gh_repo_release_update() {
     param:scope  "github/$O"
     param:dsl    '
 options:
-    #1|--release        "Release ID"                <>:number
-    --tag               "Please provide tag name"   <>
-    --name              "Release name"              <>
-    --body              "Release Description"       <>
-    --prerelease        "Is release version"        <>:bool="false"
+    #1|--release  "Release ID"                <>:number
+    --repo        "Provide owner name and repo name.(default:the current user repo)"      <>:RepoName
+    --tag         "Please provide tag name"   <>
+    --name        "Release name"              <>
+    --body        "Release Description"       <>
+    --prerelease  "Is release version"        <>:bool="false"
 '
     param:run
 
     ___x_cmd_gh_repo_release_init_owner_repo_and_release
-    ___x_cmd_gh_patch_json "/repos/${owner_repo}/releases/${release}" \
-        tag_name="$tag" name body prerelease
+    local gen_gh_json
+    gen_gh_json="$(param:option2json tag_name=tag -repo)"
+
+    ___x_cmd_gh_patch_json "/repos/${owner_repo}/releases/${release}" "$gen_gh_json"
 }
 
 ___x_cmd_gh_repo_release_rm() {
