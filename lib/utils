@@ -46,8 +46,18 @@ ___x_cmd_gh_put_json() {
     http "@___x_cmd_gh_${O:-GITHUB_DEFAULT}" put json "$@"
 }
 
+___x_cmd_gh_put(){
+    http header put Content-Type application/json
+    http "@___x_cmd_gh_${O:-GITHUB_DEFAULT}" put "$@"
+}
+
 ___x_cmd_gh_patch_json() {
     http "@___x_cmd_gh_${O:-GITHUB_DEFAULT}" patch json "$@"
+}
+
+___x_cmd_gh_patch(){
+    http header put Content-Type application/json
+    http "@___x_cmd_gh_${O:-GITHUB_DEFAULT}" patch "$@"
 }
 
 ___x_cmd_gh_delete() {

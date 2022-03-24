@@ -65,7 +65,7 @@ option:
     local gen_gh_json
     gen_gh_json="$(param:option2json has_issues=^no_issues has_wiki=^no_wiki has_projects=^no_projects \
                     auto_init=^no_auto_init allow_squash_merge=^no_squash_merge allow_merge_commit=^no_merge_commit \
-                    allow_rebase_merge=^no_rebase_merge -access  +private)"
+                    allow_rebase_merge=^no_rebase_merge -access -org  +private)"
     # TODO:owner may be personal
     local name
     xrc json

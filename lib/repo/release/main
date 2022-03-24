@@ -64,9 +64,9 @@ options:
     --tag               "Please provide tag name"                                           <>
     --name              "Release name"                                                      <>
     --body              "Release Description"                                               <>
-    --target_commitish  "Default is master"                                                 <>:name="master"
-    --draft             ”create a draft release“                                            <>:Bool="false"
-    --prerelease        "Is release version"                                                <>:Bool="false"
+    --target_commitish  "Default is main"                                                   <>:name="main"
+    --draft             "create a draft release"                                            <>:Bool="false"
+    --prerelease        "Is release version"
     #1|--repo           "Provide owner name and repo name.(default:the current user repo)"  <>:RepName
 
 '
@@ -75,7 +75,7 @@ options:
     ___x_cmd_gh_param_init_owner_repo
     local gen_gh_json
     gen_gh_json="$(param:option2json tag_name=tag)"
-    ___x_cmd_gh_post_json "/repos/${owner_repo}/releases" "$gen_gh_json"
+    ___x_cmd_gh_post "/repos/${owner_repo}/releases" "$gen_gh_json"
 }
 
 
@@ -112,7 +112,7 @@ options:
     local gen_gh_json
     gen_gh_json="$(param:option2json tag_name=tag -repo)"
 
-    ___x_cmd_gh_patch_json "/repos/${owner_repo}/releases/${release}" "$gen_gh_json"
+    ___x_cmd_gh_patch "/repos/${owner_repo}/releases/${release}" "$gen_gh_json"
 }
 
 ___x_cmd_gh_repo_release_rm() {
