@@ -1,55 +1,64 @@
-# shellcheck shell=sh disable=SC2039,SC3043 # xrc
+# Author:       Li Junhao       l@x-cmd.com             # xrc
+# shellcheck    shell=sh        disable=SC2039,SC3043
 
-# author:       Li Junhao           l@x-cmd.com
-
-___X_CMD_JO_AWK="$___X_CMD_ROOT/awk/lib/jo.awk"
-
-# x jo '{
-#     abc: cde,
-#     cde: eft,
-#     abc: aaa
-# }'
-
-# x jo abc cde abc
 ___x_cmd_jo(){
-    if [ ! -t 1 ]; then
-        command awk -f "$___X_CMD_JO_AWK"
-    fi
+    case "${1:?Provide op}" in
+        data)                                       ___x_cmd_jo_data "$@" ;;
+        fmt)        if [ -t 1 ]; then       COLOR=1 ___x_cmd_jo_fmt "$@"
+                    else                            ___x_cmd_jo_fmt "$@"
+                    fi ;;
+        v|valid)    ;;
+        u|uniq)     ;;
+        color)                              COLOR=1 ___x_cmd_jo_fmt "$@" ;;
+        list|\[)    shift;                          ___x_cmd_jo_wrap ___x_cmd_jo_list "$@" ;;
+        dict|\{)    shift;                          ___x_cmd_jo_wrap ___x_cmd_jo_dict "$@" ;;
+        -)                                          ___x_cmd_jo_wrap ___x_cmd_jo_awk ;;
 
-    local op="${1:?Provide op}"
-    case "$op" in
-        list)
-            return
-            ;;
-        dict)
-            return
-            ;;
-        -)
-            command awk -f "$___X_CMD_ROOT/awk/lib/re.awk" -f "$___X_CMD_ROOT/awk/lib/jo.awk"
-            return
-            ;;
+        #   We will add some query functions and modified function here ...
+        *)
+                    if [ "$#" -eq 0 ]; then         ___x_cmd_jo_wrap ___x_cmd_jo_awk
+                    else    local IFS; printf "%s" "$*" | \
+                                                    ___x_cmd_jo_wrap ___x_cmd_jo_awk
+                    fi
     esac
-
-    local IFS
-    printf "%s" "$*" | command awk -f "$___X_CMD_ROOT/awk/lib/re.awk" -f "$___X_CMD_ROOT/awk/lib/jo.awk"
 }
 
-# Section: list
-
-# x jo list 1 2 3
-___x_cmd_jo_list(){
-    :
+___x_cmd_jo_awk(){
+    command awk \
+        -f "$___X_CMD_ROOT/awk/lib/re.awk"  \
+        -f "$___X_CMD_ROOT/jo/lib/normalize.awk"
 }
 
-# EndSection
-
-# Section: dict
-
-# x jo dict abc cde fge abc=123 aaa=$abc
-# x jo "{ abc: $abc, cde: $cde, fge: $fge }"
-___x_cmd_jo_dict(){
-    :
+___x_cmd_jo_wrap(){
+    if [ ! -t 1 ]; then
+        "$@"
+    else
+        "$@" | ___x_cmd_jo_color
+    fi
 }
+
+# Section: subcmd
+
+# arg: indent
+___x_cmd_jo_fmt(){
+    command awk -v INDENT="${INDENT:-2}}" -f "$___X_CMD_ROOT/jo/lib/fmt.awk"
+}
+
+___x_cmd_jo_color(){
+    command awk -v INDENT="${INDENT:-2}}" -f "$___X_CMD_ROOT/jo/lib/color.awk"
+}
+
+___x_cmd_json_data(){
+    ___x_cmd_curl_gitx x-cmd json-test-data main data/one.mb.json "${TMPDIR}/mb1.json"
+    seq "${1:-1}" | x args 1 - cat "${TMPDIR}/mb1.json"
+}
+
+# time ___x_cmd_jo_list 1 2 \"true\" $( ___x_cmd_jo_list 1 2 3)
+if [ -n "${BASH_VERSION}${ZSH_VERSION}${KSH_VERSION}" ]; then
+    . "$___X_CMD_ROOT/jo/lib/list_dict"             # xrc jo/lib/list_dict
+else
+    . "$___X_CMD_ROOT/jo/lib/list_dict_posix"       # xrc jo/lib/list_dict_posix
+fi
 
 # EndSection
 
