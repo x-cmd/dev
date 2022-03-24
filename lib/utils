@@ -34,6 +34,7 @@ ______x_cmd_gt_get_multi() {
 }
 
 ______x_cmd_gt_post_json() {
+    http header put Content-Type application/json
     http "@___x_cmd_gt_${O:-GITEE_DEFAULT}" post    json "$@"
 }
 
