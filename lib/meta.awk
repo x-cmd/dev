@@ -46,10 +46,31 @@ function ls_option(         i, j, _tmp_len, _option_id, _tmp, _option_argc){
     }
 }
 
+function ls_option_name(         i, j, _option_id, _option_name, _option_argc){
+    for (i=1; i<=option_id_list[ L ]; ++i) {
+        _option_id = option_id_list[i]
+        _option_argc = option_arr[ _option_id L ]
+        for(j=1; j<=_option_argc; ++j){
+            _option_default = option_arr[ _option_id S j S OPTARG_DEFAULT ]
+            if (_option_default != "" && _option_default != OPTARG_DEFAULT_REQUIRED_VALUE){
+                _option_name = option_arr[ _option_id S OPTION_NAME ]
+                printf("%s=", _option_name)
+                printf("%s\n",_option_default)
+            }
+        }
+    }
+}
+
 function ls_subcmd(         i,_cmd_name){
     for (i=1; i <= subcmd_arr[ L ]; ++i) {
         _cmd_name = subcmd_arr[ i ]
         printf("%s\n%s\n", _cmd_name, str_unquote( subcmd_map[ _cmd_name ] ))
+    }
+}
+
+function _param_list_subcmd(         i){
+    for (i=1; i <= subcmd_arr[ L ]; ++i) {
+        printf("%s\n", subcmd_arr[ i ] )
     }
 }
 
@@ -58,8 +79,10 @@ NR==4{
         for(i=1; i<=subcmd_arr[ L ]; ++i) if( subcmd_arr[i] == arg_arr[2] ) exit 0
         exit 1
     }
-    else if( arg_arr[1] == "_ls_subcmd" || arg_arr[1] == "_param_list_subcmd" )           ls_subcmd()
+    else if( arg_arr[1] == "_param_list_subcmd" )                                         _param_list_subcmd()
+    else if( arg_arr[1] == "_ls_subcmd" )                                                 ls_subcmd()
     else if( arg_arr[1] == "_ls_option" )                                                 ls_option()
+    else if( arg_arr[1] == "_ls_option_name" )                                            ls_option_name()
     else if( arg_arr[1] == "_ls_option_subcmd" ){
         ls_option()
         printf("---------------------\n")

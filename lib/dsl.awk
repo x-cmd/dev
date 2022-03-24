@@ -222,7 +222,7 @@ function append_code(code){
 function append_code_assignment(varname, value) {
     if( varname == "path" ){
         HAS_PATH = true
-        varname  = "___x_cmd_param_" varname
+        varname  = "___x_cmd_param_path"
     }
     append_code( "local " varname " >/dev/null 2>&1" )
     append_code( varname "=" single_quote_string( value ) )
@@ -231,7 +231,7 @@ function append_code_assignment(varname, value) {
 function append_query_code(varname, description, typestr){
     if( varname == "path" ){
         HAS_PATH = true
-        varname = "___x_cmd_param_" varname
+        varname = "___x_cmd_param_path"
     }
     append_code( "local " varname " >/dev/null 2>&1" )
     # append_code( "ui prompt main " quote_string(description) " " varname " " typestr )
