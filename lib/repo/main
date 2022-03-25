@@ -109,8 +109,8 @@ option:
 
     for name in "$@"; do
         # ___x_cmd_str_sub "${gen_gh_json}" "%%name%%" "$name" | \
-        printf "%s" "${gen_gh_json}" | awk -v name '{ gsub(/%%name%%/, name, $0); print $0 }' | \
-        ___x_cmd_gh_http post "/user/repos" | \
+        printf "%s" "${gen_gh_json}" | sed s/%%name%%/"${name##%/}"/g | \
+        ___x_cmd_gh_http post "/user/repos" - | \
         {
             ___x_cmd_git_json_query_rename id=.id url=.html_url owner=.owner.login
             if [ -n "$id" ]; then
@@ -226,28 +226,6 @@ option:
         }"
     )"
 
-    # true=enable false=disable param:flag2bool \
-    #     secret_scanning \
-    #     advanced_security \
-    #     secret_scanning_push_protection
-
-    # xrc jo
-    # local security
-    # security="$(___x_cmd_jo "{
-    #         security_and_analysis:{
-    #             secret_scanning:{
-    #                 status: $scanning
-    #             },
-    #             advanced_security:{
-    #                 status: $advanced_security
-    #             },
-    #             secret_scanning_push_protection:{
-    #                 status: $scanning_push_protection
-    #             }
-    #         }
-    #     }"
-    # )"
-
     local name="%%name%%"
 
     local gen_gh_json
@@ -259,9 +237,8 @@ option:
 
     ___x_cmd_gh_param_init_owner_repo
     for name in "$@"; do
-        name="${name##%/}"
-        ___x_cmd_str_sub "${gen_gh_json}" "%%name%%" "$name" | \
-            ___x_cmd_gh_http patch "/repos/${owner_repo}" | \
+        printf "%s" "${gen_gh_json}" | sed s/%%name%%/"${name##%/}"/g | \
+            ___x_cmd_gh_http patch "/repos/${owner_repo}" - | \
             ___x_cmd_gh_repo_update_json_status_handler
     done
 }
@@ -274,9 +251,9 @@ ___x_cmd_gh_repo_update_json_status_handler(){
 
     ___x_cmd_git_json_query_rename id=.id url=.html_url owner=.owner.login
     if [ -n "$id" ];then
-        ___x_cmd_ui_tf true "Creating repo $name success" "repo_id: $id" "repo_owner: $owner" "url: $url"
+        ___x_cmd_ui_tf true "Update repo $name success" "repo_id: $id" "repo_owner: $owner" "url: $url"
     else
-        ___x_cmd_ui_tf false "Creating repo failure: $name."
+        ___x_cmd_ui_tf false "Update repo failure: $name."
         return 1
     fi
 }
