@@ -9,16 +9,16 @@ ___x_cmd_hub_register(){
         "")
                 ___x_cmd_ui_select "_SELECT" \
                     "Register Methods:" \
-                        "Weixin QR" \
-                        "Email Verification" \
                         "Open Browser to x-cmd.com" \
+                        "Weixin QR" \
+                        "Email Verification"
                         # "Telegram Bot"
 
                 # TODO: Should move official site login to the first of the list
                 case "$_SELECT" in
-                    1)          ___x_cmd_hub_register_weixin        "$@" ;;
-                    2)          ___x_cmd_hub_register_email         "$@" ;;
-                    3)          ___x_cmd_hub_register_official_site "$@" ;;
+                    1)          ___x_cmd_hub_register_official_site "$@" ;;
+                    2)          ___x_cmd_hub_register_weixin        "$@" ;;
+                    3)          ___x_cmd_hub_register_email         "$@" ;;
                     4)          ___x_cmd_hub_register_telegram      "$@" ;;
                     *)          ;;
                 esac

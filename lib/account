@@ -103,6 +103,5 @@ ___x_cmd_hub_get_and_save_userinfo_by_token(){
 # EndSection
 
 
-. "$___X_CMD_ROOT/ui/lib/select"
-. "$___X_CMD_ROOT/hub/lib/account_login"
-. "$___X_CMD_ROOT/hub/lib/account_registration"
+___x_cmd_source_inner_lib ui select
+___x_cmd_source_inner_lib hub account_login account_registration
