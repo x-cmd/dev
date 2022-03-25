@@ -12,26 +12,6 @@ ___X_CMD_HUB_WECHAT_AUTHORIZE_URL_PREFIX="https://open.weixin.qq.com/connect/oau
 . "$___X_CMD_ROOT/hub/lib/account"
 . "$___X_CMD_ROOT/hub/lib/file"
 
-# Section: util
-
-___x_cmd_hub_qrcode(){
-    x qr enc -s 1 -m 3 -t ANSIUTF8 "$1"
-    hub_log debug "QR Code url: $1"
-}
-
-___x_cmd_hub_wechat_register_url(){
-    local token_to_activate="${1:?provide token_to_activate}"
-    local username="${2:?provide username}"
-    printf "%s" "${___X_CMD_HUB_WECHAT_AUTHORIZE_URL_PREFIX}r%3Fu%3D${username}&response_type=code&scope=snsapi_userinfo&state=${token_to_activate}#wechat_redire"
-}
-
-___x_cmd_hub_wechat_login_url(){
-    local token_to_activate="${1:?provide token_to_activate}"
-    printf "%s" "${___X_CMD_HUB_WECHAT_AUTHORIZE_URL_PREFIX}l&response_type=code&scope=snsapi_userinfo&state=${token_to_activate}#wechat_redire"
-}
-
-# EndSection
-
 ___x_cmd_hub(){
     local subcmd="$1";  [ "$#" -gt 0 ] && shift
     case "$subcmd" in
