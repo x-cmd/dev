@@ -1,4 +1,4 @@
-# shellcheck shell=sh disable=SC2039,SC1090,SC3043,SC2263    # xrc
+# shellcheck shell=sh disable=SC2039,SC1090,SC3043,SC2263,SC2120    # xrc
 
 ___X_CMD_ENV_NODE_MIRROR="https://nodejs.org/dist"
 
@@ -16,16 +16,13 @@ ___x_cmd_env_node_ls_remote(){
     local pattern="${1:-""}"
     local cache_expiration="${2:-1}"
     local cache_path="$___X_CMD_ENV_PATH/node/cache/version_list"
-    if [ "$pattern" = "default" ]; then
-        pattern=""
-    fi
 
 	___x_cmd_httpget "$___X_CMD_ENV_NODE_MIRROR/index.tab" "$cache_path" "$cache_expiration" 2>/dev/null && \
     awk -v pattern="$pattern" -v prev_codename="x-cmd" '
         ((NR>1)&&($1)){
             codename=$10
             version=$1
-            if ( (pattern == "") || ( index( version, pattern ) > 0 ) ) {
+            if ( (pattern != "") || ( index( version, pattern ) > 0 ) ) {
                 if (codename ~ /^\-?$/)                                 print version
                 else if (codename!="" && codename != prev_codename)     print version, codename, "*"        # The latest version of this code name
                 else                                                    print version, codename
