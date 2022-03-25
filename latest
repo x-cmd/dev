@@ -84,9 +84,8 @@ ___x_cmd_gt_make() {
 
     if [ -n "$token" ]; then
         O="___x_cmd_gt_$O_ORIGINAL" http header put Authorization "token $token"
-        local user
-        user="$(O="$O_ORIGINAL" ___x_cmd_gt_current_owner)" || return 1
-        gt_log info "Hi $user! You've successfully authenticated."
+        O="$O_ORIGINAL" ___x_cmd_gt_current_owner || return 1
+        gt_log info "Hi $___X_CMD_GITEE_DEFAULT_OWNER! You've successfully authenticated."
         return 0
     fi
 
