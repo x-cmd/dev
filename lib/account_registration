@@ -39,11 +39,11 @@ ___x_cmd_hub_register_official_site(){
         read -r username
     fi
 
-    if [ -n "$(___x_cmd_hub_token)" ]; then
-        # TODO: ask
-        printf "Detect token in this folder. Erase the token in the disk?" >&2
-        ___x_cmd_hub_token ""
-    fi
+    # if [ -n "$(___x_cmd_hub_token)" ]; then
+    #     # TODO: ask
+    #     printf "Detect token in this folder. Erase the token in the disk?" >&2
+    #     ___x_cmd_hub_token ""
+    # fi
 
     local token_to_activate
     token_to_activate="$(___x_cmd_hub_token_generate)"
