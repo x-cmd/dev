@@ -48,7 +48,7 @@ options:
     local gen_gt_json
     gen_gt_json="$(param:option2json security_hole=^^security issue_type=type -security -type)"
 
-    ______x_cmd_gt_post "/v5/repos/${repo##*/}/issues" "$gen_gt_json" | (
+    ___x_cmd_gt_http post "/v5/repos/${repo##*/}/issues" "$gen_gt_json" | (
         ___x_cmd_git_json_query_rename id=.number title=.title html_url=.html_url
         if [ -n "$id" ]; then
             ___x_cmd_ui_tf true  "Success" "id: $id" "title: $title" "url: $html_url"
@@ -83,9 +83,9 @@ options:
 
     local security="${security:-false}"
     local gen_gt_json
-    gen_gt_json="$(param:option2json security_hole=^^security  issue_type=type -security -type)"
+    gen_gt_json="$(param:option2json issue_type=type security_hole=^^security -security -type)"
 
-    ______x_cmd_gt_patch "/v5/repos/${owner##*/}/issues/${number}" "$gen_gt_json" | (
+    ___x_cmd_gt_http patch "/v5/repos/${owner##*/}/issues/${number}" "$gen_gt_json" | (
         ___x_cmd_git_json_query_rename id=.number state=.state html_url=.html_url
         if [ -n "$id" ]; then
             ___x_cmd_ui_tf true  "Success" "id: $id" "state: $state" "url: $html_url"
@@ -109,16 +109,13 @@ options:
     param:run
     ___x_cmd_gt_param_init_owner_repo
 
-    local gen_gt_json
-    gen_gt_json="$(param:option2json -number)"
-
     if [ -t 1 ]; then
         if ___ui_table_json Time=.created_at User=.user.login Type=.action_type Content=.content \
-            -- "______x_cmd_gt_get" "/v5/repos/${owner_repo##*/}/issues/${number}/operate_logs" "$gen_gt_json"; then
+            -- ___x_cmd_gt_http get "/v5/repos/${owner_repo##*/}/issues/${number}/operate_logs" repo sort; then
             return 0
         fi
     else
-        ______x_cmd_gt_get "/v5/repos/${owner_repo##*/}/issues/${number}/operate_logs" "$gen_gt_json" && \
+        ___x_cmd_gt_http get "/v5/repos/${owner_repo##*/}/issues/${number}/operate_logs" repo sort && \
             return 0
     fi
     gt_log error "Couldn't find any data by: $repo $number"
@@ -156,17 +153,19 @@ options:
     if [ -z "$number" ]; then
         if [ -t 1 ]; then
             if ___ui_table_json IssueNumber=.number Title=.title State=.issue_state Assigner=.assignee.name Body=.body \
-                -- "______x_cmd_gt_get_multi" "/v5/repos/${owner_repo}/issues" "$gen_gt_json"; then
+                -- "___x_cmd_gt_get_multi" "/v5/repos/${owner_repo}/issues" state labels milestone \
+                    assignee creator program sort direction number; then
                 return 0
             fi
         else
-            ______x_cmd_gt_get_multi "/v5/repos/${owner_repo}/issues" "$gen_gt_json" && \
+            ___x_cmd_gt_get_multi "/v5/repos/${owner_repo}/issues" state labels milestone \
+                    assignee creator program sort direction number && \
                 return 0
         fi
         gt_log error "Couldn't find any data by: ${owner_repo}"
         return 1
     else
-        ______x_cmd_gt_get "/v5/repos/${owner_repo}/issues/${number}" | (
+        ___x_cmd_gt_http get "/v5/repos/${owner_repo}/issues/${number}" | (
             ___x_cmd_gt_json_query_rename "$data" id=.number title=.title state=.state assignee=.assignee.name
             if [ -n "$id" ]; then
                 ___x_cmd_ui_tf true  "Success" "id: $id" "title: $title" "state: $state" "assignee: $assignee"
@@ -201,11 +200,11 @@ options:
 
     if [ -t 1 ]; then
         if ___ui_table_json IssueNumber=.number State=.issue_state Assigner=.assignee.name Repository=.repository.full_name Type=.issue_type Title=.title Url=.html_url \
-            -- "______x_cmd_gt_get_multi" "/v5/orgs/${org##*/}/issues" filter state labels sort direction since page per_page; then
+            -- ___x_cmd_gt_get_multi "/v5/orgs/${org##*/}/issues" filter state labels sort direction since page per_page; then
             return 0
         fi
     else
-        ______x_cmd_gt_get_multi "/v5/orgs/${org##*/}/issues" filter state labels sort direction since page per_page && \
+        ___x_cmd_gt_get_multi "/v5/orgs/${org##*/}/issues" filter state labels sort direction since page per_page && \
             return 0
     fi
     gt_log error "Couldn't find any data by: ${org}"
@@ -233,17 +232,16 @@ options:
 '
     param:run
 
-    local gen_gt_json
-    gen_gt_json="$(param:option2json -enterprise -page -per_page)"
-
     if [ -t 1 ]; then
         if ___ui_table_json IssueNumber=.number State=.issue_state Assigner=.assignee.name AssignerMarkName=.assignee.remark \
             Repository=.repository.full_name Type=.issue_type Title=.title Url=.html_url \
-            -- "______x_cmd_gt_get_multi" "/v5/enterprises/${enterprise##*/}/issues" "$gen_gt_json"; then
+            -- ___x_cmd_gt_get_multi "/v5/enterprises/${enterprise##*/}/issues" filter state labels sort direction \
+                milestone assignee creator program; then
             return 0
         fi
     else
-        ______x_cmd_gt_get_multi "/v5/enterprises/${enterprise##*/}/issues" "$gen_gt_json" && \
+        ___x_cmd_gt_get_multi "/v5/enterprises/${enterprise##*/}/issues" filter state labels sort direction \
+            milestone assignee creator program && \
             return 0
     fi
     gt_log error "Couldn't find any data by: ${enterprise}"
@@ -289,11 +287,11 @@ options:
 
     if [ -t 1 ]; then
         if ___ui_table_json CommitId=.id IssueNumber=.target.issue.number Title=.target.issue.title User=.user.login Body=.body \
-            -- "______x_cmd_gt_get_multi" "/v5/repos/${owner_repo}/issues/$number/comments" "$gen_gt_json"; then
+            -- "___x_cmd_gt_get_multi" "/v5/repos/${owner_repo}/issues/$number/comments" "$gen_gt_json"; then
             return 0
         fi
     else
-        ______x_cmd_gt_get_multi "/v5/repos/${owner_repo}/issues/$number/comments" "$gen_gt_json" && \
+        ___x_cmd_gt_get_multi "/v5/repos/${owner_repo}/issues/$number/comments" "$gen_gt_json" && \
             return 0
     fi
     gt_log error "Couldn't find any data by: ${owner_repo}"
@@ -314,7 +312,7 @@ options:
     local gen_gt_json
     gen_gt_json="$(param:option2json -repo -number)"
 
-    ______x_cmd_gt_post_json "/v5/repos/${owner##*/}/${repo##*/}/issues/$number/comments" "$(param:option2json)" | (
+    ___x_cmd_gt_http post "/v5/repos/${owner##*/}/${repo##*/}/issues/$number/comments" "$(param:option2json)" | (
         ___x_cmd_git_json_query_rename "$data" id=.target.issue.number title=.target.issue.title body=.body
         if [ -n "$id" ]; then
             ___x_cmd_ui_tf true  "Success" "Success" "id: $id" "title: $title" "comment_body: $body"
@@ -338,7 +336,7 @@ options:
     local gen_gt_json
     gen_gt_json="$(param:option2json -repo -id)"
 
-    ______x_cmd_gt_patch_json "/v5/repos/${owner##*/}/${repo##*/}/issues/comments/${id}" "$(param:option2json)" | (
+    ___x_cmd_gt_http patch "/v5/repos/${owner##*/}/${repo##*/}/issues/comments/${id}" "$(param:option2json)" | (
         ___x_cmd_git_json_query_rename "$data" id=.target.issue.number title=.target.issue.title body=.body
         if [ -n "$id" ]; then
             ___x_cmd_ui_tf true  "Success" "id: $id" "title: $title" "comment_body: $body"
@@ -361,7 +359,7 @@ options:
     param:run
     ___x_cmd_gt_param_init_owner_repo
     # TODO:http handle，delete repo return data is null.Status: 204 No Content
-    if ______x_cmd_gt_delete "/v5/repos/${owner_repo}/issues/comments/${id}" >/dev/null; then
+    if ___x_cmd_gt_http delete "/v5/repos/${owner_repo}/issues/comments/${id}" >/dev/null; then
         ___x_cmd_ui_tf true  "Deleted comment successfully"
     else
         ___x_cmd_ui_tf false "Deleting comment failure by ${owner_repo} $id."
