@@ -421,6 +421,7 @@ ___x_cmd_param_option_to_json()(
     done
 
     while read -r ___option_name; do
+        eval "[ -z \"\$""$___option_name""\" ] && ___to_remove=\"$___to_remove ${___option_name} \""
         if [ "${___to_remove#* "$___option_name" *}" = "$___to_remove" ]; then
             ___code="$___code $___option_name"
         fi
