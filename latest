@@ -43,7 +43,7 @@ subcommands:
 
 ___x_cmd_http_cli(){
     xrc ps1env
-    ps1env init "http >"
+    ps1env init "http"
     ps1env alias + "http"
     ps1env alias :h "http help"
     local IFS
