@@ -41,11 +41,11 @@ options:
     ___x_cmd_gh_param_init_owner_repo
 
     if [ -t 1 ] && ___ui_table_json number=.number state=.state title=.title url=.html_url \
-         -- "___x_cmd_gh_get" "/repos/$owner_repo/pulls" state head base sort direction; then
+         -- "___x_cmd_gh_http get" "/repos/$owner_repo/pulls" state head base sort direction; then
         return 0
     fi
 
-    ___x_cmd_gh_get "/repos/$owner_repo/pulls" state head base sort direction && return 0
+    ___x_cmd_gh_http get "/repos/$owner_repo/pulls" state head base sort direction && return 0
 
     ___x_cmd_ui_tf false "get $owner_repo pull request list fail"
     return 1
@@ -61,7 +61,7 @@ options:
     param:run
 
     ___x_cmd_gh_param_init_owner_repo
-    ___x_cmd_gh_get "/repos/${owner_repo}/pulls/$number" | (
+    ___x_cmd_gh_http get "/repos/${owner_repo}/pulls/$number" | (
         ___x_cmd_git_json_query_rename url=.html_url state=.state title=.title body=.body
         if [ -n "$state" ];then
             ___x_cmd_ui_tf true "get number $number pr success" "Url:$url" "State:$state" "Title:$title" "Body:$body"
@@ -97,7 +97,7 @@ options:
     local gen_gh_json
     gen_gh_json="$(param:option2json -repo)"
 
-    ___x_cmd_gh_post "/repos/$owner_repo/pulls" "$gen_gh_json"
+    ___x_cmd_gh_http post "/repos/$owner_repo/pulls" "$gen_gh_json"
 }
 
 ___x_cmd_gh_repo_pr_update() {
@@ -124,7 +124,7 @@ options:
     local gen_gh_json
     gen_gh_json="$(param:option2json -repo)"
 
-    ___x_cmd_gh_patch "/repos/${owner_repo}/pulls/$pr" "$gen_gh_json"
+    ___x_cmd_gh_http patch "/repos/${owner_repo}/pulls/$pr" "$gen_gh_json"
 }
 
 ___x_cmd_gh_repo_pr_merge() {
@@ -145,7 +145,7 @@ options:
     ___x_cmd_gh_param_init_owner_repo
     local gen_gh_json
     gen_gh_json="$(param:option2json -repo)"
-    ___x_cmd_gh_put "/repos/${owner_repo}/pulls/$pr/merge" "$gen_gh_json"
+    ___x_cmd_gh_http put "/repos/${owner_repo}/pulls/$pr/merge" "$gen_gh_json"
 }
 
 # EndSection
@@ -193,10 +193,10 @@ options:
     param:run
     ___x_cmd_gh_param_init_owner_repo
     if [ -t 1 ] && ___ui_table_json id=.id body=.body url=.url \
-            -- "___x_cmd_gh_get" "/repos/${owner_repo}/pulls/$number/comments"; then
+            -- "___x_cmd_gh_http get" "/repos/${owner_repo}/pulls/$number/comments"; then
             return 0
     fi
-    ___x_cmd_gh_get "/repos/${owner_repo}/pulls/$number/comments" && return 0
+    ___x_cmd_gh_http get "/repos/${owner_repo}/pulls/$number/comments" && return 0
 
     ___x_cmd_ui_tf false "get $owner_repo pull request comments list fail"
     return 1
@@ -222,7 +222,7 @@ options:
     ___x_cmd_gh_param_init_owner_repo
     local gen_gh_json
     gen_gh_json="$(param:option2json -repo)"
-    ___x_cmd_gh_post "/repos/${owner_repo}/pulls/$number/comments" "$gen_gh_json"
+    ___x_cmd_gh_http post "/repos/${owner_repo}/pulls/$number/comments" "$gen_gh_json"
 }
 
 ___x_cmd_gh_repo_pr_comments_rm(){
@@ -234,7 +234,7 @@ options:
 '
     param:run
     ___x_cmd_gh_param_init_owner_repo
-    ___x_cmd_gh_delete "/repos/${owner_repo}/pulls/comments/${comment_id}"
+    ___x_cmd_gh_http delete "/repos/${owner_repo}/pulls/comments/${comment_id}"
 }
 
 # EndSection

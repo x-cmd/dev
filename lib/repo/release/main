@@ -39,7 +39,7 @@ options:
 
     ___x_cmd_gh_param_init_owner_repo
 
-    ___x_cmd_gh_get "/repos/${owner_repo}/releases" page per_page direction
+    ___x_cmd_gh_http get "/repos/${owner_repo}/releases" page per_page direction
 }
 
 ___x_cmd_gh_repo_get_release_by_tag() {
@@ -52,7 +52,7 @@ options:
     param:run
     ___x_cmd_gh_param_init_owner_repo
 
-    ___x_cmd_gh_get "/repos/${owner_repo}/releases/tags/${tag}"
+    ___x_cmd_gh_http get "/repos/${owner_repo}/releases/tags/${tag}"
 }
 
 ___x_cmd_gh_repo_release_create() {
@@ -75,7 +75,7 @@ options:
     ___x_cmd_gh_param_init_owner_repo
     local gen_gh_json
     gen_gh_json="$(param:option2json tag_name=tag)"
-    ___x_cmd_gh_post "/repos/${owner_repo}/releases" "$gen_gh_json"
+    ___x_cmd_gh_http post "/repos/${owner_repo}/releases" "$gen_gh_json"
 }
 
 
@@ -112,7 +112,7 @@ options:
     local gen_gh_json
     gen_gh_json="$(param:option2json tag_name=tag -repo)"
 
-    ___x_cmd_gh_patch "/repos/${owner_repo}/releases/${release}" "$gen_gh_json"
+    ___x_cmd_gh_http patch "/repos/${owner_repo}/releases/${release}" "$gen_gh_json"
 }
 
 ___x_cmd_gh_repo_release_rm() {
@@ -125,7 +125,7 @@ options:
     param:run
 
     ___x_cmd_gh_repo_release_init_owner_repo_and_release
-    ___x_cmd_gh_delete "/repos/${owner_repo}/releases/$release"
+    ___x_cmd_gh_http delete "/repos/${owner_repo}/releases/$release"
 }
 
 ___x_cmd_gh_repo_release_latest() {
@@ -138,7 +138,7 @@ options:
     param:run
 
     ___x_cmd_gh_param_init_owner_repo
-    ___x_cmd_gh_get "/repos/${owner_repo}/releases/latest"
+    ___x_cmd_gh_http get "/repos/${owner_repo}/releases/latest"
 }
 
 ___x_cmd_gh_repo_release_info() {
@@ -151,7 +151,7 @@ options:
     param:run
 
     ___x_cmd_gh_repo_release_init_owner_repo_and_release
-    ___x_cmd_gh_get "/repos/${owner_repo}/releases/${release}"
+    ___x_cmd_gh_http get "/repos/${owner_repo}/releases/${release}"
 }
 
 
