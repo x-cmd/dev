@@ -54,7 +54,7 @@ ___x_cmd_hub_register_official_site(){
 
     local userinfo
     if userinfo="$(___x_cmd_hub_get_and_save_userinfo_by_token "${token_to_activate}")" ; then
-        hub_log info "Register Successfully, ${userinfo})"
+        hub_log info "Register Successfully, ${userinfo}"
     else
         hub_log error "Register Failed"
     fi
