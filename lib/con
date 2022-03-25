@@ -17,7 +17,7 @@ ___x_cmd_eval_concurrent_single_tail(){
     sep="$(printf "\001")"
     s="$(eval "$1"; printf "%s" "${___X_CMD_EVAL_CON_SEPERATOR}$sep")"
     cat
-    printf "%s" "${s%$sep}"
+    printf "%s" "${s%"$sep"}"
 }
 
 ___x_cmd_eval_concurrent_single_tail_without_end(){
@@ -63,9 +63,10 @@ ___x_cmd_eval_concurrent_assign(){
     local result
     local var_namelist=
     local i=2
+    local varname_eq
 
     while [ $i -le $# ]; do
-        local varname_eq="$(eval printf "%s" \""\$$((i-1))"\")"
+        varname_eq="$(eval printf "%s" \""\$$((i-1))"\")"
         case "$varname_eq" in
             *:=)
                 eval "${varname_eq%:=}=s"
