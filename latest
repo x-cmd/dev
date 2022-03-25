@@ -2,6 +2,7 @@
 # shellcheck    shell=sh
 
 ___x_cmd_definelazyloader ___x_cmd_man_search man/lib/search
+xrc ui/lib/gridselect
 
 # Section: main
 ___x_cmd_man() {
