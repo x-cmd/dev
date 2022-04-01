@@ -1,7 +1,7 @@
 # shellcheck shell=sh disable=SC2039,SC2142,SC3043
 
 param_type      gitee     License   -  <<A
-$(cat .x-cmd/testcases/license.txt)
+$(cat .x-cmd/testcase_pre/license.txt)
 A
 
 paramtest_license(){
@@ -15,7 +15,7 @@ option:
 }
 
 test_paramtest_license(){
-    assert_stdout "paramtest_license -d BSD-2-Clause" <<A
+    @assert stdout paramtest_license -d BSD-2-Clause<<A
 param license: BSD-2-Clause
 A
 }

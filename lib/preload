@@ -1,0 +1,162 @@
+# Section 5: param scope and plugin
+
+# Section 1: Global definitions
+############################
+
+___X_CMD_PARAM_AWK_RE_PATH="$___X_CMD_ROOT_MOD/awk/lib/re.awk"
+___X_CMD_PARAM_AWK_DSL_PATH="$___X_CMD_ROOT_MOD/param/lib/dsl.awk"
+___X_CMD_PARAM_AWK_PATH="$___X_CMD_ROOT_MOD/param/lib/main.awk"
+
+# DICT_KEYS_SEP conflict. But it is OK.
+PARAM_ARG_SEP="$(printf "\005")"         # ARG_SEP in awk script
+PARAM_RS_SEP="${DICT_SEP}"
+# EndSection
+
+
+___param_scope_set_id(){
+    ___X_CMD_PARAM_SCOPE="${1:?Please provide scope}"
+}
+alias param:scope='local ___X_CMD_PARAM_SCOPE;    ___param_scope_set_id'
+
+___param_plugin_set_id(){
+    ___X_CMD_PARAM_PLUGIN_ID="${1:?Please provide scope}"
+}
+alias param:plugin="local ___X_CMD_PARAM_PLUGIN_ID; ___param_plugin_set_id"
+
+# EndSection
+
+# Section 6: param main
+
+___param_dsl_set(){
+    if [ -z "$1" ]; then
+        ___X_CMD_PARAM_DSL="$(cat)"
+    else
+        ___X_CMD_PARAM_DSL="$1"
+    fi
+}
+
+alias param:dsl="local ___X_CMD_PARAM_DSL; ___param_dsl_set"
+# TODO: there is a better design.
+alias param:run='local IFS; ___x_cmd_param_int "$@" ; local _x_cmd_param_code="$?" ; [ "$_x_cmd_param_code" = 125 ] && eval "$(_param_main "$@" )" || return $_x_cmd_param_code'
+
+___x_cmd_param_int(){
+    case "$1" in
+        _x_cmd_help | _param_help_doc)
+            ___X_CMD_PARAM_AWK_PATH="$(xrc which param/lib/help.awk)" _param_main
+            ;;
+        _x_cmd_advise_json)
+            eval "$(___X_CMD_PARAM_AWK_PATH="$(xrc which param/lib/advise.awk)" _param_main "$@")"
+            ;;
+        _param_list_subcmd)
+            ___X_CMD_PARAM_AWK_PATH="$(xrc which param/lib/meta.awk)" _param_main "$@"
+            ;;
+        _param_has_subcmd)
+            ___X_CMD_PARAM_AWK_PATH="$(xrc which param/lib/meta.awk)" _param_main "$@"
+            ;;
+        _ls_subcmd)
+            ___X_CMD_PARAM_AWK_PATH="$(xrc which param/lib/meta.awk)" _param_main "$@"
+            ;;
+        _ls_option)
+            ___X_CMD_PARAM_AWK_PATH="$(xrc which param/lib/meta.awk)" _param_main "$@"
+            ;;
+        _ls_option_name)
+            ___X_CMD_PARAM_AWK_PATH="$(xrc which param/lib/meta.awk)" _param_main "$@"
+            ;;
+        _ls_option_subcmd)
+            ___X_CMD_PARAM_AWK_PATH="$(xrc which param/lib/meta.awk)" _param_main "$@"
+            ;;
+        *)  return 125
+    esac
+    return
+}
+
+alias param:void="local ___X_CMD_PARAM_SCOPE;  local ___X_CMD_PARAM_DSL;  param:run"
+
+___param_eval_echo(){
+    local IFS
+    printf "%s\n" "$*" >&2
+    eval "$*"
+}
+
+alias param:debug='local IFS; ___param_eval_echo "$(_param_main "$@"  )"'
+# if [ "${-#*i}" != "$-" ]; then
+#     xrc ui/latest
+# fi
+
+_param_type_print() {
+    local app_name="${1:?Provide app name}"
+    local varname="${PARAM_TYPE_VAR_PREFIX}${app_name}"
+    eval echo "\"\$$varname\""
+}
+
+___param_plugin_print() {
+    local plugin_id="${1:?Provide plugin id}"
+    local varname="${PARAM_SUBCMD_VAR_PREFIX}${plugin_id}"
+    eval echo "\"\$$varname\""
+}
+
+# TODO: our goal, 6ms
+_param_main() {
+    if [ -n "$___X_BASH_PARAM_PLUGIN_ID" ]; then
+        if [ "plugin" = "$1" ]; then
+            printf "%s\n" shift
+            printf "param_plugin \"\$@\"\n"
+            printf "return 0 >/dev/null 2>/dev/null"
+            return 0
+        fi
+    fi
+
+    local ___X_CMD_PARAM_IS_INTERACTIVE=0
+    # Maybe for JUDGE
+    # TO OPTIMIZE
+    if [ -t 0 ] && [ "${-#*i}" != "$-" ]; then
+        ___X_CMD_PARAM_IS_INTERACTIVE=1
+    fi
+
+    local ___X_CMD_PARAM_STDERR_IS_TTY=0
+    if [ -t 2 ] ; then
+        ___X_CMD_PARAM_STDERR_IS_TTY=1
+    fi
+
+    {
+        local IFS
+        if [ -z "$___X_CMD_PARAM_SCOPE" ]; then
+            # line 1: global types and subcmds are null
+            printf "$PARAM_RS_SEP$PARAM_RS_SEP"
+        else
+            # line 1: global types and subcmds
+            _param_type_print "${___X_CMD_PARAM_SCOPE%%/*}"
+            printf "$PARAM_RS_SEP"
+            if [ "${___X_CMD_PARAM_PLUGIN_ID}" != "" ] ;then
+                ___param_plugin_print "${___X_CMD_PARAM_PLUGIN_ID}"
+            fi
+            printf "$PARAM_RS_SEP"
+        fi
+
+        printf "%s" "$___X_CMD_PARAM_DSL"
+        # line 3: running argument lines
+        IFS="$PARAM_ARG_SEP"                    # ARG_SEP in awk script
+        printf "$PARAM_RS_SEP%s$PARAM_RS_SEP" "$*"
+
+        # line 4: default dict
+        if [ -n "$___X_CMD_PARAM_SCOPE" ]; then
+            param_default dump_raw "$___X_CMD_PARAM_SCOPE"
+        fi
+    } | awk \
+            -v OBJECT_NAME="${O}" \
+            -v ARG_SEP="$PARAM_ARG_SEP" \
+            -v RS="$PARAM_RS_SEP" \
+            -v COLUMNS="$COLUMNS" \
+            -v IS_INTERACTIVE="$___X_CMD_PARAM_IS_INTERACTIVE" \
+            -v IS_TTY="$___X_CMD_PARAM_STDERR_IS_TTY" \
+            -f "$___X_CMD_PARAM_AWK_RE_PATH" \
+            -f "$___X_CMD_PARAM_AWK_DSL_PATH" \
+            -f "$___X_CMD_PARAM_AWK_PATH"
+    local code="$?"
+    # Notice: Must clear this variable.
+    ___X_CMD_PARAM_SCOPE=
+    return $code
+}
+
+# EndSections
+

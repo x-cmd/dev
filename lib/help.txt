@@ -1,0 +1,15 @@
+param -- param
+
+SYNOPSIS
+    param <SUBCOMMAND> [...arguments]
+
+SUBCOMMAND
+    marg
+    flag2bool
+    jo
+    default
+    plugin
+    type
+    help
+
+

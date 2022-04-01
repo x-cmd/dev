@@ -11,15 +11,17 @@ A
 }
 
 test_dryrun(){
-    assert_stdout "dryrun _dryrun -y qwe;echo \$?" <<A
+    dryrun _dryrun -y qwe
+    assert stdout echo $?<<A
 1
 A
 
-    assert_stdout "dryrun _dryrun -y 123;echo \$?" <<A
+    dryrun _dryrun -y 123
+    assert stdout echo $?<<A
 0
 A
 
-    assert_stdout "dryrun -y 777" <<A
+    assert stdout dryrun -y 777 <<A
 y: 777
 A
 

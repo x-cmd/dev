@@ -22,7 +22,7 @@ case "$1" in
     local)
         param_log info "copy all files from ./* to ~/.x-cmd/param/"
         \cp -r ./* ~/.x-cmd/param/
-        . "$(x wsroot)/.x-cmd/testcases/v0_test"
+        . "$(x wsroot)/.x-cmd/testcase1/v0_test"
         ;;
     cross)
         x _test local
@@ -32,12 +32,12 @@ case "$1" in
         docker run -it -v "$(pwd)":/param "xcmd/${1}-dev" bash -i -c "cd param && x _test local"
         ;;
     alpine|ubuntu)
-        docker run -it -v "$(pwd)":/param "xcmd/${1}-dev" sh -i -c "cd param && . \$(x wsroot)/.x-cmd/testcases/v0_test"
+        docker run -it -v "$(pwd)":/param "xcmd/${1}-dev" sh -i -c "cd param && . \$(x wsroot)/.x-cmd/testcase1/v0_test"
         ;;
     help)
         x _test local
-        . "$(x wsroot)/.x-cmd/testcases/v0_test_help"
-        start_test "$(x wsroot)/.x-cmd/testcases/v0_test_help"
+        . "$(x wsroot)/.x-cmd/testcase1/v0_test_help"
+        start_test "$(x wsroot)/.x-cmd/testcase1/v0_test_help"
         ;;
     *)
         \cp -r ./* ~/.x-cmd/param/
