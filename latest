@@ -557,8 +557,7 @@ x(){
 
 if ___x_cmd_is_suitable_advise_env; then
     # if you use xrc that you must have advise
-    # xrc advise/latest
-    advise x
+    x advise init x
 fi
 
 # TODO: We should have a better solution for this.
