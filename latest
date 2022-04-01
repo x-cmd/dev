@@ -556,8 +556,8 @@ x(){
 }
 
 if ___x_cmd_is_suitable_advise_env; then
-    # if you use xrc that you must have advise
-    x advise init x
+    command -v ___x_cmd_advise >/dev/null || xrc advise
+    ___x_cmd_advise init x
 fi
 
 # TODO: We should have a better solution for this.
