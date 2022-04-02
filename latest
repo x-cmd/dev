@@ -1,8 +1,7 @@
-# shellcheck shell=sh disable=SC3043 #xrc
+# Author:       Li Junhao       l@x-cmd.com         #xrc
+# shellcheck    shell=sh        disable=SC3043
 
-# author:       Li Junhao           l@x-cmd.com    edwinjhlee.github.io
 # maintainer:   Li Junhao
-
 
 # Section: main
 
@@ -105,9 +104,9 @@ _dict_free(){
 
 # 001 for \n
 # 002 for "
-DICT_SEP="$(printf "\003")"
-DICT_KV_SEP="$(printf "\004")"
-DICT_KEYS_SEP="$(printf "\005")"
+DICT_SEP="$___X_CMD_UNSEENCHAR_003"
+DICT_KV_SEP="$___X_CMD_UNSEENCHAR_004"
+DICT_KEYS_SEP="$___X_CMD_UNSEENCHAR_005"
 
 _dict_has(){
     ___dict_get "$@" > /dev/null
@@ -377,17 +376,17 @@ ___dict_pprint(){
 if [ -n "${BASH_VERSION}" ]; then
     case "${BASH_VERSION}" in
         3*|4.0*|4.1*)
-            xrc:mod dict/_v0/str
-            # . ./_v0/str
+            xrc:mod dict/lib/str
+            # . ./lib/str
             ;;
         *)
-            xrc:mod dict/_v0/bash4
+            xrc:mod dict/lib/bash4
             ;;
     esac
 elif [ -n "${ZSH_VERSION}" ]; then
-    xrc:mod dict/_v0/zsh
+    xrc:mod dict/lib/zsh
 else
-    xrc:mod dict/_v0/str
+    xrc:mod dict/lib/str
 fi
 
 xrc setmain dict
