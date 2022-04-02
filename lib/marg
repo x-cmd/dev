@@ -1,5 +1,15 @@
 
 # Section 2: param_marg -- Helper for param user: Handle param marg
+
+___x_cmd_param_marg(){
+    case "$1" in
+        get)        shift; param_marg_get "$@" ;;
+        len)        shift; param_marg_get "$@" ;;
+        seq)        shift; param_marg_seq "$@" ;;
+        *)          param_marg "$@" ;;
+    esac
+}
+
 # Example:
 # for idx in $(param_marg optname); do
 #     param_marg optname "$idx"

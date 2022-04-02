@@ -1,12 +1,20 @@
 # Section 3: param type definition
+
+___x_cmd_param_type(){
+    case "$1" in
+        unset)      shift; param_type_unset "$@" ;;
+        pprint)     shift; param_type_pprint "$@" ;;
+
+        *)          param_type "$@"
+    esac
+}
+
 # Example:
 # param_type    gitee     repo
 # param_type    gitee     user      =~  [A-Za-z0-9_]+
 # param_type    gitee     access    =   private         public          inner-public
 # param_type    gitee     License   -  <"$(xrc cat gh/lib/_type/license)"
 
-
-# TODO: check
 
 PARAM_TYPE_VAR_PREFIX=___X_CMD_X_BASH_PARAM_TYPE___
 
@@ -22,7 +30,7 @@ param_type(){
     fi
 
     local varname="${PARAM_TYPE_VAR_PREFIX}${app_name}"
-    eval "$varname=\"\${$varname}\${PARAM_ARG_SEP}\${result}\""
+    eval "$varname=\"\${$varname}\${___X_CMD_PARAM_ARG_SEP}\${result}\""
 }
 
 param_type_unset(){
@@ -32,6 +40,7 @@ param_type_unset(){
 }
 
 param_type_pprint(){
-    _param_type_print "$@" | tr "$PARAM_ARG_SEP" "\n"
+    ___x_cmd_param___type_print "$@" | tr "$___X_CMD_PARAM_ARG_SEP" "\n"
 }
+
 

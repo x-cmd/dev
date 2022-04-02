@@ -43,7 +43,7 @@ param_default() {
                     dict @"${O}" put ${object_name:+"${object_name}"} "${1:?Provide key name in function param_default}" "${2:?Provide [value] in function 'param_default put'}" ;;
         remove)
                     if [ -n "$object_name" ]; then
-                        dict @"${O}" remove "${object_name:+"${object_name}"}$PARAM_ARG_SEP${1:?Provide key name in function param_default}"
+                        dict @"${O}" remove "${object_name:+"${object_name}"}$___X_CMD_PARAM_ARG_SEP${1:?Provide key name in function param_default}"
                     else
                         dict @"${O}" remove "${1:?Provide key name in function param_default}"
                     fi ;;
