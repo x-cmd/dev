@@ -15,4 +15,4 @@ jobs:
           ref: main
           sshkey: ${{ secrets.SSH_PRIVATE_KEY }}
           user/email: agent-zero/0@x-cmd.com
-        run: xws pub
+        run: xws pub0
