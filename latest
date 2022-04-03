@@ -97,7 +97,7 @@ ___X_CMD_CUR_SHELL="${___X_CMD_SHELL:-sh}"      # TODO: will remove
 xrc:mod log/latest
 ___x_cmd_log init x
 
-xrc:mod:lib xrc         util  mirror httpget ldict instance arglist
+xrc:mod:lib xrc         util  mirror httpget ldict/posix instance arglist
 # EndSection
 
 # Section 3: main entrance helper: xrc_set_main, which_one, which_one_with_naming
@@ -347,7 +347,7 @@ xrc(){
             ;;
         ""|help)                cat "$___X_CMD_ROOT_MOD/xrc/lib/help/main.txt" >&2 ;;
         root)                   printf "%s" "$___X_CMD_ROOT" ;;
-        mirror)                 ___x_cmd_mirror "$@" ;;
+        mirror)                 ___x_cmd_mirror "$@"; printf "%s\n" "$___X_CMD_MIRROR_LIST" ;;
         export-all)             xrc:mod xrc/lib/export && ___x_cmd_xrc_export_all "$@" ;;
         update)                 xrc:mod xrc/lib/update && ___x_cmd_xrc_update "$@" ;;
         upgrade)                xrc:mod xrc/lib/upgrade && ___x_cmd_xrc_upgrade "$@" ;;

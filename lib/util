@@ -19,7 +19,7 @@ ___x_cmd_is_interative_tty(){
 }
 
 ___x_cmd_is_suitable_advise_env(){
-    [ -z "$XRC_NO_ADVISE" ] && [ -n "${BASH_VERSION}${ZSH_VERSION}" ] && [ "${-#*i}" != "$-" ]
+    [ -n "$___X_CMD_ADVISE_ENABLE" ] && [ -n "${BASH_VERSION}${ZSH_VERSION}" ] && [ "${-#*i}" != "$-" ]
 }
 
 ___x_cmd_readlink_recursive(){
@@ -145,4 +145,12 @@ ___x_cmd_llist(){
 
 ___x_cmd_awk(){
     xrc awk/latest && ___x_cmd_awk "$@"
+}
+
+___x_cmd_evex(){
+    if [ "$#" -lt 2 ]; then
+        eval "${1:-:}"
+    else
+        "$@"
+    fi
 }
