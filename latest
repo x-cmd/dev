@@ -32,35 +32,36 @@ A
 ___x_cmd_theme_control_ls() {
     param:void
 
-    local tmp
-    tmp="$(___x_cmd_theme_which index.yml)" && awk 'op==1{ if ($0 ~ /^-/) exit(0); print $2; };  op==0{  if ($2 == "all") op=1; }' <"$tmp"
+    local filepath
+    ___x_cmd_theme___which___filepath index.yml && awk 'op==1{ if ($0 ~ /^-/) exit(0); print $2; };  op==0{  if ($2 == "all") op=1; }' <"$filepath"
 
     # tar xf "$__tgz" -O index.yml 2>/dev/null | awk 'op==1{ if ($0 ~ /^-/) exit(0); print $2; };  op==0{  if ($2 == "all") op=1; }'
 }
 
-___x_cmd_theme_which(){
+___x_cmd_theme___which___filepath(){
     local filename="${1:?Provide name}"
-    if [ ! -f "$___X_CMD_ROOT_TMP/theme/$filename" ] || [ "$filename" = "index.yml" ]; then
-        local __tgz
-        __tgz="$(___x_cmd_theme_which_tgz)" || return 1
 
-        local tmp_style_dir="$___X_CMD_ROOT_TMP/theme/tgz"
+    local tmp_style_dir="$___X_CMD_ROOT_TMP/theme/tgz"
+    if [ ! -f "$tmp_style_dir/$filename" ]; then
+        local tgzfilepath
+        ___x_cmd_theme___which_tgz___tgzfilepath || return 1
+
         [ ! -d "$tmp_style_dir" ] && mkdir -p "$tmp_style_dir"
 
         local _src_code
-        if ! tar xf "$__tgz" -C "$tmp_style_dir" "$filename" 2>/dev/null; then
+        if ! tar xf "$tgzfilepath" -C "$tmp_style_dir" "$filename" 2>/dev/null; then
             printf "\033[31m%s\033[33m%s\n%s \033[1;36m%s\033[0m\n" \
                 "[x-cmd]: Not found theme in cache." " Check the theme name is exist." \
                 "Or you can try run command to update cache." "\`x theme ls\`"
             return 1
         fi
     fi
-    printf "%s" "$___X_CMD_ROOT_TMP/theme/tgz/$filename"
+    filepath="$tmp_style_dir/$filename"
 }
 
-___x_cmd_theme_which_tgz(){
-    local cache="$___X_CMD_ROOT/.tmp/theme/theme.tgz"
-    if ! ___x_cmd_httpget_gitx x-cmd theme main "dist/theme.tgz" "$cache"; then
+___x_cmd_theme___which_tgz___tgzfilepath(){
+    tgzfilepath="$___X_CMD_ROOT/.tmp/theme/theme.tgz"
+    if ! ___x_cmd_httpget_gitx x-cmd theme main "dist/theme.tgz" "$tgzfilepath"; then
         if [ ! -f "$cache" ]; then
             x:error "Unaviable theme.tgz. Unable to fetch theme.tgz."
             return 1
@@ -69,7 +70,6 @@ ___x_cmd_theme_which_tgz(){
     if [ -n "$___X_CMD_HTTPGET_UPDATED" ]; then
         x rmrf "$___X_CMD_ROOT_TMP/theme/tgz"
     fi
-    printf "%s" "$cache"
 }
 
 # EndSection
@@ -120,10 +120,10 @@ A
 ___x_cmd_theme_control_try_inner(){
     local name="${1}"
     case "$name" in
-        ys|"")          ___x_cmd_theme_load_format "$(xrc which theme/lib/ys)" ;;
+        ys|"")          ___x_cmd_theme_load_format "$___X_CMD_ROOT_MOD/theme/lib/ys" ;;
         */*)            ___x_cmd_theme_load_format "$(xrc which "$name")" ;;
-        *)      name="$(___x_cmd_theme_which "style/$name")" && \
-                        ___x_cmd_theme_load_format "$name"
+        *)      local filepath; ___x_cmd_theme___which___filepath "style/$name" && \
+                        ___x_cmd_theme_load_format "$filepath"
     esac
 }
 # EndSection
