@@ -144,6 +144,7 @@ ___x_cmd_assert_otherwise(){
         folder)             ___x_cmd_assert_folder "$@" ;;
 
         stdout)             ___x_cmd_assert_stdout "$@" ;;
+        stderr)             ___x_cmd_assert_stderr "$@" ;;
     esac
 }
 
@@ -179,14 +180,15 @@ A
 yes
 DOCTEST
 ___x_cmd_assert_within(){
-    local c value="$1"
+    local c
+    local value="$1"
     shift
     for c in "$@"; do
-        for v in $value; do
-            if [ "$v" = "$c" ]; then
-                return 0
-            fi
-        done
+        # for v in $value; do
+        if [ "$value" = "$c" ]; then
+            return 0
+        fi
+        # done
     done
     return 1
 }
@@ -233,11 +235,11 @@ ___x_cmd_assert_eq(){
 
 # Section: value and grep
 ___x_cmd_assert_stdout(){
-    ___x_cmd_assert_eq "$(cat)" "$("$@")"
+    ___x_cmd_assert_eq "$(cat)" "$(___x_cmd_evex "$@")"
 }
 
 ___x_cmd_assert_stderr(){
-    ___x_cmd_assert_eq "$(cat)" "$("$@" 2>/dev/stdout 1>/dev/null)"
+    ___x_cmd_assert_eq "$(cat)" "$(___x_cmd_evex "$@" 2>/dev/stdout 1>/dev/null)"
 }
 
 # There is two ways to use ___x_cmd_assert_grep
