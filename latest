@@ -12,6 +12,26 @@ xrc:mod:lib test    cycle
 # TODO: select specific testcase: x test folder 1-wabc; x test folder ~^[0-9]+-[frame]
 
 ___x_cmd_test(){
-    ___x_cmd_test_cycle_exec "$@"
+    case "$1" in
+        :)          ;;
+        :*)         : other shell ;;
+        errexit)    ___x_cmd_test_set_errexit "$@" ;;
+        *)          ___x_cmd_test_cycle_exec "$@" ;;
+    esac
 }
 
+___X_CMD_TEST_ASSERT_ERREXIT=1
+___x_cmd_test_errexit(){
+    case "$1" in
+        "")
+            if [ -z "$___X_CMD_TEST_ASSERT_ERREXIT" ]; then
+                test:info Error Exit is OFF
+                return 1
+            else
+                test:info Error Exit is ON
+                return 0
+            fi ;;
+        on|enable)          ___X_CMD_TEST_ASSERT_ERREXIT=1  ;;
+        off|disable)        ___X_CMD_TEST_ASSERT_ERREXIT="" ;;
+    esac
+}
