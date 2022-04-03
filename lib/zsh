@@ -1,24 +1,21 @@
-# shellcheck shell=zsh
-
-# author:       Li Junhao           l@x-cmd.com    edwinjhlee.github.io
-# maintainer:   Li Junhao
+# shellcheck    shell=zsh
 
 # Section: Life Cycle
 # DICT_KEYS_SEP=","
 # DICT_SEP="-"
-___dict_make(){
+___x_cmd_dict_make(){
     local O="${O:?Please provide object name}"
     unset "___X_BASH_DICT_$O"
     ___x_cmd_instance_add "dict" "$O"
     typeset -gA ___X_BASH_DICT_"$O"
 }
 
-___dict_clear(){
+___x_cmd_dict_clear(){
     local O="${O:?Please provide object name}"
     eval "typeset -gA ___X_BASH_DICT_$O=()"
 }
 
-___dict_dump(){
+___x_cmd_dict_dump(){
     local O="${O:?Please provide object name}"
     local key
     local val
@@ -32,9 +29,9 @@ ___dict_dump(){
     printf "%s" "$i"
 }
 
-___dict_load(){
+___x_cmd_dict_load(){
     local O="${O:?Please provide object name}"
-    ___dict_make "$O"
+    ___x_cmd_dict_make "$O"
     local key
     local val
 
@@ -49,14 +46,14 @@ ___dict_load(){
 
 # Section: size get put scope remove
 
-___dict_size(){
+___x_cmd_dict_size(){
     : "${O:?Please provide object name}"
     eval printf "%s" "\"\${#___X_BASH_DICT_${O}[@]}\""
 }
 
-___dict_get(){
+___x_cmd_dict_get(){
     if [ -z "$O" ]; then
-        _dict_pget "$@"
+        ___x_cmd_dict___pget "$@"
         return
     fi
 
@@ -74,9 +71,9 @@ ___dict_get(){
     fi
 }
 
-___dict_put(){
+___x_cmd_dict_put(){
     if [ -z "$O" ]; then
-        _dict_pput "$@"
+        ___x_cmd_dict___pput "$@"
         return
     fi
 
@@ -85,13 +82,13 @@ ___dict_put(){
     local key="$*"
     local val="${key##*${DICT_KEYS_SEP}}"
     key="$DICT_KEYS_SEP${key%${DICT_KEYS_SEP}*}"
-    eval "___X_BASH_DICT_${O}[\$key]"="\"\$val\"" 2>/dev/null || ___dict_make "$O"; eval "___X_BASH_DICT_${O}[\$key]"="\"\$val\""
+    eval "___X_BASH_DICT_${O}[\$key]"="\"\$val\"" 2>/dev/null || ___x_cmd_dict_make "$O"; eval "___X_BASH_DICT_${O}[\$key]"="\"\$val\""
 }
 
 # Not universal enough
-___dict_scope(){
+___x_cmd_dict_scope(){
     if [ -z "$O" ]; then
-        _dict_pscope "$@"
+        ___x_cmd_dict___pscope "$@"
         return
     fi
 
@@ -114,9 +111,9 @@ ___dict_scope(){
     printf "%s" "$i"
 }
 
-___dict_remove(){
+___x_cmd_dict_remove(){
     if [ -z "$O" ]; then
-        _dict_premove "$@"
+        ___x_cmd_dict___premove "$@"
         return
     fi
 
@@ -142,9 +139,9 @@ ___dict_remove(){
 
 # Section: drop grep iter
 
-___dict_drop(){
+___x_cmd_dict_drop(){
     if [ -z "$O" ]; then
-        _dict_pdrop "$@"
+        ___x_cmd_dict___pdrop "$@"
         return
     fi
 
@@ -166,9 +163,9 @@ ___dict_drop(){
     return "$code"
 }
 
-___dict_grep(){
+___x_cmd_dict_grep(){
     if [ -z "$O" ]; then
-        _dict_pgrep "$@"
+        ___x_cmd_dict___pgrep "$@"
         return
     fi
 
@@ -185,11 +182,11 @@ ___dict_grep(){
     done
 }
 
-___dict_grepr(){
-    ___dict_grep "$@"
+___x_cmd_dict_grepr(){
+    ___x_cmd_dict_grep "$@"
 }
 
-___dict_iter(){
+___x_cmd_dict_iter(){
     local fun="$*" # "$1 \"\$key\" \"\$val\""
     if [ "$#" -eq 1 ] && command -v "$1"; then
         fun="$1 \"\$key\" \"\$val\""
