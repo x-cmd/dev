@@ -31,7 +31,7 @@ w() {
 
     case "$BASH_VERSION" in
         5*)
-            @assert stdout param_default dump gitee/$O<<A
+            @assert stdout param_default dump gitee/"$O"<<A
 {
   "arg3": "111",
   "arg2": "11",
@@ -40,7 +40,7 @@ w() {
 A
         ;;
         *)
-            @assert stdout param_default dump gitee/$O<<A
+            @assert stdout param_default dump gitee/"$O"<<A
 {
   "arg1 ee": "1",
   "arg2": "11",
@@ -58,10 +58,10 @@ A
         ;;
     esac
 
-    @assert stdout param_default dump_raw gitee/$O<<A
+    @assert stdout param_default dump_raw gitee/"$O"<<A
 c${arg_sep}arg1 ee${dict_sep}1${dict_sep}c${arg_sep}arg2${dict_sep}11${dict_sep}c${arg_sep}arg3${dict_sep}111${dict_sep}3
 A
-    @assert stdout param_default dump_raw gitee"  <<A
+    @assert stdout param_default dump_raw gitee<<A
 c${arg_sep}arg1 ee${dict_sep}1${dict_sep}c${arg_sep}arg2${dict_sep}11${dict_sep}c${arg_sep}arg3${dict_sep}111${dict_sep}3
 A
 }
@@ -73,7 +73,7 @@ test_param_default_load(){
   \"e${arg_sep}arg3\": \"111\"
 }"
     local json_path
-    json_path="$(x wsroot)/.x-cmd/testcase_pre/test_json"
+    json_path="$(x wsroot)/.x-cmd/testcase1/test_json"
     echo "$test_json" > "$json_path"
 
     param_default clear cc/e
@@ -125,9 +125,12 @@ test_param_default(){
     param_default put gitee/c arg2 11
     param_default put gitee/c arg3 111
 
-    @assert stdout O=ccc paramtest_default<<A
+    O=ccc
+    @assert stdout paramtest_default<<A
 param default: public
 A
 
     O=c w -a private --repo "中文" --user "7777" work a b
 }
+
+@assert:file:func

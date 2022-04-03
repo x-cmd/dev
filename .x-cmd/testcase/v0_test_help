@@ -1,12 +1,15 @@
 # shellcheck shell=sh disable=SC2039,SC2142,SC3043
 
-# Section: Testcase for test help.
-
 test_error_help(){
+    @assert stderr paramtest --not_exist_flag <<A
+error: Option unexpected, or invalid in this context: '--not_exist_flag'
+For more information try --help
+A
 
-    echo "======== test option wasn't expected ============="
-    paramtest --not_exist_flag
-    paramtest -acvP
+    @assert stderr paramtest -acvP <<A
+error: Option unexpected, or invalid in this context: '-a'
+For more information try --help
+A
     paramtest option --not_exist_flag
     paramtest --not_exist_option ccc
     paramtest option --not_exist_option ccc
@@ -34,4 +37,4 @@ test_common_help(){
     paramtest rarg _x_cmd_help
     echo "======================="
 }
-# EndSection
+@assert:file:func

@@ -74,3 +74,4 @@ Test rest argument #4 when exist option and flag
 list_repo_2
 A
 }
+@assert:file:func

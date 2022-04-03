@@ -10,4 +10,12 @@ A
     param:run
 }
 
-ls_option_name _ls_option_name
+test_ls_option_name(){
+    @assert stdout ls_option_name _ls_option_name <<A
+y
+u
+license
+A
+}
+
+@assert:file:func

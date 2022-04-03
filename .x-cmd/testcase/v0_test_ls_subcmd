@@ -1,6 +1,4 @@
 # shellcheck shell=sh disable=SC2039,SC2142,SC3043
-
-xrc .x-cmd/testcases/v0_test
 ls_subcmd(){
     param:dsl <<A
 subcommand:
@@ -13,7 +11,7 @@ A
 }
 
 test_ls_subcmd(){
-    @assert stdout ls_subcmd _ls_subcmd<<A
+    @assert stdout ls_subcmd _ls_subcmd <<A
 aaa
 This is a aaa
 bbb
@@ -22,3 +20,5 @@ ccc
 This is a ccc
 A
 }
+
+@assert:file:func

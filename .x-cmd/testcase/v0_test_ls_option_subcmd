@@ -70,3 +70,5 @@ _ls_option_subcmd
 apachev2
 A
 }
+
+@assert:file:func
