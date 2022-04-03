@@ -141,12 +141,12 @@ ___x_cmd_env_common_download(){
     fi
 
     if ! ___x_cmd_env_run_common_if_notfound download_archive "$candidate" "$version"; then
-        env_log info "Failed to download $candidate $version"
+        env_log error "Failed to download $candidate $version"
         return 1
     fi
 
     if ! ___x_cmd_env_run_common_if_notfound unpack "$candidate" "$version"; then
-		env_log info "Failed to unpack $candidate of version: $version."
+		env_log error "Failed to unpack $candidate of version: $version."
 		return 1
 	fi
 }
@@ -161,7 +161,7 @@ ___x_cmd_env_common_install(){
 
     env_log info "Installing $candidate $version"
     if ! ___x_cmd_env_run_common_if_notfound download "$candidate" "$version"; then
-        env_log info "Failed to installed $candidate of version: $version."
+        env_log error "Failed to installed $candidate of version: $version."
         return 1
     fi
 
