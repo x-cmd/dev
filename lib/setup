@@ -1,4 +1,6 @@
-cat > "$HOME/.x-cmd/.boot/boot" <"$___X_CMD_ROOT_MOD/boot/lib/setup.sh"
+# shellcheck shell=sh
+
+cp "$___X_CMD_ROOT_MOD/boot/lib/setup.sh" "$HOME/.x-cmd/.boot/boot" && \
 (
     if [ "$BASH_VERSION" ]; then
         # The bash login mode will not source the .bashrc file but the .bash_profile file.
