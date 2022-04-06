@@ -1,5 +1,5 @@
 
-___x_cmd_dict_x_cmd_advise_json(){
+___x_cmd_dict__x_cmd_advise_json(){
     cat "$___X_CMD_ROOT_MOD/lib/dict.advise.json"
     return 126
 }

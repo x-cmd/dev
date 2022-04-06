@@ -4,41 +4,22 @@
 # Section: main
 
 ___x_cmd_dict(){
-    local op=${1:?Provide op}
     local O="${O:-DEFAULT}"
 
-    if [ "${1#@}" != "$op" ]; then
-        O="${1#@}"
-        op="${2:-help}"
-        [ $# -gt 1 ] && shift 2
-    else
+    if [ "${1#@}" != "$1" ]; then
+        O="___X_BASH_DICT_${1#@}"
         shift
     fi
-    O="___X_BASH_DICT_${O}"
-    case "$op" in
-        new)                ___x_cmd_dict_new "$@"   ;;
-        del)                ___x_cmd_dict_del "$@"   ;;
-        make)               ___x_cmd_dict_make "$@"   ;;
-        free)               ___x_cmd_dict_free "$@"  ;;
-        get)                ___x_cmd_dict_get "$@" ;;
-        put)                ___x_cmd_dict_put "$@" ;;
-        scope)              ___x_cmd_dict_scope "$@"   ;;
-        remove)             ___x_cmd_dict_remove "$@" ;;
-        clear)              ___x_cmd_dict_clear "$@" ;;
-        drop)               ___x_cmd_dict_drop "$@" ;;
-        dropr)              ___x_cmd_dict_dropr "$@" ;;
-        grep)               ___x_cmd_dict_grep "$@" ;;
-        grepr)              ___x_cmd_dict_grepr "$@" ;;
-        iter)               ___x_cmd_dict_iter "$@" ;;
-        load)               ___x_cmd_dict_load "$@" ;;
-        load_json)          ___x_cmd_dict_load_json "$@" ;;
-        dump)               ___x_cmd_dict_dump "$@" ;;
-        json)               ___x_cmd_dict_json "$@" ;;
-        size)               ___x_cmd_dict_size "$@" ;;
-        has)                ___x_cmd_dict_has "$@"  ;;
-        is_empty)           ___x_cmd_dict_is_empty "$@" ;;
-        _x_cmd_advise_json) ___x_cmd_dict_x_cmd_advise_json "$@" ;;
-        *)                  : help ;;
+
+    case "$1" in
+        new | del | make | free | get | put | scope | \
+        remove | clear | drop | dropr | grep | grepr | iter | \
+        load | load_json | dump | json | \
+        size | has | is_empty | _x_cmd_advise_json )
+            local op="$1"; shift;
+            "___x_cmd_dict_$op" "$@" ;;
+        ""|help)                : help ;;
+        *)                      : help ;;
     esac
 }
 
