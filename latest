@@ -262,7 +262,6 @@ ___x_cmd_main(){
 
         *:=)                                    shift;  ___x_cmd_varset "${subcmd%:=}" "$@" ;;
         *=)                                     shift;  ___x_cmd_varset_without_end "${subcmd%=}" "$@" ;;
-        dev)                                    shift;  ___x_cmd_main yanfa "$@" ;;    # tmp
 
         arg1)                                   shift;  ___x_cmd_args 1 "$@"    ;;
         marg1)                                  shift;  ___x_cmd_margs 1 "$@"   ;;
