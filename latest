@@ -1,20 +1,10 @@
-# shellcheck shell=sh # xrc
+# Author:       Li Junhao           l@x-cmd.com     # xrc
+# shellcheck    shell=sh
 
-# author:       Li Junhao           l@x-cmd.com
-
-# Section: modules included
 xrc param/latest
 
-xrc yanfa/lib/all
+xrc:mod:lib yanfa   all ws mod pkg init try git
 
-xrc yanfa/lib/ws
-xrc yanfa/lib/mod
-xrc yanfa/lib/pkg
-
-xrc yanfa/lib/init
-xrc yanfa/lib/try
-
-# EndSection
 
 # git config --worktree --get-regexp "remote[a-z\.]+.url"
 
@@ -37,27 +27,5 @@ A
 
     "___x_cmd_yanfa_${PARAM_SUBCMD}" "$@"
 }
-
-alias xdev="x dev"
-
-# Section: git
-
-# TODO: we will find a more suitable place for the code below.
-
-alias giss="git status -s"
-alias gip="x dev ws pull"
-alias giP="x dev ws push"
-giam(){
-    local msg="${1:-...}"
-    shift
-    if [ $# -eq 0 ]; then
-        ( cd "$(x wsroot)" && git add . )
-    else
-        git add "$@"
-    fi
-    git commit -m "$msg"
-}
-
-# EndSection
 
 xrc setmain ___x_cmd_yanfa

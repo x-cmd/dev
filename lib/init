@@ -38,7 +38,7 @@ A
 ___x_cmd_yanfa_init_vscode(){
     param:void
     mkdir -p "$(x wsroot)/.vscode"
-    xrc cat dev/lib/settings.json >"$(x wsroot)/.vscode/settings.json"
+    xrc cat yanfa/lib/settings.json >"$(x wsroot)/.vscode/settings.json"
 
     local ext
     for ext in zokugun.explicit-folding \
@@ -58,7 +58,7 @@ ___x_cmd_yanfa_init_vscode(){
 
 ___x_cmd_yanfa_init_license(){
     param:void
-    xrc cat dev/lib/LICENSE > "$(x wsroot)/LICENSE"
+    xrc cat yanfa/lib/LICENSE > "$(x wsroot)/LICENSE"
 }
 
 ___x_cmd_yanfa_init_xproj(){
