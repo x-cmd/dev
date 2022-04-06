@@ -11,7 +11,7 @@ ___x_cmd_param(){
         default)        param_default "$@" ;;
         plugin)         param_plugin "$@" ;;
         type)           param_type "$@" ;;
-        ""|help)        param help ;;
+        ""|help)        cat "$___X_CMD_ROOT_MOD/param/lib/help.txt" >&2; return 1 ;;
     esac
 }
 
