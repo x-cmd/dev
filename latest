@@ -283,6 +283,7 @@ ___x_cmd_log_0(){
         fi
 
         if [ $# -gt 0 ]; then
+            [ "$L" = "INF" ] && local ___X_CMD_LOG_C_MSG="\\033[1m"
             printf "${timestamp}${C}[%s] <%s>: \033[0m${___X_CMD_LOG_C_MSG:-"$C"}%s\033[0m\n" "$L" "$O" "$*"
         else
             printf "${timestamp}${C}[%s] <%s>:" "$L" "$O"
