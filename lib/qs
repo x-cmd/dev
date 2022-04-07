@@ -34,17 +34,17 @@ subcommands:
 ______x_cmd_http_qs_dump(){
     case "$1" in
         json)
-            O=$O dict scope qs | ___dict_pjson
+            O=$O dict scope qs | ___x_cmd_dict_pjson
             ;;
         curl)
             local line
             printf "%s" " -G "
-            O=$O dict scope qs | KV_SEP="=" ___dict_pprint | while read -r line; do
+            O=$O dict scope qs | KV_SEP="=" ___x_cmd_dict_pprint | while read -r line; do
                 # printf "--data-urlencode \"%s\" " "$line"
                 printf " %s " "--data-urlencode $line"
             done
             ;;
-        *) O=$O dict scope qs | KV_SEP="=" ___dict_pprint ;;
+        *) O=$O dict scope qs | KV_SEP="=" ___x_cmd_dict_pprint ;;
     esac
 }
 
@@ -114,25 +114,25 @@ subcommands:
 ______x_cmd_http_body_dump(){
     local O="${O:?Provide Object name}"
     case "$1" in
-        json)       O=$O dict scope body | ___dict_pjson        ;;
+        json)       O=$O dict scope body | ___x_cmd_dict_pjson        ;;
         *)          O=$O dict scope body ;;
     esac
 }
 
 ______x_cmd_http_body_get(){
-    dict "@$O" get body "${1:?body key}"
+    O=$O dict get body "${1:?body key}"
 }
 
 ______x_cmd_http_body_put(){
     local body_key="${1:?body key}"
     if [ $# -eq 1 ]; then
-        eval dict "@$O" put body "\$body_key" "\$${body_key}"
+        eval O="$O" dict put body "\$body_key" "\$${body_key}"
     else
-        dict "@$O" put body "$body_key" "$2"
+        O=$O dict put body "$body_key" "$2"
     fi
 }
 ______x_cmd_http_body_remove(){
-    dict "@$O" drop body "${1:?body key}"
+    O=$O dict drop body "${1:?body key}"
 }
 
 ______x_cmd_http_body_mput(){

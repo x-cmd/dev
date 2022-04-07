@@ -2,6 +2,7 @@
 # shellcheck    shell=sh    disable=SC2039,SC3043
 
 xrc param
+xrc dict
 
 ___x_cmd_http() {
     local O="${O:-_HTTP_DEFAULT}"
