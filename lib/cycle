@@ -187,7 +187,7 @@ ___x_cmd_test___cycle_exec_folder_inner(){
     local testcase="${1:?Provide testcase}"; shift
 
     if ! ___x_cmd_test___cycle_exclude "$testcase" "$@"; then
-        printf "\033[2;34m%s\033[0m\n" "${INDENT}>>> $NAME $testcase  ---<SKIP>"
+        printf "\033[2;36m%s\033[0m\n" "${INDENT}>>> $NAME $testcase  ---<SKIP>"
         return 0
     fi
 
