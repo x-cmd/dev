@@ -58,7 +58,7 @@ ___x_cmd_yanfa_init_vscode(){
 
 ___x_cmd_yanfa_init_license(){
     param:void
-    xrc cat yanfa/lib/LICENSE > "$(x wsroot)/LICENSE"
+    x license --name 'Li Junhao' --email 'l@x-cmd.com' --year 2022 gplv3 > "$(x wsroot)/LICENSE"
 }
 
 ___x_cmd_yanfa_init_xproj(){
