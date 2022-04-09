@@ -1,5 +1,4 @@
 name: Publish x-cmd/dev
-
 on:
   # push:
   workflow_dispatch:
