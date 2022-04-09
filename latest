@@ -38,7 +38,6 @@ ___x_cmd_main_otherwise(){
 
 ___x_cmd_alias_init ___x_cmd
 
-#       7zd)                                    shift;  ( xrc p7zip/v0   &&  p7zd "$@" ) ;;
 ___x_cmd_main(){
     local subcmd="$1"
     case "$subcmd" in
@@ -57,10 +56,18 @@ ___x_cmd_main(){
         jar|java|npm|npx|ts|    _ws|wsroot|ws|      args|margs|conjoin|con|rmrf|repeat|     which|search_path|_x_cmd_advise_json|       ls|ll   |ssl    | abspath  )
                                                 shift;  "___x_cmd_$subcmd" "$@" ;;
 
-        curl|jq|yq|tmux|git|tesseract|magick|    ps|du|sqlite|cat|bw|    nmap|ncat|nping|traceroute)     # TODO: we will rename ___x_cmd_curl to make room for it
+        curl|jq|yq|tmux|git|tesseract|magick)     # TODO: we will rename ___x_cmd_curl to make room for it
                                                 shift;  ___x_cmd_static_build_file     "$subcmd" "$subcmd"      "$@"    ;;
-
+        nmap|ncat|nping|traceroute)
+                                                shift;  ___x_cmd_static_build_file      nmap "$subcmd"          "$@"    ;;
+        ps)                                     shift;  ___x_cmd_static_build_file      procs procs             "$@"    ;;
+        du)                                     shift;  ___x_cmd_static_build_file      dust dust               "$@"    ;;
+        sqlite)                                 shift;  ___x_cmd_static_build_file      sqlite3 sqlite3         "$@"    ;;
+        cat)                                    shift;  ___x_cmd_static_build_help      bat bat                 "$@"    ;;
+        bw)                                     shift;  ___x_cmd_static_build_file      bandwhich bandwhich     "$@"    ;;
         7z|7za|7zr)                             shift;  ___x_cmd_static_build_file      p7zip 7za               "$@"    ;;
+
+        7zd)                                    shift;  ( xrc p7zip/v0   &&  p7zd "$@" ) ;;
 
 
         sh|bash|zsh|fish|ksh|dash|ash)          shift;  ___x_cmd_shell_exec "$subcmd" "$@" ;;
