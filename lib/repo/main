@@ -15,17 +15,15 @@ ___x_cmd_gt_repo(){
         branch          "repo branch management"
     param:subcmd:try
     param:run
-    if [ -z "$PARAM_SUBCMD" ]; then
-        gt_log warn "Subcmd Not Found."
-        ___x_cmd_gt_repo _param_help_doc
-        return 1
-    fi
 
-    "___x_cmd_gt_repo_${PARAM_SUBCMD}" "$@"
+    gt_log warn "Subcmd Not Found."
+    ___x_cmd_gt_repo _param_help_doc
+    return 1
 }
 
 # Section: create
 # shellcheck disable=SC2154
+# https://gitee.com/api/v5/swagger#/postV5UserRepos
 ___x_cmd_gt_repo_create() {
     local O="${O:-GITEE_DEFAULT}"
 
@@ -34,7 +32,7 @@ ___x_cmd_gt_repo_create() {
 option:
     #n                      "repo names"                    <>:RepoName
 
-    --path|-p               "repo path"                     <>=""
+    -p|--path               "repo path"                     <>=""
     --description           "description"                   <>=""
     --homepage              "homepage"                      <>=""
     --access                "private,public"                <>:RepoAccess=private
@@ -45,7 +43,6 @@ option:
     --no_comment            "Provide can_comment"
     --no_auto_init          "Not auto init README"
 '
-
     param:run
     [ $# -eq 0 ] && gt_log error "Repo name is empty" && return 1
 
@@ -57,11 +54,10 @@ option:
     local name="%%name%%"
     local gen_gt_json
     gen_gt_json="$(
-        param:option2json +private -access \
+        param:option2json +name +private -access \
             has_issues=^no_issue        has_wiki=^no_wiki \
             can_comment=^no_comment     auto_init=^no_auto_init)"
 
-    # TODO: gen json put name
     for name in "$@"; do
         printf "%s" "${gen_gt_json}" | sed s/%%name%%/"${name##%/}"/g | \
             ___x_cmd_gt_http post "/v5/user/repos" - | \
@@ -119,7 +115,7 @@ option:
     local name="%%name%%"
     local gen_gt_json
     gen_gt_json="$(
-        param:option2json +private -access \
+        param:option2json +name +private -access \
             has_issues=^no_issue            has_wiki=^no_wiki \
             can_comment=^no_comment         auto_init=^no_auto_init )"
 
@@ -182,7 +178,7 @@ option:
     local outsourced="${outsourced:-false}"
     local gen_gt_json
     gen_gt_json="$(
-        param:option2json +private -access \
+        param:option2json +name +private -access \
         has_issues=^no_issue            has_wiki=^no_wiki              outsourced=^^outsourced \
         can_comment=^no_comment         auto_init=^no_auto_init)"
 
@@ -262,7 +258,6 @@ options:
         private)    private=true ;;
     esac
     [ -z "$name" ] && name=${repo##*/}
-    ___x_cmd_gt_param_init_owner_repo
     local gen_gt_json
     gen_gt_json="$(
         param:option2json +repo +private -access \
@@ -271,6 +266,7 @@ options:
             pull_requests_enabled=^no_pull_requests     lightweight_pr_enabled=^no_lightweight_pr  \
             no_online_edit=^no_online_edit)"
 
+    ___x_cmd_gt_param_init_owner_repo
     ___x_cmd_gt_http patch "/v5/repos/${owner_repo}" "$gen_gt_json" | \
     {
         ___x_cmd_git_json_query_rename url=.html_url
