@@ -140,7 +140,8 @@ ___x_cmd_yanfa_release_7z()(
 
 ___x_cmd_yanfa_release_pub(){
     param:void
-    ___x_cmd_yanfa_release_update "${CONCURRENCY:-7}" && ___x_cmd_yanfa_release_tgz "$@" && git add . && git commit -m ... && ___x_cmd_yanfa_ws_push
+    ___x_cmd_yanfa_release_update "${CONCURRENCY:-7}" && ___x_cmd_yanfa_release_tgz "$@" && git add . && git commit -m ... && ___x_cmd_yanfa_ws_push && return 0
+    return 1
 }
 
 ___x_cmd_yanfa_release(){
