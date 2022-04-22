@@ -2,8 +2,8 @@ name: Package and Publish
 on:
   # push:
   workflow_dispatch:
-  schedule:
-    - cron: '30 11 * * *'
+  # schedule:
+  #   - cron: '30 11 * * *'
 
 jobs:
   bot:
