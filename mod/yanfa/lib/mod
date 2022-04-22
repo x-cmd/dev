@@ -141,7 +141,7 @@ ___x_cmd_yanfa_mod_ls(){
     local fp="${MODLIST:-""}"
     if [ -z "$fp" ]; then
         fp="$(___x_cmd_yanfa_mod_getfp)" || {
-            printf "Cannot find file modlist. Using ls_latest\n" >&2
+            x log :yanfa "Cannot find file modlist. Using ls_latest, source is https://github.com/x-cmd/x-cmd/raw/main/modlist"
             ___x_cmd_yanfa_mod_ls_latest
             return
         }
