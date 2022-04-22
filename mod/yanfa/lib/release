@@ -17,7 +17,17 @@ ___x_cmd_yanfa_release_add()(
     # local position="${2:-"git@gitee.com/x-bash/$name.git"}"
     local position="${2:-"https://$(___x_cmd_yanfa_release_gitx)/x-bash/$name.git"}"
     local branch="${3:-main}"
-    cd "$___X_CMD_YANFA_RELEASE_TMP" && git clone --depth=1 "$position" -b "$branch"
+
+    cd "$___X_CMD_YANFA_RELEASE_TMP" || exit 1
+    for ((i=1; i<=3; i=i+1)); do
+        git clone --depth=1 "$position" -b "$branch" && exit 0
+        x log :yanfa warn "<release-add> Fail to git clone. Retry it after 5 seconds"
+        if ! sleep 5; then
+            x log :yanfa warn "<release-add> Sleep interrupted."
+        fi
+    done
+    x log :yanfa error "<release-add> Fail to git clone after 3 attemps. Mission abort."
+    exit 1
 )
 
 ___x_cmd_yanfa_release_update(){
