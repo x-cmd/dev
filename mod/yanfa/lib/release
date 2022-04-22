@@ -62,6 +62,7 @@ ___x_cmd_yanfa_release_update(){
 
     x log :yanfa "<release-cpfile> Starting"
     ___x_cmd_yanfa_release_cpfile
+    x log :yanfa "<release-cpfile> exit: $?"
 }
 
 # EndSection
