@@ -13,19 +13,23 @@ ___x_cmd_env_common_full_version(){
 }
 
 ___x_cmd_env_common_sort_version(){
-    sort -V -r
+    sort -V
 }
 
 ___x_cmd_env_common_simplify_version(){
     awk '{
-        version=$1
+        version = $1
         match(version, /[0-9]+\.[0-9+]+/)
         prefix = substr(version,RSTART+0,RLENGTH-0)
 
-        if ( uniq_map[ prefix ] == "" ){
-            print version
-            uniq_map[ prefix ] = version
+        if ( uniq_map[ prefix ] == "" && last != "" ) {
+            print last
+            uniq_map[ prefix ] = 1
         }
+        last = version
+    }
+    END{
+        if ( last != "" ) { print last ; }
     }'
 }
 # EndSection
