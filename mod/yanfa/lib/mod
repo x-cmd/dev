@@ -73,7 +73,7 @@ ___x_cmd_yanfa_mod_install()(
                 esac
                 ___x_cmd_yanfa_mod_install_tmp "$current_folder" "$line"
             done
-            x log :yanfa info "Installed $total files: sh=$sh awk=$awk json=$json txt=$txt"
+            yanfa:info "Installed $total files: sh=$sh awk=$awk json=$json txt=$txt"
         }
 
         # buggy code
