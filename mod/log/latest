@@ -60,7 +60,7 @@ ${logger_name}_log(){     ___x_cmd_log_pr $logger_name \"\$@\";   }
     for level_code in 1 2 3 4; do
         ___x_cmd_log_level_code_to_level_name "$level_code"
         code="$code
-alias ${logger_name}:$level_name='test $level_code -lt \"\${___X_CMD_LOG__${logger_name}:-2}\" || O=${logger_name} ___x_cmd_log_pr_${level_name}'
+alias ${logger_name}:$level_name='test -z \"\$___X_CMD_LOG_DEBUG\" -a $level_code -lt \"\${___X_CMD_LOG__${logger_name}:-2}\" || O=${logger_name} ___x_cmd_log_pr_${level_name}'
 "
     done
 
@@ -157,11 +157,12 @@ ___x_cmd_log_level_code_to_level_name(){
 }
 
 ___x_cmd_log_set_level(){
+    x:trace x/log
     local logger_name="${1:?Provide loggername}"
 
     # TODO: how to check the logger_name is valid?
     if ! ___x_cmd_validenvname "${logger_name}"; then
-        ___x_cmd_log_pr log error "Logger Name should be match [0-9A-Za-z_]+ "
+        ___x_cmd_log_pr x error "Logger Name should be match [0-9A-Za-z_]+ "
         return 1
     fi
 
@@ -187,7 +188,7 @@ ___x_cmd_log_set_level(){
     fi
 
     # eval "$O:debug  \"Level of logger [\$logger_name] is set to [\$level]\""
-    ___x_cmd_log_pr log info "Level of logger [$logger_name] is set to [$level_name]"
+    ___x_cmd_log_pr x info "Level of logger [$logger_name] is set to [$level_name]"
 }
 
 ___x_cmd_log_get_level_name(){
@@ -242,11 +243,11 @@ ___X_CMD_LOG_C_TIMESTAMP_END="${___X_CMD_LOG_C_WARN:-"]"}"
 
 ___x_cmd_log_pr(){
     case "${2:?Provide level}" in
-        debug)      eval "test 1 -ge \"\${___X_CMD_LOG__${1#:}:-2}\"" && { local O="${1#:}"; shift 2; L=DBG C="$___X_CMD_LOG_C_DEBUG"  ___x_cmd_log_0 "$@"; } ;;
-        info)       eval "test 2 -ge \"\${___X_CMD_LOG__${1#:}:-2}\"" && { local O="${1#:}"; shift 2; L=INF C="$___X_CMD_LOG_C_INFO"   ___x_cmd_log_0 "$@"; } ;;
-        warn)       eval "test 3 -ge \"\${___X_CMD_LOG__${1#:}:-2}\"" && { local O="${1#:}"; shift 2; L=WRN C="$___X_CMD_LOG_C_WARN"   ___x_cmd_log_0 "$@"; } ;;
-        error)      eval "test 4 -ge \"\${___X_CMD_LOG__${1#:}:-2}\"" && { local O="${1#:}"; shift 2; L=ERR C="$___X_CMD_LOG_C_ERROR"  ___x_cmd_log_0 "$@"; } ;;
-        *)          eval "test 3 -ge \"\${___X_CMD_LOG__${1#:}:-2}\"" && { local O="${1#:}"; shift 1; L=INF C="$___X_CMD_LOG_C_INFO"   ___x_cmd_log_0 "$@"; } ;;
+        debug)      eval "test -z \"\$___X_CMD_LOG_DEBUG\" -a 1 -lt \"\${___X_CMD_LOG__${1#:}:-2}\"" || { local O="${1#:}"; shift 2; L=DBG C="$___X_CMD_LOG_C_DEBUG"  ___x_cmd_log_0 "$@"; } ;;
+        info)       eval "test -z \"\$___X_CMD_LOG_DEBUG\" -a 2 -lt \"\${___X_CMD_LOG__${1#:}:-2}\"" || { local O="${1#:}"; shift 2; L=INF C="$___X_CMD_LOG_C_INFO"   ___x_cmd_log_0 "$@"; } ;;
+        warn)       eval "test -z \"\$___X_CMD_LOG_DEBUG\" -a 3 -lt \"\${___X_CMD_LOG__${1#:}:-2}\"" || { local O="${1#:}"; shift 2; L=WRN C="$___X_CMD_LOG_C_WARN"   ___x_cmd_log_0 "$@"; } ;;
+        error)      eval "test -z \"\$___X_CMD_LOG_DEBUG\" -a 4 -lt \"\${___X_CMD_LOG__${1#:}:-2}\"" || { local O="${1#:}"; shift 2; L=ERR C="$___X_CMD_LOG_C_ERROR"  ___x_cmd_log_0 "$@"; } ;;
+        *)          eval "test -z \"\$___X_CMD_LOG_DEBUG\" -a 3 -lt \"\${___X_CMD_LOG__${1#:}:-2}\"" || { local O="${1#:}"; shift 1; L=INF C="$___X_CMD_LOG_C_INFO"   ___x_cmd_log_0 "$@"; } ;;
     esac
 }
 
