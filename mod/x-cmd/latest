@@ -3,7 +3,7 @@
 
 ___x_cmd_log init x
 
-xrc:mod:lib x-cmd glob con alias args rmrf util lang ws exe tomod
+xrc:mod:lib x-cmd trace glob con alias args rmrf util lang ws exe tomod
 
 # Section : x main function
 

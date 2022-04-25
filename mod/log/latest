@@ -190,6 +190,12 @@ ___x_cmd_log_set_level(){
     ___x_cmd_log_pr log info "Level of logger [$logger_name] is set to [$level_name]"
 }
 
+___x_cmd_log_get_level_name(){
+    # local level_name
+    eval ___x_cmd_log_level_code_to_level_name "\$___X_CMD_LOG__${1:?Provide logger name}"
+    # printf "%s" "$level_name"
+}
+
 ___x_cmd_log_show_level(){
     local level_name
     while [ $# -gt 0 ]; do
@@ -264,6 +270,9 @@ ___x_cmd_log_0(){
     local IFS=" "
     local timestamp
 
+    # ${___X_CMD_TRACE_LINE_LOCAL+<${___X_CMD_TRACE_LINE_LOCAL#"$O"}>
+    local track="/${___X_CMD_TRACE_LINE_LOCAL}"
+    track="${track+<${track#"/$O/"}> }"
     if [ -n "$___X_CMD_LOG_C_TF" ] || [ -t 2 ]; then
         if [ -n "$___X_CMD_LOG__TIMESTAMP_FORMAT" ]; then
             timestamp="$(date "${___X_CMD_LOG__TIMESTAMP_FORMAT}")"
@@ -272,17 +281,17 @@ ___x_cmd_log_0(){
 
         if [ $# -gt 0 ]; then
             [ "$L" != "INF" ] || local ___X_CMD_LOG_C_MSG="\\033[1m"
-            printf "${timestamp}${C}[%s] <%s>: \033[0m${___X_CMD_LOG_C_MSG:-"$C"}%s\033[0m\n" "$L" "$O" "$*"
+            printf "${timestamp}${C}[%s] <%s>: $track\033[0m${___X_CMD_LOG_C_MSG:-"$C"}%s\033[0m\n" "$L" "$O" "$*"
         else
-            printf "${timestamp}${C}[%s] <%s>:" "$L" "$O"
+            printf "${timestamp}${C}[%s] <%s>: $track" "$L" "$O"
             cat | awk 'NR==1{ print($0) }; NR>=2{ print("> " $0); }; END{ printf("%s", "\033[0m"); }'
         fi
     else
         [ -z "$___X_CMD_LOG__TIMESTAMP_FORMAT" ] || timestamp="$(date "${___X_CMD_LOG__TIMESTAMP_FORMAT}") "
         if [ $# -gt 0 ]; then
-            printf "${timestamp}[%s] <%s>: %s\n" "$L" "$O" "$*"
+            printf "${timestamp}[%s] <%s>: $track%s\n" "$L" "$O" "$*"
         else
-            printf "${timestamp}[%s] <%s>:" "$L" "$O"
+            printf "${timestamp}[%s] <%s>: $track" "$L" "$O"
             cat | awk 'NR==1{ print($0) }; NR>=2{ print("> " $0); }; }'
         fi
     fi >&2

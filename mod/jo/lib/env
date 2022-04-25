@@ -35,8 +35,8 @@ ____x_cmd_jo_env_main(){
         eval "$(____x_cmd_jo_query_main "$pat" "$argstr")"
     else
         local ____x_cmd_jo_env_main_line_tmpvar___19491001
-        ____x_cmd_jo_query_main "$pat" "$argstr" | \
-        while ___x_cmd_readml ____x_cmd_jo_env_main_line_tmpvar___19491001; do
+        ____x_cmd_jo_query_main "$pat" "$argstr" | ___x_cmd_writeml |\
+        while  ___x_cmd_readml ____x_cmd_jo_env_main_line_tmpvar___19491001; do
             eval "$____x_cmd_jo_env_main_line_tmpvar___19491001"
             ___x_cmd_evex "$@"
         done
