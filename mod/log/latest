@@ -228,7 +228,7 @@ ___x_cmd_log_help(){
 
 # Section: printer
 # TODO: To move xrc_log
-___X_CMD_LOG_C_TF=
+___X_CMD_LOG_C_TF="${___X_CMD_LOG_C_TF:-""}"
 
 ___X_CMD_LOG__TIMESTAMP_FORMAT=      # "+%H:%M:%S"      # Enable Timestamp.
 
