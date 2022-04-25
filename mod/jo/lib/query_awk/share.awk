@@ -10,6 +10,7 @@ function pattern_arr_join( sep, arrl, arr,     i, _ ){
 
 function pattern_split( selector, arr,     e, l ){
     # print "selector:" selector
+    if ( selector ~ /^\.$/) selector = "1"
     if ( selector ~ /^\./ ) selector = "1" selector
     gsub(/\\\\/, "\002", selector)
     gsub(/\\\./, "\003", selector)
@@ -19,7 +20,7 @@ function pattern_split( selector, arr,     e, l ){
         gsub("\002", "\\\\", e)
         gsub("\003", ".", e)
 
-        arr[j] = e    # quote
+        arr[j] =  e     # quote
     }
 
     return l
