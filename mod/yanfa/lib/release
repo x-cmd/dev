@@ -2,6 +2,7 @@
 
 # Section: main
 ___x_cmd_yanfa_release(){
+    x:trace yanfa/relesae "$@"
 
     if [ -f "$(x wsroot)/.x-cmd/$1" ]; then
         x _ws "$@"
@@ -52,23 +53,24 @@ A
 
 # Section: pub
 ___x_cmd_yanfa_release_pub()(
+    x:trace yanfa/relesae/pub
     param:void
     # set -o errexit
     if {
-        yanfa:info "<release-pub> update"
+        yanfa:info "update"
         ___x_cmd_yanfa_release_update "${CONCURRENCY:-7}"
     } && {
-        yanfa:info "<release-pub> create tgz"
+        yanfa:info "create tgz"
         ___x_cmd_yanfa_release_tgz "$@"
-        yanfa:info "<release-pub> create tgz exit: $?"
+        yanfa:info "create tgz exit: $?"
     } && {
-        yanfa:info "<release-pub> Add && Commit && Push"
+        yanfa:info "Add && Commit && Push"
         git add . && git commit -m ... && ___x_cmd_yanfa_ws_push
-        yanfa:info "<release-pub> Add && Commit && Push exit: $?"
+        yanfa:info "Add && Commit && Push exit: $?"
     }; then
-        yanfa:info "<release-pub> OK"
+        yanfa:info "OK"
     else
-        yanfa:info "<release-pub> Fail"
+        yanfa:info "Fail"
         return 1
     fi
 )
