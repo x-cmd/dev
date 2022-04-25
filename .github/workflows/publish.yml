@@ -11,7 +11,6 @@ jobs:
       git_user: agent-zero
       git_email: 0@x-cmd.com
       ___X_CMD_CODESORUCE_REPO: dev
-      ___X_CMD_LOG_C_TF: 1
       CONCURRENCY: 10
     steps:
       - name: main
