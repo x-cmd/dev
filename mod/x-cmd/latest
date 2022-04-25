@@ -49,10 +49,10 @@ ___x_cmd_main(){
         arg1)                                   shift;  ___x_cmd_args 1 "$@"    ;;
         marg1)                                  shift;  ___x_cmd_margs 1 "$@"   ;;
 
-        rl)                                     shift;  ___x_cmd_rl "$@"   ;;
+        readl|rl)                               shift;  ___x_cmd_readl "$@"   ;;
         readeval|reval)                         shift;  ___x_cmd_reval "$@"   ;;
-        rml)                                    shift;  ___x_cmd_rml "$@"   ;;
-        wml)                                    shift;  ___x_cmd_wml "$@"   ;;
+        readml)                                 shift;  ___x_cmd_readml "$@"   ;;
+        writeml)                                shift;  ___x_cmd_writeml "$@"   ;;
 
         js|node)                                shift;  ___x_cmd_node "$@" ;;
         python|py)                              shift;  ___x_cmd_python "$@" ;;

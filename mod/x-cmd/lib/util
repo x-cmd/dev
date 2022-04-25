@@ -60,7 +60,7 @@ ___x_cmd_reval(){
 
 
 # f(){ seq "${1:-1000}" | while read -r aaa; do  :; done   }; time f; 1ms = 100 read
-___x_cmd_rl(){
+___x_cmd_readl(){
     local code="read -r ${1:?At least provide one argument}"; shift
     while [ "$#" -gt 0 ]; do
         case "$1" in
@@ -83,10 +83,10 @@ ___x_cmd_rl(){
 }
 
 
-# testcase: . util; ___x_cmd_wml "$t" cde  | { ___x_cmd_rml c d; echo "|$c|"; echo "$d"; }
+# testcase: . util; ___x_cmd_writeml "$t" cde  | { ___x_cmd_readml c d; echo "|$c|"; echo "$d"; }
 
 ___X_CMD_MULTIPLELINE_SEP="${___X_CMD_UNSEENCHAR_003}${___X_CMD_UNSEENCHAR_002}${___X_CMD_UNSEENCHAR_005}"
-___x_cmd_rml___readone(){
+___x_cmd_readml___readone(){
     local res
     local line
     while :; do
@@ -103,15 +103,15 @@ $line"
     done
 }
 
-___x_cmd_rml(){
-    local code="___x_cmd_rml___readone ${1:?At least provide one argument}"; shift
+___x_cmd_readml(){
+    local code="___x_cmd_readml___readone ${1:?At least provide one argument}"; shift
     while [ "$#" -gt 0 ]; do
         case "$1" in
             --)
                 shift
                 break ;;
             *)
-                code="$code && ___x_cmd_rml___readone $1"
+                code="$code && ___x_cmd_readml___readone $1"
                 shift ;;
         esac
     done
@@ -125,7 +125,7 @@ ___x_cmd_rml(){
     fi
 }
 
-___x_cmd_wml(){
+___x_cmd_writeml(){
     if [ "$#" -eq 0 ]; then
         cat
         printf "\n%s\n" "$___X_CMD_MULTIPLELINE_SEP"
