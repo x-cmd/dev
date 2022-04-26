@@ -1,5 +1,6 @@
 # shellcheck shell=sh
 
+mkdir -p "$___X_CMD_ROOT/.boot"
 x:info "[x-cmd]: Coping setup.sh to $___X_CMD_ROOT/.boot/boot"
 cp "$___X_CMD_ROOT_MOD/boot/lib/setup.sh" "$___X_CMD_ROOT/.boot/boot" && \
 (

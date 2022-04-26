@@ -2,7 +2,6 @@
 # Section: Global data
 BEGIN {
     KSEP = "\001"
-    if (COL_MAX_SIZE == "")       COL_MAX_SIZE = 30
 
     ctrl_help_item_put("ARROW UP/DOWN/LEFT/ROW", "to move focus")
     ctrl_help_item_put("n/p", "for next/previous page")
@@ -54,11 +53,7 @@ function view_header(       col_i, _col_start, data, _tmp){
     _col_start = view_body_cal_beginning_col()
     data = th( TH_TABLE_HEADER_ITEM_NORMAL, "     ")
     for (col_i=_col_start; col_i<=data_col_num; col_i++) {
-        if (col_max[ col_i ] > COL_MAX_SIZE) {
-            _tmp = sprintf( "  %s ", str_pad_right( data_header_arr[ col_i ], COL_MAX_SIZE + 6, data_header_arr_wlen[ 1 KSEP col_i ] ) )
-        } else {
-            _tmp = sprintf( "  %s ", str_pad_right( data_header_arr[ col_i ], col_max[ col_i ], data_header_arr_wlen[ 1 KSEP col_i ] ) )
-        }
+        _tmp = sprintf( "  %s ", str_pad_right( data_header_arr[ col_i ], col_max[ col_i ], data_header_arr_wlen[ 1 KSEP col_i ] ) )
         if ( ctrl_rstate_get( CURRENT_COLUMN ) == col_i ) _tmp = th(TH_TABLE_HEADER_ITEM_FOCUSED, _tmp)
         else _tmp = th( TH_TABLE_HEADER_ITEM_NORMAL,  _tmp )
         data = data _tmp
@@ -71,7 +66,7 @@ function view_body_cal_beginning_col(           _col, _col_size, i, _len){
     _col = ctrl_rstate_get( CURRENT_COLUMN )
     _col_size = max_col_size - 5
     for (i=_col; i>=1; --i) {
-        _len = col_max[ i ] + 2
+        _len = col_max[ i ] + 3
         if (_col_size < _len) return i+1
         _col_size -= _len
     }
@@ -112,15 +107,7 @@ function update_view_print_cell(model_row_i, data_row_i, col_i,       h, _size, 
     }
 
     cord = data_row_i KSEP col_i
-    if (col_max[ col_i ] <= COL_MAX_SIZE) {
-        _data =_data sprintf( "│ %s ", str_pad_right( data[ cord ], col_max[ col_i ], data_wlen[ cord ] ) )
-    } else {
-        if (data_wlen[ cord ] > COL_MAX_SIZE){
-            _data =_data sprintf( "│ %s ", str_pad_right( substr(data[ cord ], 1, COL_MAX_SIZE) "...", COL_MAX_SIZE + 3, COL_MAX_SIZE + 3) )
-        } else {
-            _data =_data sprintf( "│ %s ", str_pad_right( data[ cord ], COL_MAX_SIZE + 3, data_wlen[ cord ] ) )
-        }
-    }
+    _data =_data sprintf( "│ %s ", str_pad_right( data[ cord ], col_max[ col_i ], data_wlen[ cord ] ) )
     return th(TH_TABLE_LINE_ITEM_FOCUSED, _data )
 }
 # EndSection
