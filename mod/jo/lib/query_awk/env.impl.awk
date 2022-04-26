@@ -29,11 +29,15 @@ function handle_jsontext( str ){
 function handle_output(idx, value) {
     if ( idx == 1) {
         count += 1
-        if (count > 1)  print "\n"
+        if (count > 1) {
+            if ( ___X_CMD_JO_ENV_MULTIPLELINE_SEP != "" ) printf "\n" ___X_CMD_JO_ENV_MULTIPLELINE_SEP "\n"
+            else printf "\n"
+        }
     }
-    print varname[ idx ] "=" handle_jsontext(value) ";"
+    printf varname[ idx ] "=" handle_jsontext(value) ";"
 }
 
 END{
-    printf "\n"
+    if ( ___X_CMD_JO_ENV_MULTIPLELINE_SEP != "" ) printf "\n" ___X_CMD_JO_ENV_MULTIPLELINE_SEP "\n"
+    else printf "\n"
 }
