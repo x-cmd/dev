@@ -5,7 +5,7 @@ INPUT==1{
         if ( jiter_regexarr_parse( obj, _item_arr[_i], patarrl, patarr ) == false )    continue
         for (i=1; i<=argvl; ++i) {
             if ( obj[ argv[i] ] != "" ) {
-                handle_output( i, jstr1(obj, argv[i]) )
+                handle_output( jstr1(obj, argv[i]), i, argvl )
             }
         }
         delete obj

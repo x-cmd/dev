@@ -130,8 +130,8 @@ ___ui_table_out_func(){
 # EndSection
 
 # Section: json to table
-CODE="$(xrc cat awk/lib/default.awk awk/lib/json.awk awk/lib/jiter.awk )"
 ___x_cmd_ui_json2table(){
+    local CODE="$(xrc cat awk/lib/default.awk awk/lib/json.awk awk/lib/jiter.awk )"
     local args=""
     local IFS
     IFS=$(printf "\003")
