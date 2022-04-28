@@ -16,7 +16,7 @@ ___x_cmd_main_otherwise(){
         return $?
     fi
 
-    if command -v "___x_cmd_$subcmd" 2>/dev/null; then
+    if command -v "___x_cmd_$subcmd" 2>/dev/null 1>&2; then
         "___x_cmd_$subcmd" "$@"
         return
     fi
