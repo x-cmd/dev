@@ -1,3 +1,6 @@
+BEGIN{
+    L = "\003"
+}
 
 function jqparse_str( obj, kp, token_str, sep,     _arr, _arrl ) {
     _arrl = json_split2tokenarr( _arr, token_str )
@@ -14,14 +17,22 @@ function jqparse(obj, kp,      token_arrl, token_arr,                           
     obj[ kp L ] = l
 }
 
+function jqparse_dict(obj, kp,     token_arrl, token_arr,  idx ){
+    return ___jqparse_dict( obj, kp, token_arrl, token_arr, idx || 1 )
+}
+
+function jqparse_list(obj, kp,     token_arrl, token_arr,  idx ){
+    return ___jqparse_list( obj, kp, token_arrl, token_arr, idx || 1 )
+}
+
 function ___jqparse_value(obj, kp,     token_arrl, token_arr,  idx,                     t ){
     t = token_arr[ idx ]
-    if (t == "[")       return jqparse_list( obj, kp, token_arrl, token_arr, idx )
-    if (t == "{")       return jqparse_dict( obj, kp, token_arrl, token_arr, idx )
+    if (t == "[")       return ___jqparse_list( obj, kp, token_arrl, token_arr, idx )
+    if (t == "{")       return ___jqparse_dict( obj, kp, token_arrl, token_arr, idx )
     obj[ kp ] = t;      return idx + 1
 }
 
-function jqparse_list(obj, kp,     token_arrl, token_arr,  idx,                 l ){
+function ___jqparse_list(obj, kp,     token_arrl, token_arr,  idx,                 l ){
     obj[ kp ] = "["
     ++ idx
     while ( idx <= token_arrl ) {
@@ -36,7 +47,7 @@ function jqparse_list(obj, kp,     token_arrl, token_arr,  idx,                 
     # return 11111111
 }
 
-function jqparse_dict(obj, kp,     token_arrl, token_arr,  idx,                 l, t ){
+function ___jqparse_dict(obj, kp,     token_arrl, token_arr,  idx,                 l, t ){
     obj[ kp ] = "{"
     ++ idx
     while ( idx <= token_arrl ) {
