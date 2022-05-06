@@ -7,10 +7,10 @@ ___x_cmd_case_(){
     local arg
     for arg in "$@"; do
         ___X_CMD_CASE_RESULT="${arg#$val:}"
-        [ "$___X_CMD_CASE_RESULT" == "$arg" ] || return 0
+        [ "$___X_CMD_CASE_RESULT" = "$arg" ] || return 0
 
         ___X_CMD_CASE_RESULT="${arg#$val=}"
-        [ "$___X_CMD_CASE_RESULT" == "$arg" ] || { ___X_CMD_CASE_RESULT="$(eval "$___X_CMD_CASE_RESULT")"; return 0; }
+        [ "$___X_CMD_CASE_RESULT" = "$arg" ] || { ___X_CMD_CASE_RESULT="$(eval "$___X_CMD_CASE_RESULT")"; return 0; }
     done
     return 1
 }
