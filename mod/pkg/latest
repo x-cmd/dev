@@ -1,16 +1,16 @@
 # Author:       Li Junhao           l@x-cmd.com
-# shellcheck    shell=sh            disable=SC3043 # xrc
+# shellcheck    shell=sh            disable=SC3043      # xrc
 
 x log init pkg
 
 xrc:mod pkg/lib/sb
 
-xrc:mod:lib pkg     util
+xrc:mod:lib pkg     util main
 
 ___x_cmd_pkg(){
     local op="$1"
     case "$op" in
-        ls)             shift; ___x_cmd_pkg_ls "$@" ;;
+        ls)             shift; ___x_cmd_pkg_ls "$@" ;;      # add filter, remote, installed, ...
         update)         shift; ___x_cmd_pkg_update "$@" ;;
 
         version)        shift; ___x_cmd_pkg_version "$@" ;;

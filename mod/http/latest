@@ -14,7 +14,7 @@ ___x_cmd_http() {
     param:subcmd ___x_cmd_http                                              \
         make            "make a new client"                                 \
         browse          "open browser"                                      \
-        dict            ""                                                  \
+        dict            "http dict"                                         \
         download        "download file"                                     \
         header          "set the default header"                            \
         head            "launch a head request"                             \
@@ -25,11 +25,11 @@ ___x_cmd_http() {
         delete          "launch a delete request"                           \
         body            "set the default attribute in body"                 \
         qs              "set the default query string parameter"            \
-        response        "get the response information of latest request"    \
         cd              "enter into the subpath relative to current path"
     param:subcmd:try
     param:run
 
+    # response        "get the response information of latest request"    \
     # graphql|gq      "launch a graphql request"                          \
     ___x_cmd_http _param_help_doc
     return 1
