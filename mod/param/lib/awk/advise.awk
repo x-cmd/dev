@@ -72,7 +72,7 @@ function generate_advise_json(      indent, indent_str,
 
     ADVISE_JSON = ADVISE_JSON generate_advise_json_subcmd( indent, indent_str, indent_str2, indent_str4 )
 
-    if (ADVISE_JSON != "{")     ADVISE_JSON = substr(ADVISE_JSON, 1, length(ADVISE_JSON)-1)  # remove extra comma
+    if (ADVISE_JSON != "\nprintf \"%s\" \"{\"")     ADVISE_JSON = substr(ADVISE_JSON, 1, length(ADVISE_JSON)-1)  # remove extra comma
 
     ADVISE_JSON = ADVISE_JSON "\n" printf_intermediate_code( "\"\n" indent_str "}\""  )
     printf( "(set -o errexit;%s)", ADVISE_JSON )
