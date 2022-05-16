@@ -45,12 +45,11 @@ BEGIN {
 
 # Section: Step 2 Utils: Parse param DSL
 BEGIN {
-    final_rest_argv[ L ]    = 0
-    HAS_PATH                = false
-    SPECIAL_OPTION_ID       = "special_option_id"
+    final_rest_argv[ L ] = 0
+    HAS_PATH   = false
 }
 
-function handle_option_id(option_id, special_option_id,            _arr, _arr_len, _arg_name, _index){
+function handle_option_id(option_id,            _arr, _arr_len, _arg_name, _index){
 
     # Add option_id to option_id_list
 
@@ -69,11 +68,14 @@ function handle_option_id(option_id, special_option_id,            _arr, _arr_le
             continue
         }
 
+        if (_arg_name !~ /^-/) {
+            panic_param_define_error("Unexpected option name: \n" option_id)
+        }
+
         if ( _index == 1 )  option_name_set( option_id, _arg_name )
         option_alias_2_option_id[ _arg_name ] = option_id
         # debug( "option_alias_2_option_id\t" _arg_name "!\t!" option_id "|" )
     }
-    if( special_option_id != "" )  option_alias_2_option_id[ option_id SPECIAL_OPTION_ID ] = special_option_id
 }
 
 BEGIN {
@@ -179,20 +181,17 @@ function parse_param_dsl_for_all_positional_argument(line,
     }
 }
 
-function parse_param_dsl_for_named_options( line_arr, line, i,            len, nextline, option_id, _arg_tokenarr, j, special_option_id, idx ){
+function parse_param_dsl_for_named_options( line_arr, line, i,            len, nextline, option_id, _arg_tokenarr, j ){
     # HANDLE:   option like --user|-u, or --verbose
+    if (line !~ /^-/)   panic_param_define_error( "Expect option starting with - or -- :\n" line )
+
     len = option_arr[ L ] + 1
     option_arr[ L ] = len
     option_arr[ len ] = line
 
     tokenize_argument( line, _arg_tokenarr )
     option_id = _arg_tokenarr[1]
-    if( option_id !~ /^-/ ){
-        idx = index(option_id, "|")
-        special_option_id = substr( option_id, 1, idx - 1 )
-        option_id = substr( option_id, idx + 1 )
-    }
-    handle_option_id( option_id, special_option_id )
+    handle_option_id( option_id )
     option_desc_set( option_id, _arg_tokenarr[2] )
 
     j = 0
@@ -267,7 +266,7 @@ function check_required_option_ready(       i, j, option, option_argc, option_id
     for ( i=1; i<=namedopt_len(); ++i ) {
         option_id       = namedopt_get( i )
         option_m        = option_multarg_get( option_id )
-        option_name     = ( option_alias_2_option_id[  option_id SPECIAL_OPTION_ID ] != "" ? option_alias_2_option_id[  option_id SPECIAL_OPTION_ID ] : option_name_get_without_hyphen( option_id ) )
+        option_name     = option_name_get_without_hyphen( option_id )
 
         # if assign, continue
         if ( option_arr_assigned[ option_id ] == true ) {
