@@ -65,6 +65,7 @@ ___x_cmd_pkg___all_info(){
 
     pkg_name="$(___x_cmd_pkg_locate "$pkg_name")" || return
 
+    pkg:debug "pkg_name: $pkg_name version: $version osarch: $osarch ___X_CMD_PKG_RAWPATH: $___X_CMD_PKG_RAWPATH ___X_CMD_WHICHNET: $___X_CMD_WHICHNET"
     printf "%s\n%s\n%s\n%s\n%s\n" "$pkg_name" "$version" "$osarch" "$___X_CMD_PKG_RAWPATH" "$___X_CMD_WHICHNET"
 
     cat "$___X_CMD_PKG_RAWPATH/$pkg_name/meta.tt.json"
