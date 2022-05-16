@@ -11,7 +11,7 @@ ___X_CMD_HUB_SERVICE_URL="https://hub.x-cmd.com"
 ___X_CMD_HUB_WECHAT_AUTHORIZE_URL_PREFIX="https://open.weixin.qq.com/connect/oauth2/authorize?appid=wx9564dec6fe13a20a&redirect_uri=https%3A%2F%2Fhub.x-cmd.com%2F"
 # ___X_CMD_HUB_SERVICE_URL="http://127.0.0.1:3000"
 
-___x_cmd_source_inner_lib hub file account
+xrc:mod:lib hub  file account
 
 ___x_cmd_hub(){
     param:dsl <<A

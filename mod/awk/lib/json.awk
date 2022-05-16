@@ -497,7 +497,7 @@ function ___json_stringify_compact_dict(arr, keypath,     _klist, _l, _i, _key, 
         # _val = arr[ keypath S _key ]
         _ret = _ret "," _key ":" ___json_stringify_compact_value( arr, keypath S _key )
     }
-    _ret = substr(_ret, 3)
+    _ret = substr(_ret, 2)
     return "{" _ret "}"
 }
 

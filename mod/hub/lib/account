@@ -104,4 +104,4 @@ A
 
 # EndSection
 
-___x_cmd_source_inner_lib hub account_login account_registration
+xrc:mod:lib hub account_login account_registration

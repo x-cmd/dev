@@ -3,11 +3,10 @@
 ___x_cmd_gh_action(){
     param:subcmd ___x_cmd_gh_action \
         workflows   "github actions Workflows manage"  \
-        runners     "github actions Self hosted Runners"  \
-        secrets     "github actions Secrets manage"
+        run         "github actions Self hosted Runners"
     param:subcmd:try
     param:run
+
     ___x_cmd_gh_action _param_help_doc
     return 1
 }
-

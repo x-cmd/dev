@@ -13,15 +13,15 @@ ___x_cmd_http_download_request(){
 
     local header_filepath
     header_filepath="$(___x_cmd_http_resp header_filepath)"
-
+    mkdir -p "${2%/*}"
     http_log debug "http request data:$(______x_cmd_http_qs_dump curl)"
-    http_log debug curl -LO -D "$header_filepath" -X "$X" "$(______x_cmd_http_qs_dump curl)" "$(___x_cmd_http_header_dump curl)" "$paths" "$2"
-    eval curl -LO -D "$header_filepath" -X "$X" "$(______x_cmd_http_qs_dump curl)" "$(___x_cmd_http_header_dump curl)" "$paths" "$2" 2>/dev/null
+    http_log debug curl -Lo -D "$header_filepath" -X "$X" "$(______x_cmd_http_qs_dump curl)" "$(___x_cmd_http_header_dump curl)" --output "$2" "$paths"
+    eval curl -Lo -D "$header_filepath" -X "$X" --output "$2"  "$(______x_cmd_http_qs_dump curl)" "$(___x_cmd_http_header_dump curl)" "$paths" 2>/dev/null
     local a b c
     read -r a b c <<A
     "$(cat "$header_filepath")"
 A
-    if [ -n "$b" ] && [ "$b" -eq 302 ]; then
+    if [ -n "$b" ] && [ "$b" -ge 200 ] && [ "$b" -le 303 ]; then
         return 0
     fi
 

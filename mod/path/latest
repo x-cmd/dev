@@ -3,55 +3,22 @@
 
 ___x_cmd_path(){
     case "$1" in
-        shift|unshift|push|pop|ls|uniq|rm|up_or_unshift|down_or_push|add_existed_folder)
+        shift|unshift|push|pop|ls|uniq|rm|up_or_unshift|down_or_push|add_existed_folder|_x_cmd_advise_json)
             local op="$1"; shift; "___x_cmd_path_$op" "$@" ;;
-        "")
-            ___x_cmd_path_ls "$@"
+        "") ___x_cmd_path_ls "$@" ;;
+        *)  printf "%s" "Can't support arg: $1" >&2 ;;
     esac
 }
 
-# Section: ls
-___x_cmd_path_lsapp(){
-    xrc:mod path/lib/lsapp && ___x_cmd_path_lsapp "$@"
-}
+# Section: basic
 
-___x_cmd_path_ls(){
-    if [ -t 1 ]; then
-        ___x_cmd_path_lsapp "$@"
-    else
-        printf "%s\n" "$PATH" | tr ':' '\n'
-    fi
-}
-# EndSection
-
-# Section: op: shift/unshift, push/pop, uniq
-___x_cmd_path_shift(){
-    PATH="${PATH#*:}"
-}
-
-___x_cmd_path_unshift(){
-    [ "$#" -eq 0 ] || return 1
-    local IFS=":"
-
-    if [ -z "$PATH" ]; then
-        PATH="$*"
-    else
-        PATH="$*:${PATH}"
-    fi
-}
-
-___x_cmd_path_push(){
-    [ "$#" -eq 0 ] || return 1
-    local IFS=":"
-    if [ -z "$PATH" ]; then
-        PATH="$*"
-    else
-        PATH="${PATH}:$*"
-    fi
-}
-
-___x_cmd_path_pop(){
-    PATH="${PATH%:*}"
+if [ -z "$ZSH_VERSION" ]; then
+___x_cmd_path_ls_native(){
+    local IFS=:
+    local p
+    for p in $PATH; do
+        printf "%s\n" "$p"
+    done
 }
 
 ___x_cmd_path_uniq(){
@@ -64,6 +31,74 @@ ___x_cmd_path_uniq(){
     PATH="${newpath#:}"
     PATH="${PATH%:}"
 }
+
+else
+___x_cmd_path_ls_native(){
+    printf "%s\n" "$PATH" | tr ':' '\n'
+}
+
+___x_cmd_path_uniq(){
+    local IFS=:
+    local newpath=:
+    local path_tmp="$PATH"
+    local p
+    while :; do
+        p="${path_tmp%%:*}"
+        [ "$p" != "$path_tmp" ] || break
+        path_tmp="${path_tmp#*:}"
+        [ "$newpath" != "${newpath#:$p:}" ] || newpath="${newpath}${p}:"
+    done
+    PATH="${newpath#:}"
+    PATH="${PATH%:}"
+}
+
+fi
+# EndSection
+
+# Section: ls
+___x_cmd_path_lsapp(){
+    xrc:mod path/lib/lsapp && ___x_cmd_path_lsapp "$@"
+}
+
+___x_cmd_path_ls(){
+    if [ -t 1 ]; then
+        ___x_cmd_path_lsapp "$@"
+    else
+        ___x_cmd_path_ls_native
+    fi
+}
+# EndSection
+
+# Section: op: shift/unshift, push/pop, uniq
+___x_cmd_path_shift(){
+    PATH="${PATH#*:}"
+}
+
+___x_cmd_path_unshift(){
+    [ "$#" -ne 0 ] || return 1
+    local IFS=":"
+    if [ -z "$PATH" ]; then
+        PATH="$*"
+    else
+        PATH="$*:${PATH}"
+    fi
+
+}
+
+___x_cmd_path_push(){
+    [ "$#" -ne 0 ] || return 1
+    local IFS=":"
+    if [ -z "$PATH" ]; then
+        PATH="$*"
+    else
+        PATH="${PATH}:$*"
+    fi
+}
+
+___x_cmd_path_pop(){
+    PATH="${PATH%:*}"
+}
+
 # EndSection
 
 # Section: rm and op
@@ -89,6 +124,7 @@ ___x_cmd_path_down_or_push(){
     ___x_cmd_path_rm_ "$@"
     _1="${_1}${dir}"
     PATH="${_1#:}"
+    PATH="${PATH%:}"
 }
 # EndSection
 
@@ -96,6 +132,7 @@ ___x_cmd_path_down_or_push(){
 ___x_cmd_path_up_or_unshift(){
     local _1
     ___x_cmd_path_rm_ "$@"
+    _1=${_1#:}
     _1="${dir}${_1}"
     PATH="${_1%:}"
 }
@@ -110,6 +147,11 @@ ___x_cmd_path_add_existed_folder(){
 
     ___x_cmd_path_up_or_unshift "$@"
 }
+
+___x_cmd_path__x_cmd_advise_json(){
+    cat "$___X_CMD_ROOT_MOD/path/lib/path.advise.json"
+}
+
 # EndSection
 
 xrc setmain ___x_cmd_path

@@ -77,7 +77,7 @@ ___x_cmd_gh_repo_pr_create() {
 type:
     bool = true false
 options:
-    --repo                  "Provide owner name and repo name.(default:the current user repo)"  <>:RepName
+    --repo                  "Provide owner name and repo name.(default:the current user repo)"  <>:RepoName
     --title                 "pr title"                                                          <>
     --head                  "source branch. Format: [username:]<branch>"                        <>:name
     --base                  "target branch. Format: [username:]<branch>"                        <>:name
@@ -104,7 +104,7 @@ type:
     state = closed
 options:
     #1|--pr                 "pr number"                                 <>:number
-    --repo                  "Provide owner name and repo name.(default:the current user repo)"  <>:RepName
+    --repo                  "Provide owner name and repo name.(default:the current user repo)"  <>:RepoName
     --title                 "pr title"                                  <>
     --body                  "pull request content"                      <>=""
     --milestone_number      "milestone number"                          <>:numbers=""
@@ -129,7 +129,7 @@ type:
     merge = squash  merge
 options:
     #1|--pr                 "pr id"                                     <>
-    --repo                  "Provide owner name and repo name.(default:the current user repo)"  <>:RepName
+    --repo                  "Provide owner name and repo name.(default:the current user repo)"  <>:RepoName
     --merge_method          "merge method(squash,merge)"                <>:merge="merge"
     --prune_source_branch   "prune source branch"                       <>:bool="false"
     --title                 "title"                                     <>=""
