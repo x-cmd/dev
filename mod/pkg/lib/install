@@ -3,7 +3,7 @@ ___x_cmd_pkg_install(){
     ___x_cmd_pkg_download "$@" || return
     local script_path
     if script_path="$(___x_cmd_pkg___get_script_path "$@" "" install)"; then
-        . "$___X_CMD_PKG_RAWPATH$script_path"
+        . "$script_path"
     else
         ___x_cmd_pkg_install___unzip "$@" || return
     fi
