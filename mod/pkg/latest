@@ -8,6 +8,7 @@ ___x_cmd_pkg(){
         update)         shift; ___x_cmd_pkg_update "$@" ;;
 
         version)        shift; ___x_cmd_pkg_version "$@" ;;
+        default_version) shift; ___x_cmd_pkg___default_version "$@" ;;
         ll)             shift; ___x_cmd_pkg_info "$@" ;;
 
         # x pkg which node=v12
@@ -16,15 +17,18 @@ ___x_cmd_pkg(){
         # x pkg download node=v12
         download)       shift; ___x_cmd_pkg_download "$@" ;;
         install)        shift; ___x_cmd_pkg_install "$@" ;;
+        uninstall)      shift; ___x_cmd_pkg_uninstall "$@" ;;
         reinstall)      shift; ___x_cmd_pkg_reinstall "$@" ;;
 
-        # x pkg setup node=v12
-        setup)          shift; ___x_cmd_pkg_setup "$@" ;;
+        # x pkg activate/deactivate  node=v12
+        activate)       shift; ___x_cmd_pkg_activate "$@" ;;
+        deactivate)     shift; ___x_cmd_pkg_deactivate "$@" ;;
 
         # x pkg exec python=
         *=)             ___x_cmd_pkg_exec "$@" ;;
 
         xbin)           shift; ___x_cmd_pkg_xbin "$@" ;;
+        _x_cmd_advise_json) printf "{}";;
 
         *)              return 1
     esac
@@ -34,7 +38,7 @@ ___x_cmd_pkg(){
 x log init pkg
 
 xrc:mod pkg/lib/sb
-xrc:mod:lib pkg     which util ls ls_installed download install xbin
+xrc:mod:lib pkg     which util ls ls_installed download install xbin activate deactivate
 
 ___X_CMD_PKG_RAWPATH="$___X_CMD_ROOT_TMP/pkg/raw"
 ___X_CMD_PKG_DOWNLOAD_PATH="$___X_CMD_ROOT_TMP/pkg/download"
@@ -63,3 +67,4 @@ ___x_cmd_pkg_version(){
         -f "awk/util.awk" \
         -f "awk/pkg.lsversion.awk"
 }
+xrc setmain ___x_cmd_pkg
