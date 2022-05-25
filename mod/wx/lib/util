@@ -1,6 +1,12 @@
+# shellcheck shell=sh disable=SC3043
 
 ___x_cmd_wx_run(){
-    local wxfile="${1:-.}"; shift
+    local wxfile="${1:-.}"; [ "$#" -eq 0 ] || shift
+
+    case "$wxfile" in
+        @me/*|@i/*|@/*|@*/*) wxfile="$(x hub file which script/demo.wx)" || return 1 ;;
+    esac
+
     local ___X_CMD_WX_UNPKG_
     if [ -d "$wxfile" ]; then
         ___X_CMD_WX_UNPKG_="$wxfile"
@@ -15,18 +21,21 @@ ___x_cmd_wx_run(){
         return 1
     fi
 
-    if [ -f ".x-cmd/run-dist" ]; then
-        x ws run-dist "$@"
-    else
-        if [ -f ".x-cmd/installed_already" ] && ! x ws installed_already; then
-            if ! x ws install; then
-                local exit=$?
-                x:error "Exit=$exit: Installation failure."
-                return "$exit"
-            fi
-        fi
-        x ws run "$@"
-    fi
+    # TODO: To use no shift at ws module.
+    x ws run run "$@"
+
+    # if [ -f ".x-cmd/run-dist" ]; then
+    #     x ws run-dist "$@"
+    # else
+    #     if [ -f ".x-cmd/installed_already" ] && ! x ws installed_already; then
+    #         if ! x ws install; then
+    #             local exit=$?
+    #             x:error "Exit=$exit: Installation failure."
+    #             return "$exit"
+    #         fi
+    #     fi
+    #     x ws run "$@"
+    # fi
 
     if ! cd "$___X_CMD_WX_RUN_OLD_PWD"; then
         x:error "Cannot return to original folder: $___X_CMD_WX_RUN_OLD_PWD"
@@ -44,15 +53,14 @@ ___x_cmd_wx_is_workspace_runnable(){
 ___x_cmd_wx_pkg(){
     local workspace="${1:-.}"
     if ! ___x_cmd_wx_is_workspace_runnable "$workspace"; then
+        x:error "Workspace is not runnable: $workspace | PWD: $PWD"
         return 1
     fi
 
-    if [ -n "$2" ]; then
-        tar cf "$2" "$workspace" --exclude "$2"
-    else
-        local name="${PWD##*/}"
-        tar cf "$name.wx" "$workspace" --exclude "*.wx"
-    fi
+    local target="${2:-${PWD##*/}.wx}"
+    local cmd="tar --exclude=$target -czf $target $workspace"
+    eval "$cmd"
+    x:debug "Created tar: $cmd"
 }
 
 ___x_cmd_wx_unpkg_(){
@@ -76,7 +84,8 @@ ___x_cmd_wx_unpkg_(){
         return 1
     fi
 
-    if ! tar xf "$wxfile" "$___X_CMD_WX_UNPKG_"; then
+    mkdir -p "$___X_CMD_WX_UNPKG_"
+    if ! tar xf "$wxfile"  --directory="$___X_CMD_WX_UNPKG_"; then
         x:error "Exit=1 for failure on delation: $wxfile"
         ___X_CMD_WX_UNPKG_=
         return 1
@@ -92,5 +101,3 @@ ___x_cmd_wx_unpkg(){
 ___x_cmd_wx_ls(){
     :
 }
-
-
