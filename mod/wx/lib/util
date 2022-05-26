@@ -78,7 +78,7 @@ ___x_cmd_wx_unpkg_(){
     ___X_CMD_WX_UNPKG_="$___X_CMD_ROOT_TMP/wx/unpkg/${md5sum}"
     [ ! -d "$___X_CMD_ROOT_TMP/wx/unpkg/${md5sum}" ] || return 0
 
-    if ! x ensuredir "$___X_CMD_ROOT_TMP/wx/unpkg"; then
+    if ! x mkdirp "$___X_CMD_ROOT_TMP/wx/unpkg"; then
         x:error "Exit=1 for wx unpack depend on folder: $___X_CMD_WX_UNPKG_"
         ___X_CMD_WX_UNPKG_=
         return 1

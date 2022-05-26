@@ -40,10 +40,10 @@ ${pkg_name}=*
 }
 
 ___x_cmd_pkg_deactivate___min_default(){
-    local pkg_name="${1:?Provide pkg name}"
+    local pkg="${1:?Provide pkg name}"
     local version="${2:?Provide version}"
     local bin_path
-    bin_path="$(___x_cmd_pkg_xbin_path "$pkg_name" "$version")"
+    bin_path="$(___x_cmd_pkg_xbin_path "$pkg" "$version")"
     bin_path="${bin_path%/*}"
     pkg:debug "path rm $bin_path"
     x path rm "$bin_path" || return 1

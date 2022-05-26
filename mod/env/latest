@@ -22,7 +22,11 @@ ___x_cmd_env(){
         prev)           shift; ___x_cmd_env_prev        "$@" ;;
         current)        shift; ___x_cmd_env_current     "$@" ;;
         current_)       shift; ___x_cmd_env_current_    "$@" ;;
+        ""|help)             cat "$___X_CMD_ROOT_MOD/env/lib/help.txt" >&2; return 1 ;;
+        _x_cmd_advise_json ) cat "$___X_CMD_ROOT_MOD/env/lib/env.advise.json"        ;;
     esac
 }
+
+___x_cmd_env_config_load
 
 xrc setmain ___x_cmd_env
