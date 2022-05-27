@@ -139,6 +139,7 @@ ___x_cmd_yanfa_release_update(){
         esac
     done
 
+    x rmrf "$___X_CMD_YANFA_RELEASE_TMP/repo.txt"
     (
         ___x_cmd_yanfa_release_lsmod |
             while read -r mod; do
@@ -147,7 +148,7 @@ ___x_cmd_yanfa_release_update(){
                     printf "%s  " "$mod"
                     git rev-parse head
                 )
-        done >>repo.txt
+        done >>"$___X_CMD_YANFA_RELEASE_TMP/repo.txt"
     )
 
     yanfa:debug "Starting CPFILE"
