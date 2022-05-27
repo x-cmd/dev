@@ -99,22 +99,16 @@ ___x_cmd_yanfa_release_add()(
     i=1
     while [ "$i" -le "${RETRY:-3}" ]; do
         if git clone --quiet --depth=1 "$position" -b "$branch"; then
-            (
-                cd "$name"
-                printf "%s  " "$name"
-                git rev-parse head
-            ) >>repo.txt
-
             yanfa:info "[$mod/$branch] Cloning success from $position"
             exit 0
         fi
-        yanfa:info "Fail to git clone. Retry it after 5 seconds"
+        yanfa:info "[$mod/$branch] Fail to git clone. Retry it after 5 seconds."
         if ! sleep 5; then
             yanfa:warn "Sleep interrupted."
         fi
         i=$((i+1))
     done
-    yanfa:error "Fail to git clone after 3 attemps. Mission abort."
+    yanfa:error "[$mod/$branch] Fail to git clone after 3 attemps. Mission abort."
     exit 1
 )
 
@@ -144,6 +138,17 @@ ___x_cmd_yanfa_release_update(){
                 printf "%s\n" "---------------"
         esac
     done
+
+    (
+        ___x_cmd_yanfa_release_lsmod |
+            while read -r mod; do
+                (
+                    cd "$___X_CMD_YANFA_RELEASE_TMP/$mod"
+                    printf "%s  " "$mod"
+                    git rev-parse head
+                )
+        done >>repo.txt
+    )
 
     yanfa:debug "Starting CPFILE"
     ___x_cmd_yanfa_release_cpfile

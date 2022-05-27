@@ -1,3 +1,4 @@
+# shellcheck    shell=sh            disable=SC3043      # xrc
 
 ___x_cmd_env_get_version(){
     local pkg_name="${1%=*}"
