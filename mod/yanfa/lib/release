@@ -215,6 +215,12 @@ ___x_cmd_yanfa_release_cpfile()(
     [ -d "$tgt" ] && rm -rf "$tgt"
     mkdir -p "$tgt"
 
+    (
+        cd "$___X_CMD_YANFA_RELEASE_TMP"
+        cp repo.txt "${tgt}/repo.txt"
+        yanfa:debug "Copy the repo.txt"
+    )
+
     ___x_cmd_yanfa_release_lsfile | while read -r line; do
         (
             cd "$___X_CMD_YANFA_RELEASE_TMP"

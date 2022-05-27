@@ -1,3 +1,4 @@
+# shellcheck    shell=sh            disable=SC3043      # xrc
 
 # Section: attr
 ___x_cmd_pkg___static_build_attr(){
