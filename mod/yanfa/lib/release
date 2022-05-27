@@ -213,14 +213,14 @@ ___x_cmd_yanfa_release_cpfile()(
                     printf "%s\t" "$mod"
                     git rev-parse head
                 )
-        done >>"$tgt/.repo.txt"
+        done >>"$tgt/repo.txt"
     )
 
     (
-        printf "md5:%s\n" "$(x md5 "$tgt/.repo.txt")"
-        printf "sha256:%s\n" "$(x sha256 "$tgt/.repo.txt")"
-        printf "sha512:%s\n" "$(x sha512 "$tgt/.repo.txt")"
-    ) >"$tgt/.hashsum"
+        printf "md5:%s\n" "$(x md5 "$tgt/repo.txt")"
+        printf "sha256:%s\n" "$(x sha256 "$tgt/repo.txt")"
+        printf "sha512:%s\n" "$(x sha512 "$tgt/repo.txt")"
+    ) >"$tgt/hashsum.txt"
 
     ___x_cmd_yanfa_release_lsfile | while read -r line; do
         (
