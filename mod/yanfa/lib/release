@@ -210,11 +210,17 @@ ___x_cmd_yanfa_release_cpfile()(
             while read -r mod; do
                 (
                     cd "$___X_CMD_YANFA_RELEASE_TMP/$mod"
-                    printf "%s  " "$mod"
+                    printf "%s\t" "$mod"
                     git rev-parse head
                 )
-        done >>"$tgt/repo.txt"
+        done >>"$tgt/.repo.txt"
     )
+
+    (
+        x md5 "$tgt/repo.txt"
+        x sha256 "$tgt/repo.txt"
+        x sha512 "$tgt/repo.txt"
+    ) >"$tgt/.hashsum"
 
     ___x_cmd_yanfa_release_lsfile | while read -r line; do
         (

@@ -61,7 +61,8 @@ ___x_cmd_pkg_ls_activated(){
 ___x_cmd_pkg_ls_all(){
     if ! [ -d "$___X_CMD_PKG_RAWPATH" ]; then return 0; fi
     pkg_name="${1:?Provide package name}"
-    cat "$___X_CMD_PKG_RAWPATH"/*/"$pkg_name/version.tt.json" | x ja '_[2]=="\"linuxx64\""&&K=="\"sha\""{print uq(_[1])}'
+    cat "$___X_CMD_PKG_RAWPATH"/*/"$pkg_name/version.tt.json" | x ja 'V=="{"&&_[1]==K&&_[1]!=1{print uq(_[1])}'
+    # cat "$___X_CMD_PKG_RAWPATH"/*/"$pkg_name/version.tt.json" | x ja '_[2]=="\"linuxx64\""&&K=="\"sha\""{print uq(_[1]) _[2] K}'
 }
 
 
