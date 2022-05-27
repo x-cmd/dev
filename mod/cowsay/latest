@@ -1,32 +1,72 @@
-# Author:       Li Junhao   l@x-cmd.com     # xrc
-# shellcheck    shell=sh    disable=SC3043
+# shellcheck shell=sh disable=SC3043 # xrc
 
-___x_cmd_qr(){
-    local op="${1}";
+# author:       Li Junhao           l@x-cmd.com
+# maintainer:   Li Junhao
 
-    case "$op" in
-        enc)    shift 1; ___x_cmd_qr_enc "$@" ;;
-        dec)    shift 1; ___x_cmd_qr_dec "$@" ;;
-        *://*)  ___x_cmd_qr_enc_default "$op" ;;
-        "")     # decode from file, like
+
+# https://serverfault.com/questions/93407/what-command-prints-a-string-as-big-ascii-text-art-in-bash
+cowsay(){
+    local IFS
+    local typ="${1:-cow}"
+
+    case "$typ" in
+        help|h) 
+            cat <<A
+cowsay [tux|cow|help]
+A
+        return 1
+        ;;
+        _x_cmd_advise_json) cat <<A
+{
+    "tux": {},
+    "cow": {},
+    "help|h": {}
+}
+A
+        return 126
+        ;;
+
+        cow|tux)  shift;  ;;
+    esac
+        
+    cat <<-A
+ ______________________
+< ${*:-$text} >
+ ----------------------
+A
+
+    case "${typ:-cow}" in
+        tux) cat <<'A'
+   \
+    \
+        .--.
+       |o_o |
+       |:_/ |
+      //   \ \
+     (|     | )
+    /'\_   _/`\
+    \___)=(___/
+A
+    ;;
+
+        *) cat <<'A'
+        \   ^__^
+         \  (oo)\_______
+            (__)\       )\/\
+                ||----w |
+                ||     ||
+A
+    ;;
     esac
 }
 
-___x_cmd_qr_enc(){
-    ___x_cmd_static_build_file qrencode qrencode "$@"
-}
+if [ -n "${BASH_VERSION}${ZSH_VERSION}" ] && [ "${-#*i}" != "$-" ]; then
+    xrc advise/latest
+    advise cowsay
+fi
 
-___x_cmd_qr_enc_default(){
-    : Provide param
-    ___x_cmd_static_build_file qrencode qrencode -t utf8i "${1:?Provide URL}"
-}
+if [ -n "$___X_CMD_ENABLE_AUTO_RUN" ]; then
+    cowsay "$@"
+fi
 
-___x_cmd_qr_dec(){
-    if [ -t 0 ]; then
-        : qr decode from input stream
-    else
-        : qr decode file, output url
-    fi
-}
-
-xrc setmain ___x_cmd_qr
+xrc setmain cowsay

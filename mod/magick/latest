@@ -1,32 +1,54 @@
-# Author:       Li Junhao   l@x-cmd.com     # xrc
-# shellcheck    shell=sh    disable=SC3043
+# shellcheck shell=sh disable=SC3043,SC2164     # xrc
 
-___x_cmd_qr(){
-    local op="${1}";
+# author:       Li Junhao           l@x-cmd.com
+# license:      GPLv3
 
-    case "$op" in
-        enc)    shift 1; ___x_cmd_qr_enc "$@" ;;
-        dec)    shift 1; ___x_cmd_qr_dec "$@" ;;
-        *://*)  ___x_cmd_qr_enc_default "$op" ;;
-        "")     # decode from file, like
+xrc pkg/lib/staticbin os
+___x_cmd_magick(){
+    local arch
+    arch="$(os arch)"
+    local osname
+    osname="$(os name)"
+    local exe
+    case "$osname" in
+        win)    exe=magick.x64.exe        ;;
+        *)      exe=magick.${osname}.${arch}  ;;
     esac
+    ___x_cmd_staticbin_init \
+        ___x_cmd_magick_download \
+        "$___X_CMD_ROOT/.bin/magick" \
+        "$exe" \
+        "$(___x_cmd_pandoc_bin_download_url "$exe")" \
+        &&(
+            cd "$___X_CMD_ROOT/.bin/magick" && {
+                chmod +x "$exe"
+            }
+        )&& ___x_cmd_magick_download "$@"
 }
 
-___x_cmd_qr_enc(){
-    ___x_cmd_static_build_file qrencode qrencode "$@"
-}
+# Section: detail
 
-___x_cmd_qr_enc_default(){
-    : Provide param
-    ___x_cmd_static_build_file qrencode qrencode -t utf8i "${1:?Provide URL}"
-}
+# Reference: https://imagemagick.org/script/download.php
 
-___x_cmd_qr_dec(){
-    if [ -t 0 ]; then
-        : qr decode from input stream
+# https://download.imagemagick.org/ImageMagick/download/binaries/magick
+# https://download.imagemagick.org/ImageMagick/download/binaries/ImageMagick-x86_64-apple-darwin20.1.0.tar.gz
+
+# win64
+# https://download.imagemagick.org/ImageMagick/download/binaries/ImageMagick-7.1.0-portable-Q16-HDRI-x64.zip
+
+# China
+
+# https://ftp.acc.umu.se/mirror/imagemagick.org/ftp/binaries/magick
+
+___x_cmd_magick_bin_download_url(){
+    local exe="${1:?Provide app name}"
+    if [ "$___X_CMD_WHICHNET" != cn ]; then
+        printf "%s/%s" "https://raw.githubusercontent.com/static-build/magick/main/bin" "$exe.7z"
     else
-        : qr decode file, output url
+        printf "%s/%s" "https://gitcode.net/x-bash/magick/-/raw/master/bin" "$exe.7z"
     fi
 }
 
-xrc setmain ___x_cmd_qr
+# EndSection
+
+xrc setmain ___x_cmd_magick

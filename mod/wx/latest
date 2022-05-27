@@ -1,32 +1,24 @@
-# Author:       Li Junhao   l@x-cmd.com     # xrc
-# shellcheck    shell=sh    disable=SC3043
+# shellcheck shell=sh disable=SC3043 # xrc
 
-___x_cmd_qr(){
-    local op="${1}";
+xrc:mod:lib wx      util
 
-    case "$op" in
-        enc)    shift 1; ___x_cmd_qr_enc "$@" ;;
-        dec)    shift 1; ___x_cmd_qr_dec "$@" ;;
-        *://*)  ___x_cmd_qr_enc_default "$op" ;;
-        "")     # decode from file, like
+# wx is a tar.gz file
+# x wx work
+# x wx --verbose work
+# x work.wx
+# x @l/work
+# xwx work
+
+___x_cmd_wx(){
+    case "$1" in
+        pkg)            shift; ___x_cmd_wx_pkg "$@"     ;;
+        unpkg)          shift; ___x_cmd_wx_unpkg "$@"   ;;
+        run)            shift; ___x_cmd_wx_run "$@"     ;;
+        ls)             shift; ___x_cmd_wx_run "$@"     ;;
+        _x_cmd_advise_json) printf "{}"                 ;;
+        *)              ___x_cmd_wx_run "$@"            ;;
     esac
 }
 
-___x_cmd_qr_enc(){
-    ___x_cmd_static_build_file qrencode qrencode "$@"
-}
+xrc setmain ___x_cmd_wx
 
-___x_cmd_qr_enc_default(){
-    : Provide param
-    ___x_cmd_static_build_file qrencode qrencode -t utf8i "${1:?Provide URL}"
-}
-
-___x_cmd_qr_dec(){
-    if [ -t 0 ]; then
-        : qr decode from input stream
-    else
-        : qr decode file, output url
-    fi
-}
-
-xrc setmain ___x_cmd_qr
