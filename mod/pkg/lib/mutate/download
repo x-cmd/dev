@@ -88,7 +88,7 @@ ___x_cmd_pkg_download_file___from_static_build_and_deflate(){
     # Rely
     if [ ! -f "$target/$exe" ]; then
         pkg:info "Downloading: $repo/$app/$version/$exe.7z to $target"
-        if ! ___x_cmd_curl_gitx static-build "${repo}" main "$app/$version/$exe.7z" "$target/$exe.7z"; then
+        if ! ___x_cmd_httpget_gitx static-build "${repo}" main "$app/$version/$exe.7z" "$target/$exe.7z"; then
             pkg:warn "Download failure: $repo/main $app/$version/$exe.7z. Perhaps platform unsupported."
             return 1
         fi
@@ -113,7 +113,7 @@ ___x_cmd_pkg_download_file___from_static_build_and_deflate(){
                     for i in $(seq "$size"); do
                         # suffix="$(printf "%03s" "$i")" # Not work in gnu bash
                         suffix="$(printf "%3s" "$i" | tr " " 0)"
-                        if ! ___x_cmd_curl_gitx static-build "${repo}" main "$app/$version/$exe.7z.$suffix" "$target/$exe.7z.$suffix"; then
+                        if ! ___x_cmd_httpget_gitx static-build "${repo}" main "$app/$version/$exe.7z.$suffix" "$target/$exe.7z.$suffix"; then
                             pkg:warn "Download failure in $exe.7z.$suffix" >&2
                             return 1
                         fi
