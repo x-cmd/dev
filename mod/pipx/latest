@@ -1,0 +1,48 @@
+# Author:       Li Junhao       l@x-cmd.com
+# shellcheck    shell=sh        disable=SC3043,SC2164,SC1091     # xrc
+
+___x_cmd_pipx(){
+    ___x_cmd___pipx_origin "$@"
+    # ___x_cmd___pipx_exec "$@"
+}
+
+
+if ! command -v pipx; then
+    x env try python || exit
+    command -v pipx || pip install pipx || exit
+    x path add_existed_folder "$HOME/.local/bin"
+    x path add_existed_folder "$HOME/.local/pipx"
+fi
+
+___x_cmd___pipx_origin(){
+    command pipx "$@"
+}
+
+___x_cmd___pipx_exec(){
+    local name="$1"; shift
+    case "$name" in
+        -*)     ___x_cmd___pipx_origin "$name" "$@" ;;
+        *)      ___x_cmd___pipx_exec_2 "$name" "$@"
+    esac
+}
+
+___x_cmd___pipx_exec_2(){
+    local name="${1:?Please provide name}"; shift
+
+    # if [ -f "$HOME/.local/pipx/"$name/pipx_metadata.json ]; then
+    #     # json find out __Path__
+    #     if [ -x "$HOME/.local/pipx/venvs/${name}/bin/${name}" ]; then
+    #         "$HOME/.local/pipx/venvs/${name}/bin/${name}" "$@"
+    #         return
+    #     fi
+    # fi
+
+    if [ -x "$HOME/.local/pipx/venvs/${name}/bin/${name}" ]; then
+        "$HOME/.local/pipx/venvs/${name}/bin/${name}" "$@"
+        return
+    fi
+
+    ___x_cmd___pipx_origin "$name" "$@"
+}
+
+xrc setmain ___x_cmd_pipx
