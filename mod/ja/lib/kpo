@@ -3,7 +3,7 @@ ___x_cmd_ja_kpo(){
     local OPT
     local filemode=0
     local code
-    while getopts 'f:v:' OPT; do
+    while getopts ':f:v:' OPT; do
         case "$OPT" in
             f)
                 filemode=1;
@@ -12,7 +12,9 @@ ___x_cmd_ja_kpo(){
                 code="$( eval echo $code -v  \"\$$((OPTIND-1))\")"
                 ;;
             ?)
-                printf "%s\n" "Fail to parse in $OPTIND: $*"
+                ja:error "Fail to parse in $OPTIND: $*"
+                cat "$___X_CMD_ROOT_MOD/ja/lib/ja.help.txt" >&2
+                return 1
                 ;;
         esac
     done

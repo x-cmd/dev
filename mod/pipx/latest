@@ -2,16 +2,16 @@
 # shellcheck    shell=sh        disable=SC3043,SC2164,SC1091     # xrc
 
 ___x_cmd_pipx(){
-    ___x_cmd___pipx_origin "$@"
-    # ___x_cmd___pipx_exec "$@"
+    case "$1" in
+        _x_cmd_advise_json)       printf "{}";;
+        *)                        ___x_cmd___pipx_exec "$@" ;;
+    esac
 }
 
 
-if ! command -v pipx; then
+if ! command -v pipx > /dev/null; then
     x env try python || exit
-    command -v pipx || pip install pipx || exit
-    x path add_existed_folder "$HOME/.local/bin"
-    x path add_existed_folder "$HOME/.local/pipx"
+    command -v pipx > /dev/null || pip install pipx || exit
 fi
 
 ___x_cmd___pipx_origin(){
@@ -21,28 +21,27 @@ ___x_cmd___pipx_origin(){
 ___x_cmd___pipx_exec(){
     local name="$1"; shift
     case "$name" in
-        -*)     ___x_cmd___pipx_origin "$name" "$@" ;;
-        *)      ___x_cmd___pipx_exec_2 "$name" "$@"
+        -*|\
+            install|inject|\
+            upgrade|upgrade-all|\
+            uninstall|uninstall-all|\
+            reinstall|reinstall-all|\
+            list|run|runpip|\
+            ensurepath|environment|completions)
+                 ___x_cmd___pipx_origin "$name" "$@" ;;
+        *)
+                ___x_cmd___pipx_exec_2 "$name" "$@"
     esac
 }
 
 ___x_cmd___pipx_exec_2(){
     local name="${1:?Please provide name}"; shift
-
-    # if [ -f "$HOME/.local/pipx/"$name/pipx_metadata.json ]; then
-    #     # json find out __Path__
-    #     if [ -x "$HOME/.local/pipx/venvs/${name}/bin/${name}" ]; then
-    #         "$HOME/.local/pipx/venvs/${name}/bin/${name}" "$@"
-    #         return
-    #     fi
-    # fi
-
     if [ -x "$HOME/.local/pipx/venvs/${name}/bin/${name}" ]; then
         "$HOME/.local/pipx/venvs/${name}/bin/${name}" "$@"
         return
     fi
 
-    ___x_cmd___pipx_origin "$name" "$@"
+    ___x_cmd___pipx_origin run "$name" "$@"
 }
 
 xrc setmain ___x_cmd_pipx

@@ -2,8 +2,8 @@
 # shellcheck    shell=sh        disable=SC3043,SC2164,SC1091     # xrc
 
 ___x_cmd_npx(){
-    ___x_cmd___npx_origin "$@"
-    # ___x_cmd___npx_exec "$@"
+    # ___x_cmd___npx_origin "$@"
+    ___x_cmd___npx_exec "$@"
 }
 
 if ! command -v npx; then
@@ -15,7 +15,7 @@ ___x_cmd___npx_origin(){
 }
 
 ___x_cmd___npx_exec(){
-    local name="$1"; shift
+    local name="$1";  [ "$#" -gt 1 ] && shift
     case "$name" in
         -*)     ___x_cmd___npx_origin "$name" "$@" ;;
         *)      ___x_cmd___npx_exec_2 "$name" "$@"
@@ -23,11 +23,16 @@ ___x_cmd___npx_exec(){
 }
 
 ___x_cmd___npx_exec_2(){
-    local name="$1"; shift
+    local name="$1"; [ "$#" -gt 1 ] && shift
     local cache; cache="$(cat "$HOME/.npm/.npmrc" "$HOME/.npmrc" "/usr/local/etc/npmrc" 2>/dev/null | awk -v FS="=" '$1=="cache"{ print $2; code=0; exit 0; } EMD{ if (code != 0) exit 1; }')" || return
+    [ -n "$cache" ] || cache="$HOME/.npm"
+    local i npx_path_prefix
+    for i in "${cache}/_npx"/*; do
+        cat "$i/package.json" 2>/dev/null | x jo env .dependencies ".${name}" -- '[ -z $name ] || npx_path_prefix="$i"'
+    done
 
-    if [ -x "${cache}/node_modules/.bin/${name}" ]; then
-        "${cache}/node_modules/.bin/${name}" "$@"
+    if [ -x "$npx_path_prefix/node_modules/.bin/${name}" ]; then
+        "$npx_path_prefix/node_modules/.bin/${name}" "$@"
         return
     fi
 

@@ -3,9 +3,8 @@
 
 # license:      GPLv3
 
-xrc:mod:lib ja      kp kpo util
-
 x log init ja
+xrc:mod:lib ja      kp kpo util
 
 ___x_cmd_ja(){
     case "$1" in
@@ -18,9 +17,9 @@ ___x_cmd_ja(){
                             return 0 ;;
         "")                 ja:error "ja need at least one argument" >&2;
                             return 1 ;;
-        _x_cmd_advise_json) cat "$___X_CMD_ROOT_MOD/ja/lib/ja.advise.json" ;
-                            return 126 ;;
-        *)                  ___x_cmd_ja_kpo "$@" ;;
+        _x_cmd_advise_json) cat "$___X_CMD_ROOT_MOD/ja/lib/ja.advise.json" ;;
+
+        *)                ___x_cmd_ja_kpo "$@" ;;
     esac
 }
 
