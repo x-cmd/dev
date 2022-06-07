@@ -11,7 +11,7 @@ if ! command -v npx; then
 fi
 
 ___x_cmd___npx_origin(){
-    command -v npx "$@"
+    command npx "$@"
 }
 
 ___x_cmd___npx_exec(){
@@ -24,13 +24,26 @@ ___x_cmd___npx_exec(){
 
 ___x_cmd___npx_exec_2(){
     local name="$1"; [ "$#" -gt 1 ] && shift
+
+    local ___X_CMD_LDICT_GET_
+    if ___x_cmd_ldict_get_ ___x_cmd___npx_exec "$name"; then
+        if [ -x "$___X_CMD_LDICT_GET_/node_modules/.bin/${name}" ]; then
+            "$___X_CMD_LDICT_GET_/node_modules/.bin/${name}" "$@"
+            return
+        fi
+    fi
+
     local cache; cache="$(cat "$HOME/.npm/.npmrc" "$HOME/.npmrc" "/usr/local/etc/npmrc" 2>/dev/null | awk -v FS="=" '$1=="cache"{ print $2; code=0; exit 0; } EMD{ if (code != 0) exit 1; }')" || return
     [ -n "$cache" ] || cache="$HOME/.npm"
-    local i npx_path_prefix
+    local i
+    local npx_path_prefix
     for i in "${cache}/_npx"/*; do
-        cat "$i/package.json" 2>/dev/null | x jo env .dependencies ".${name}" -- [ -z $name ] || npx_path_prefix="$i"
+        [ -f "$i/package.json" ] || continue
+        < "$i/package.json" x jo env .dependencies ".${name}" -- [ -z $name ] || npx_path_prefix="$i"
     done
+
     if [ -x "$npx_path_prefix/node_modules/.bin/${name}" ]; then
+        ___x_cmd_ldict_put ___x_cmd___npx_exec "$name" "$npx_path_prefix"
         "$npx_path_prefix/node_modules/.bin/${name}" "$@"
         return
     fi
