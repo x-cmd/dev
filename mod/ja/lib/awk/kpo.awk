@@ -81,7 +81,7 @@ function jiter( item,  _res ) {
 {
     if ( (KP = jiter( $0 )) == "" ) next
     K=key;  V=$0;
-    D = ( item ~ /^[\[\{]]$/) ? depth - 1 : depth
+    D = ( $0 ~ /^[\[\{]$/) ? depth - 1 : depth
 
     _k_reset = 0; # k_reset()
     _v_reset = 0; # v_reset()

@@ -18,14 +18,11 @@ ___x_cmd___curl___not_secure_request_bash()(
 )
 
 ___X_CMD___CURL_HTTP_NOT_SECURE_REQUEST_HANDLER_R="$(printf "\r")"
-
-___x_cmd___curl___not_secure_request_handler(){
+___x_cmd_curl___not_secure_request_handler(){
     local file="${1:?Provide cache filepath}"
     local line
     while read -r line; do
         line="${line%"${___X_CMD___CURL_HTTP_NOT_SECURE_REQUEST_HANDLER_R}"}"
-        printf "%s\n" "$line"
-
         if [ "$line" = "" ]; then
             break
         fi
@@ -53,7 +50,7 @@ ___x_cmd___curl___not_secure_get(){
         }
     elif command -v wget >/dev/null; then
         ___x_cmd___curl_not_secure_request(){
-            wget "http://${host}${path}" -O -
+            wget "http://${host}${path}" -O - 2>&1
         }
     elif command -v nc 1>/dev/null; then
         ___x_cmd___curl_not_secure_request(){
@@ -64,8 +61,7 @@ ___x_cmd___curl___not_secure_get(){
         return 1
     fi
 
-    local code=0
-    ___x_cmd___curl_not_secure_request | ___x_cmd___curl___not_secure_request_handler "$file"| ___x_cmd___curl_handle_resp_header "$file" "$code"
+    ___x_cmd___curl_not_secure_request | ___x_cmd_curl___not_secure_request_handler "$file"
 }
 
 ___x_cmd___curl___download_curl(){
@@ -76,41 +72,23 @@ ___x_cmd___curl___download_curl(){
     if [ "$(os name)" != "linux" ];then
         return 1
     fi
-    local url="${1:-"static-build.gitee.io/curl/bin"}"
+
+    local url="${1:-"static-build.gitee.io/curl/curl/7.83.1-DEV"}"
     local app="${2:-"curl.$name.$arch"}"
     local target="$HOME/.x-cmd/.bin/${app%%.*}"
     local sha
     case "${arch}" in
-        x86_64 | amd64 | x64)  sha="a45e65f60321c3bdf382a404e1413a3b7b1224b1da22fc3906f40c272849e06a";;
-        aarch64|arm64)         sha="20f22526b1af8433ebd8d0e94a969343b4d51484335bd3123caf784fd62b095f";;
+        x86_64 | amd64 | x64)  sha="a29239a3a9c18e5b215f8940de0fc164451cba50d445c7660e82bb7324c0d200";;
+        aarch64|arm64)         sha="4864c203a71f8ce784ad036ad1d36176e3a0108cf68f1d12c039acb9de9580d4";;
     esac
     if [ ! -e "$target/$app" ];then
         x mkdirp "$target"
         ___x_cmd___curl___not_secure_get "http://$url/$app.tar.gz" "$target/$app.tar.gz" 2>/dev/stdout || return 1
         local tarsha
         tarsha="$(x sha256sum "$target"/"$app".tar.gz)"
-        [ "$sha" = "${tarsha}" ] && tar zxvf "$target/$app.tar.gz" -C "$target" && return 0
+        [ "$sha" = "${tarsha%% *}" ] && tar zxvf "$target/$app.tar.gz" -C "$target" && return 0
         x:error "$app sha256 match fail"
         return 1
     fi
     return 0
-}
-
-___x_cmd___curl_handle_resp_header(){
-    local url="${1:?Provide url}"
-    local code="${2:?Provide exit code of function ___x_cmd_httpget_inner}"
-
-    local http_code
-    http_code="$(awk 'NR==1{ printf("%s", $2); }')"
-    case "$http_code" in
-        20*)    return 0 ;;
-        40*)    x:debug "HTTP_CODE: $http_code. Fail to retrieve file from: $url"
-                return 4 ;;     # TODO: consider using exit code 70
-        "")     x:debug "Return code: $code. HTTP_CODE Unavialable. Fail to retrieve file from: $url"
-                return 1 ;;
-        5*)     x:debug "Return code: $code. Server internal error. Fail to retrieve file from: $url"
-                return 5 ;;     # TODO: consider using exit code 69
-        *)      x:debug "Unknow error. HTTP_CODE: $http_code. Fail to retrieve file from: $url"
-                return 2 ;;
-    esac
 }
