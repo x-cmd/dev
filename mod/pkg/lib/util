@@ -58,7 +58,7 @@ ___x_cmd_pkg_osarch(){
 # Section: get raw text from all.7z
 ___x_cmd_pkg_locate(){
     local tgt="${1:?Provide name}"
-    ___x_cmd_pkg_ll | awk -v FS=/ -v tgt="$tgt" '$2==tgt{ TGT=1; print $0 }END{ if(TGT>0){exit(0);}else{exit(1)}}'
+    ___x_cmd_pkg_ll | awk -v FS=/ -v RS="\t" -v tgt="$tgt" '$2==tgt{ TGT=1; print $0 }END{ if(TGT>0){exit(0);}else{exit(1)}}'
 }
 
 # Default, China
@@ -92,7 +92,7 @@ ___x_cmd_pkg___list(){
 
 
 ___x_cmd_pkg_default_version(){
-
+    ___x_cmd_pkg___which_p7zip || return
     ___x_cmd_pkg___all_info "$@" | awk \
         -f "$___X_CMD_ROOT_MOD/awk/lib/default.awk" \
         -f "$___X_CMD_ROOT_MOD/awk/lib/jqparse.awk" \

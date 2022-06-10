@@ -21,7 +21,7 @@ function pkg_init_table( jobj, table, table_kp,
 
     _final_version = table_version( table, pkg_name)
     if ( _final_version != "" ) {
-        pkg_copy_table( jobj, pkg_kp( pkg_name, "version", _final_version, osarch), table, table_kp )
+        pkg_copy_table( jobj, pkg_kp( pkg_name, "version", juq(_final_version), osarch), table, table_kp )
     }
 
     split( juq( table_osarch( table, pkg_name ) ), _os_arch, "/" )
@@ -152,7 +152,7 @@ function parse_pkg_meta_json(jobj, pkg_name, meta_json) {
     return parse_pkg_jqparse( meta_json,     jobj, jqu(pkg_name) SUBSEP jqu("meta") )
 }
 
-function parse_pkg_version_json(jobj, pkg_name, meta_json) {
+function parse_pkg_version_json(jobj, pkg_name, version_json) {
     return parse_pkg_jqparse( version_json,  jobj, jqu(pkg_name) SUBSEP jqu("version") )
 }
 

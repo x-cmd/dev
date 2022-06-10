@@ -27,12 +27,7 @@ ___x_cmd_pkg_download(){
         return 1
     fi
 
-    local file_suffix
-    local md5
-    local sha1
-    local sha256
-    local sha512
-
+    local file_suffix md5 sha1 sha256 sha512
     ___x_cmd_pkg___attr "$name" "$version" "$osarch" "md5,sha1,sha256,sha512,file_suffix"
     local url
     local ball="$___X_CMD_PKG_DOWNLOAD_PATH/$name/$version.$file_suffix"
@@ -59,7 +54,8 @@ ___x_cmd_pkg_download(){
         ! ___x_cmd_pkg_download___check_hashsum "$ball" "$md5" "$sha1" "$sha256" "$sha512" || return 0
 
         pkg:warn "File corrupted."
-        x rmrf "$ball"
+        # x rmrf "$ball"
+        return 1
     done <<A
 $url_list
 A
@@ -75,7 +71,7 @@ ___x_cmd_pkg_download_file___from_static_build_and_deflate(){
 
     pkg:debug "Download static-build. repo: $repo app: $app"
 
-    local target="$___X_CMD_PKG_INSTALL_PATH/$repo/$version"
+    local target="$___X_CMD_PKG_INSTALL_PATH/$app/$version"
     x mkdirp "$target" || return 1
 
     local osarch
@@ -90,6 +86,7 @@ ___x_cmd_pkg_download_file___from_static_build_and_deflate(){
         pkg:info "Downloading: $repo/$app/$version/$exe.7z to $target"
         if ! ___x_cmd_httpget_gitx static-build "${repo}" main "$app/$version/$exe.7z" "$target/$exe.7z"; then
             pkg:warn "Download failure: $repo/main $app/$version/$exe.7z. Perhaps platform unsupported."
+            x rmrf "$target"
             return 1
         fi
 
@@ -113,6 +110,7 @@ ___x_cmd_pkg_download_file___from_static_build_and_deflate(){
                     for i in $(seq "$size"); do
                         # suffix="$(printf "%03s" "$i")" # Not work in gnu bash
                         suffix="$(printf "%3s" "$i" | tr " " 0)"
+                        pkg:info "Downloading: $repo/$app/$version/$exe.7z.$suffix to $target"
                         if ! ___x_cmd_httpget_gitx static-build "${repo}" main "$app/$version/$exe.7z.$suffix" "$target/$exe.7z.$suffix"; then
                             pkg:warn "Download failure in $exe.7z.$suffix" >&2
                             return 1
@@ -122,8 +120,13 @@ ___x_cmd_pkg_download_file___from_static_build_and_deflate(){
                     pkg:info "Using p7zd to decompress: $target/$exe.7z.001"
                     cat "$target/$exe".7z.0* > "$exe.7z"
                     p7zd x "$exe.7z" 1>/dev/null 2>/dev/null
-                fi && chmod +x "$exe" \
-                    && pkg:info "Finish file decompress and chmod."
+                fi
+                [ "$?" = 0 ] || return
+                if chmod +x "$exe"; then
+                    pkg:info "Finish file decompress and chmod."
+                else
+                    pkg:error "chmod: Operation not permitted "
+                fi
             }
         )
     fi && return 0

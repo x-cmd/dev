@@ -4,7 +4,7 @@
 x log init pkg
 xrc os advise
 ___x_cmd_pkg(){
-    ___x_cmd_pkg___which_p7zip || return
+    # ___x_cmd_pkg___which_p7zip || return
     local op="$1"
     case "$op" in
         ls)                     shift; ___x_cmd_pkg_ls                    "$@" ;;      # add filter, remote, installed, ...

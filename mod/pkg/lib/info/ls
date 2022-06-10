@@ -60,12 +60,16 @@ A
 ___x_cmd_pkg_ls_all(){
     if ! [ -d "$___X_CMD_PKG_RAWPATH" ]; then return 0; fi
     pkg_name="${1:?Provide package name}"
-    cat "$___X_CMD_PKG_RAWPATH"/*/"$pkg_name/version.tt.json" | x ja '_[2]=="\"'"$(os name)/$(os arch)"'\""&&K=="\"sha\""{print uq(_[1])}'
+    cat "$___X_CMD_PKG_RAWPATH"/*/"$pkg_name/version.tt.json" | x ja 'O[2]=="\"'"$(os name)/$(os arch)"'\""{
+        cur_version = juq(O[1])
+        if ( juq(O[1]) != last_version) print cur_version
+        last_version = cur_version
+    }'
 }
 
-___x_cmd_pkg_rawpath_name_ls()(
+___x_cmd_pkg_rawpath_name_advise_ls()(
     if ! [ -d "$___X_CMD_PKG_RAWPATH" ]; then return 0; fi
-    cd "$___X_CMD_PKG_RAWPATH"
+    cd "$___X_CMD_PKG_RAWPATH" || exit
     local i
     for i in */*; do
         printf "%s\n" "${i#*/}"

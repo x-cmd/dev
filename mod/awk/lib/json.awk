@@ -663,6 +663,16 @@ function json_split2tokenarr_( text ){
     return json_split2tokenarr( _, text )
 }
 
+function json2tokenarr( text , token_arr, token_arrl,        _arr, _arrl, i){
+    _arrl = json_split2tokenarr( _arr, text )
+    token_arrl = token_arr[ L ]
+    for (i=1; i<=_arrl; ++i) {
+        if (_arr[i] !="") token_arr[ ++token_arrl ] = _arr[i]
+    }
+    token_arr[ L ] = token_arrl
+}
+
+
 # Section: still strange: should be global search
 
 # TODO: ...
