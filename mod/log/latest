@@ -1,6 +1,8 @@
 # shellcheck    shell=sh            disable=SC3043      # xrc
 # author:       Li Junhao           l@x-cmd.com
 
+xrc:mod log/lib/trace
+
 ___x_cmd_log() {
     case "$1" in
         :*)                                     ___x_cmd_log_pr "$@" ;;
@@ -273,7 +275,7 @@ ___x_cmd_log_0(){
 
     # ${___X_CMD_TRACE_LINE_LOCAL+<${___X_CMD_TRACE_LINE_LOCAL#"$O"}>
     local track="${___X_CMD_TRACE_LINE_LOCAL}"
-    [ -z "$track" ] || track="<${track#"$O/"}> "
+    [ -z "$track" ] || track="<${track#"$O/"}>"
     if [ -n "$___X_CMD_LOG_C_TF" ] || [ -t 2 ]; then
         if [ -n "$___X_CMD_LOG__TIMESTAMP_FORMAT" ]; then
             timestamp="$(date "${___X_CMD_LOG__TIMESTAMP_FORMAT}")"
@@ -282,17 +284,17 @@ ___x_cmd_log_0(){
 
         if [ $# -gt 0 ]; then
             [ "$L" != "INF" ] || local ___X_CMD_LOG_C_MSG="\\033[1m"
-            printf "${timestamp}${C}[%s] <%s>: $track\033[0m${___X_CMD_LOG_C_MSG:-"$C"}%s\033[0m\n" "$L" "$O" "$*"
+            printf "${timestamp}${C}[%s] <%s> $track: \033[0m${___X_CMD_LOG_C_MSG:-"$C"}%s\033[0m\n" "$L" "$O" "$*"
         else
-            printf "${timestamp}${C}[%s] <%s>: $track" "$L" "$O"
+            printf "${timestamp}${C}[%s] <%s> $track: " "$L" "$O"
             cat | awk 'NR==1{ print($0) }; NR>=2{ print("> " $0); }; END{ printf("%s", "\033[0m"); }'
         fi
     else
         [ -z "$___X_CMD_LOG__TIMESTAMP_FORMAT" ] || timestamp="$(date "${___X_CMD_LOG__TIMESTAMP_FORMAT}") "
         if [ $# -gt 0 ]; then
-            printf "${timestamp}[%s] <%s>: $track%s\n" "$L" "$O" "$*"
+            printf "${timestamp}[%s] <%s> $track: %s\n" "$L" "$O" "$*"
         else
-            printf "${timestamp}[%s] <%s>: $track" "$L" "$O"
+            printf "${timestamp}[%s] <%s> $track: " "$L" "$O"
             cat | awk 'NR==1{ print($0) }; NR>=2{ print("> " $0); }; }'
         fi
     fi >&2

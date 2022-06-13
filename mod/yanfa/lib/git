@@ -1,3 +1,4 @@
+# shellcheck shell=sh disable=SC3043
 
 # TODO: we will find a more suitable place for the code below.
 

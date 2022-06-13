@@ -1,4 +1,4 @@
-# shellcheck shell=sh
+# shellcheck shell=sh disable=SC3043
 
 ___x_cmd_yanfa_init(){
     param:dsl <<A
@@ -41,8 +41,7 @@ ___x_cmd_yanfa_init_vscode(){
     mkdir -p "$(x wsroot)/.vscode"
     xrc cat yanfa/lib/settings.json >"$(x wsroot)/.vscode/settings.json"
 
-    local ext
-    for ext in zokugun.explicit-folding \
+    local ext; for ext in zokugun.explicit-folding \
         timonwong.shellcheck \
         aaron-bond.better-comments \
         hangxingliu.vscode-awk-hint \
