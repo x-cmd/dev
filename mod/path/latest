@@ -3,7 +3,7 @@
 
 ___x_cmd_path(){
     case "$1" in
-        shift|unshift|push|pop|ls|uniq|rm|rm_by_prefix|rm_by_suffix|up_or_unshift|down_or_push|add_existed_folder|_x_cmd_advise_json)
+        add|shift|unshift|push|pop|ls|uniq|rm|rm_by_prefix|rm_by_suffix|up_or_unshift|down_or_push|add_existed_folder|_x_cmd_advise_json)
             local op="$1"; shift; "___x_cmd_path_$op" "$@" ;;
         "") ___x_cmd_path_ls "$@" ;;
         *)  printf "%s" "Can't support arg: $1" >&2 ;;
@@ -72,6 +72,10 @@ ___x_cmd_path_ls(){
 # Section: op: shift/unshift, push/pop, uniq
 ___x_cmd_path_shift(){
     PATH="${PATH#*:}"
+}
+
+___x_cmd_path_add(){
+    ___x_cmd_path_unshift "$*"
 }
 
 ___x_cmd_path_unshift(){

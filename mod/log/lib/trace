@@ -103,23 +103,23 @@ ___x_cmd_log_trace_log_exit(){
 }
 # EndSection
 
-echo $___X_CMD_LOG_TRACE_DEBUGTRIG
+# echo $___X_CMD_LOG_TRACE_DEBUGTRIG
 
-f_a_c(){
-    log:trace f/a/c
-    echo "$1"
-}
+# f_a_c(){
+#     log:trace f/a/c
+#     echo "$1"
+# }
 
-f_a_b(){
-    log:trace f/a/b
-    echo "$1"
-    f_a_c 111
-}
+# f_a_b(){
+#     log:trace f/a/b
+#     echo "$1"
+#     f_a_c 111
+# }
 
-f_a(){
-    log:trace f/a
-    f_a_b 1
-    x:info hi
-}
+# f_a(){
+#     log:trace f/a
+#     f_a_b 1
+#     x:info hi
+# }
 
-f_a
+# f_a
