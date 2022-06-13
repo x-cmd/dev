@@ -5,9 +5,11 @@ xrc param/latest
 # Section: main
 ___x_cmd_theme_control(){
     local zinit
+    local unplugin
     local font
-    [ -n "$ZSH_VERSION" ] && zinit="zinit    \"init the zsh environment\""
-    [ -z "$SSH_CONNECTION" ] && [ ! -f "/.dockerenv" ] && font="font    \"install powerline font\""
+    [ -z "$ZSH_VERSION" ]       || zinit="zinit    \"init the zsh environment\""
+    [ -z "$ZSH_VERSION" ]       || unplugin="unplugin    \"unset zsh plugins\""
+    [ -n "$SSH_CONNECTION" ]    || [ -f "/.dockerenv" ] || font="font    \"install powerline font\""
     param:dsl <<A
 subcommands:
     ls          "list all theme"
@@ -15,6 +17,7 @@ subcommands:
     use         "use theme when starting the shell"
     try         "try theme"
     ${zinit}
+    ${unplugin}
     ${font}
     unset       "unset the theme"
 A
@@ -46,7 +49,7 @@ ___x_cmd_theme___which___filepath(){
         local tgzfilepath
         ___x_cmd_theme___which_tgz___tgzfilepath || return 1
 
-        [ ! -d "$tmp_style_dir" ] && mkdir -p "$tmp_style_dir"
+        [ -d "$tmp_style_dir" ] || mkdir -p "$tmp_style_dir"
 
         local _src_code
         if ! tar xf "$tgzfilepath" -C "$tmp_style_dir" "$filename" 2>/dev/null; then
@@ -131,22 +134,28 @@ ___x_cmd_theme_control_try_inner(){
 # Section: zsh
 ___x_cmd_theme_control_zinit(){
     param:void
-    local _have_loaded_theme
-    _have_loaded_theme=$([ -f "$___X_CMD_ROOT/.boot/rc" ] && x boot rc ls | grep 'x-theme')
     # load theme
-    [ -z "$_have_loaded_theme" ] && ___x_cmd_theme_control_use ""
+    [ -n "$(command -v ___x_cmd_theme_prompt_format)" ] || ___x_cmd_theme_control_use ""
     # load zsh plugins
-    [ -z "$ZSH_AUTOSUGGEST_COMPLETIONS_PTY_NAME" ] && ___x_cmd_theme_control_use_plugin "zsh-autosuggestions"
-    [ -z "$ZSH_HIGHLIGHT_REVISION" ] && ___x_cmd_theme_control_use_plugin "zsh-syntax-highlighting"
+    # TODO: wait pkg can not repeat activate bug fix
+    if [ -z "$ZSH_AUTOSUGGEST_COMPLETIONS_PTY_NAME" ] || [ -z "$ZSH_HIGHLIGHT_REVISION" ]; then
+        printf "\033[90m%s\033[0m\n" "$ ZSH_PLUGIN=\"zsh-syntax-highlighting,zsh-autosuggestions\" x pkg activate zsh-plugin"
+        ZSH_PLUGIN="zsh-syntax-highlighting,zsh-autosuggestions" x pkg activate zsh-plugin
+    fi
     # load font
-    [ -z "$SSH_CONNECTION" ] && [ ! -f "/.dockerenv" ] && ___x_cmd_theme_control_font
+    [ -n "$SSH_CONNECTION" ] || [ -f "/.dockerenv" ] || ___x_cmd_theme_control_font
     printf "%s\n" "[x-cmd]: Successfully initialized."
 }
 
-___x_cmd_theme_control_use_plugin() {
-    { [ -z "$1" ] || [ -z "$ZSH_VERSION" ]; } && return 1
-    xrc:mod theme/lib/third-party/"$1"/"$1".plugin.zsh
-    x boot rc add "x-plugin-$1" "[ -n \"\$ZSH_VERSION\" ] && xrc:mod theme/lib/third-party/$1/$1.plugin.zsh"
+___x_cmd_theme_control_unplugin(){
+    param:void
+    printf "\033[90m%s\033[0m\n" "$ ZSH_PLUGIN=\"zsh-syntax-highlighting,zsh-autosuggestions\" x pkg deactivate zsh-plugin"
+    if ZSH_PLUGIN="zsh-syntax-highlighting,zsh-autosuggestions" x pkg deactivate zsh-plugin; then
+        printf "\033[32m%s \033[1;33m%s\033[0m \n" "Unset ZSH plugins successfully!" "Now you can restart your terminal."
+    else
+        printf "\033[31m%s\033[0m \n" "Unset ZSH plugins failed."
+        return 1
+    fi
 }
 # EndSection
 

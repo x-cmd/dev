@@ -46,7 +46,10 @@ ___x_cmd_ls(){
 
 # TODO: Will be replaced by module ls
 ___x_cmd_ls_app(){
-    ___x_cmd_static_build_file exa exa   "$@"
+    if ! [ -d $___X_CMD_PKG_INSTALL_PAth/exa ]; then
+        x pkg install exa  1>/dev/null
+    fi
+    x exa  "$@"
     # ___x_cmd_ui_catsel "$@"
 }
 

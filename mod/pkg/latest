@@ -27,8 +27,9 @@ ___x_cmd_pkg(){
         activate)               shift; ___x_cmd_pkg_activate              "$@" ;;
         deactivate)             shift; ___x_cmd_pkg_deactivate            "$@" ;;
 
-        xbin)                   shift; ___x_cmd_pkg_xbin                  "$@"       ;;
-        _x_cmd_advise_json)     cat "$___X_CMD_ROOT_MOD/pkg/lib/pkg.advise.json"     ;;
+        xbin)                   shift; ___x_cmd_pkg_xbin                  "$@"          ;;
+        ""|--help|-h)           cat "$___X_CMD_ROOT_MOD/pkg/lib/help.txt" >&2; return 0 ;;
+        _x_cmd_advise_json)     cat "$___X_CMD_ROOT_MOD/pkg/lib/pkg.advise.json"        ;;
 
         *)              return 1
     esac

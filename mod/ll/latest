@@ -29,12 +29,12 @@ ___x_cmd_ll(){
 
 ___x_cmd_ll_otherwise(){
     if [ -t 1 ]; then
-        ___x_cmd_ll_bin "$@"
+        x exa -al "$@"
         return
     fi
 
     # TODO: Add theme code
-    ___x_cmd_ll_bin -G "$@"
+    x exa -al "$@"
 }
 
 xrc setmain ___x_cmd_ll
