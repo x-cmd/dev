@@ -21,7 +21,7 @@ ___x_cmd_gh_repo_pr(){
 
 ___x_cmd_gh_repo_pr_ls() {
 
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     --repo          "Provide owner name and repo name.(default:the current user repo)"  <>:RepoName
@@ -47,7 +47,7 @@ options:
 }
 
 ___x_cmd_gh_repo_pr_info() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     --repo          "Provide owner name and repo name.(default:the current user repo)"  <>:RepoName
@@ -71,8 +71,7 @@ options:
 # Section: create update merge
 
 ___x_cmd_gh_repo_pr_create() {
-    local O="${O:-GITHUB_DEFAULT}"
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 type:
     bool = true false
@@ -96,8 +95,7 @@ options:
 }
 
 ___x_cmd_gh_repo_pr_update() {
-    local O="${O:-GITHUB_DEFAULT}"
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
 ##TODO:state
     param:dsl       '
 type:
@@ -123,7 +121,7 @@ options:
 }
 
 ___x_cmd_gh_repo_pr_merge() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 type:
     merge = squash  merge
@@ -146,7 +144,7 @@ options:
 # EndSection
 
 ___x_cmd_gh_repo_pr_view() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     #1|--pr             "pr id"         <>:number
@@ -174,7 +172,7 @@ ___x_cmd_gh_repo_pr_comments(){
 # TODO:github API error
 # Section:fail
 ___x_cmd_gh_repo_pr_comments_ls() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     --repo      "Provide owner name and repo name.(default:the current user repo)"  <>:RepoName
@@ -193,7 +191,7 @@ options:
 }
 
 ___x_cmd_gh_repo_pr_comments_add(){
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     --repo          "Provide owner name and repo name.(default:the current user repo)"  <>:RepoName
@@ -216,7 +214,7 @@ options:
 }
 
 ___x_cmd_gh_repo_pr_comments_rm(){
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     --repo          "Provide owner name and repo name.(default:the current user repo)"  <>:RepoName

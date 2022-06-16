@@ -10,12 +10,10 @@ ___x_cmd_gt_repo_pr_assign(){
         review          "review pass"
     param:subcmd:try
     param:run
-    if [ -z "$PARAM_SUBCMD" ]; then
-        ___x_cmd_gt_repo_pr_assign help
-        return
-    fi
 
-    "___x_cmd_gt_repo_pr_assign_$PARAM_SUBCMD" "$@"
+    ___x_cmd_gt_repo_pr_assign _param_help_doc
+    gt_log warn "Subcmd Not Found."
+    return 1
 }
 
 ___x_cmd_gt_repo_pr_assign_add(){

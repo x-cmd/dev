@@ -1,9 +1,9 @@
-# shellcheck shell=sh disable=SC2034,SC2154
+# shellcheck shell=sh disable=SC2034,SC2154,SC3043
 # Section: cat zip file, following the list of files to cat ...
 ___x_cmd_zuz_cat(){
-    param:void
+
     local target_file="${1:-filename}"; shift
-    local logger_msg="$target_file"
+    local extra_logger_msg="< ${target_file}"
     case "$target_file" in
         *.tar)
             ___x_cmd_zuz_run tar -t <"$target_file"  # bsdtar
@@ -18,7 +18,7 @@ ___x_cmd_zuz_cat(){
             ___x_cmd_zuz_run tar -t <"$target_file"  # bsdtar
             ;;
         *.tgz)
-            logger_msg=
+            extra_logger_msg=
             ___x_cmd_zuz_run gzip --list "$target_file"
             ;;
         *.xz)
@@ -34,8 +34,12 @@ ___x_cmd_zuz_cat(){
             return 1
             ;;
         *.7z)
-            logger_msg=
+            extra_logger_msg=
             ___x_cmd_zuz_run x 7z l -ba "$target_file" | awk '{ print $NF }'
+            ;;
+        *)
+            ___x_cmd_zuz --help; zuz:warn "Unsupported to resolve as $target_file format.";
+            return 1
             ;;
     esac
 }

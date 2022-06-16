@@ -112,3 +112,9 @@ if ___x_cmd_is_suitable_advise_env; then
     command -v ___x_cmd_advise >/dev/null || xrc advise/latest
     ___x_cmd_advise init x
 fi
+
+xi(){
+    # TODO: xi tmux xxx == x tmux @me/xxx
+    local name="$1"; shift
+    ___x_cmd_main "@me/$name" "$@"
+}

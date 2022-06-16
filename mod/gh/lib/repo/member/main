@@ -21,7 +21,7 @@ ___x_cmd_gh_repo_member(){
 }
 # Section: List
 ___x_cmd_gh_repo_member_ls() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 type:
     Affiliation =   outside direct all
@@ -45,7 +45,7 @@ options:
 
 # Section: Add & Rm
 ___x_cmd_gh_repo_member_add() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     --repo          "Provide owner name and repo name.(default:the current user repo)"      <>:RepoName
@@ -81,7 +81,7 @@ options:
 }
 
 ___x_cmd_gh_repo_member_rm() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     --repo      "Provide owner name and repo name.(default:the current user repo)"  <>:RepoName

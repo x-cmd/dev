@@ -15,7 +15,7 @@ ___x_cmd_gt_repo_branch(){
     return 1
 }
 
-# Section:list & info
+# Section: list & info
 # shellcheck disable=SC2154
 # https://gitee.com/api/v5/swagger#/getV5ReposOwnerRepoBranches
 ___x_cmd_gt_repo_branch_ls(){
@@ -112,7 +112,8 @@ subcommand:
     param:run
 
     if [ -z "$PARAM_SUBCMD" ]; then
-        gt_log error "subcommand not found. show help."
+        ___x_cmd_gt_repo_branch_protection _param_help_doc
+        gt_log warn "Subcmd Not Found."
         return 0
     fi
 

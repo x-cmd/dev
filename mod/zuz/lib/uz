@@ -1,27 +1,14 @@
-# shellcheck shell=sh disable=SC2034,SC2154
-# Section: unzip the zip file
+# shellcheck shell=sh disable=SC2034,SC2154,SC3043
 
+# Section: unzip the zip file
 
 # Reference: https://linuxhint.com/xz_compression_tutorial/
 # Reference: https://blog.csdn.net/example440982/article/details/51712973
 # Reference: https://wangying.sinaapp.com/archives/2574
 ___x_cmd_zuz_uz(){
-    param:dsl <<A
-advise:
-    #n          ___advise_ls
-option:
-    #n          "target file"
-A
-    param:run
-
     local target_file="${1:?Please provide filename}"
     local dest_folder="${2:-.}"
-    # Zsh Compatible
-    if [ "$#" -eq 1 ];then
-        shift 1
-    else
-        shift 2
-    fi
+    shift $#
 
     target_file="$( cd "$(dirname "$target_file")" && pwd )"/$(basename "$target_file")
     mkdir -p "$dest_folder"
@@ -88,6 +75,10 @@ ___x_cmd_zuz_uz_whole_file(){
             #NOTE:: use 7zr command
             ___x_cmd_zuz_run x 7z x "$target_file"
             ;;
+        *)
+            ___x_cmd_zuz --help; zuz:warn "Unsupported to decompress as $target_file format.";
+            return 1
+            ;;
     esac
 }
 
@@ -137,12 +128,16 @@ ___x_cmd_zuz_uz_and_files(){
             #NOTE:: use 7zr command
             ___x_cmd_zuz_run x 7z x "$target_file"
             ;;
+        *)
+            ___x_cmd_zuz --help; zuz:warn "Unsupported to decompress as $target_file format.";
+            return 1
+            ;;
     esac
 }
 
 ___x_cmd_zuz_uzr(){
-    param:void
+
     ZUZ_DELETE_AFTER=1 ___x_cmd_zuz_uz "$@"
 }
-# EndSection
+## EndSection
 

@@ -15,8 +15,8 @@ ___x_cmd_gt_user(){
     param:subcmd:try
     param:run
 
-    gt_log warn "Subcmd Not Found."
     ___x_cmd_gt_user _param_help_doc
+    gt_log warn "Subcmd Not Found."
     return 1
 }
 
@@ -62,8 +62,8 @@ ___x_cmd_gt_user_repo(){
     param:subcmd:try
     param:run
 
-    gt_log warn "Subcmd Not Found."
     ___x_cmd_gt_user_repo _param_help_doc
+    gt_log warn "Subcmd Not Found."
     return 1
 }
 
@@ -183,16 +183,9 @@ ___x_cmd_gt_user_key(){
     param:subcmd:try
     param:run
 
-    if [ -z "$PARAM_SUBCMD" ]; then
-        gt_log warn "Subcmd Not Found."
-        ___x_cmd_gt_user_key _param_help_doc
-        return 1
-    fi
-
-    # list issues of user
-    # list projects of user
-
-    "___x_cmd_gt_user_key_${PARAM_SUBCMD}" "$@"
+    ___x_cmd_gt_user_key _param_help_doc
+    gt_log warn "Subcmd Not Found."
+    return 1
 }
 
 # https://gitee.com/api/v5/swagger#/getV5UserKeys

@@ -7,13 +7,10 @@ ___x_cmd_gt_repo_tag(){
         add             "Add repo tag"
     param:subcmd:try
     param:run
-    if [ -z "$PARAM_SUBCMD" ]; then
-        gt_log warn "Subcmd Not Found."
-        ___x_cmd_gt_repo_tag _param_help_doc
-        return 1
-    fi
 
-    "___x_cmd_gt_repo_tag_$PARAM_SUBCMD" "$@"
+    ___x_cmd_gt_repo_tag _param_help_doc
+    gt_log warn "Subcmd Not Found."
+    return 1
 }
 
 # shellcheck disable=SC2154,SC2086

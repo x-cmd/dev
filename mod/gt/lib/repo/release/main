@@ -12,13 +12,10 @@ ___x_cmd_gt_repo_release(){
         attachment      "attachment management"
     param:subcmd:try
     param:run
-    if [ -z "$PARAM_SUBCMD" ]; then
-        gt_log warn "Subcmd Not Found."
-        ___x_cmd_gt_repo_release _param_help_doc
-        return 1
-    fi
 
-    "___x_cmd_gt_repo_release_${PARAM_SUBCMD}" "$@"
+    ___x_cmd_gt_repo_release _param_help_doc
+    gt_log warn "Subcmd Not Found."
+    return 1
 }
 
 # shellcheck disable=SC2086,SC2154
@@ -75,17 +72,31 @@ options:
     --tag               "Please provide tag name"                                            <>
     --name              "Release name"                                                       <>
     --body              "Release Description"                                                <>
-    --prerelease        "Is pre-release version"                                             <>:bool="false"
-    --target_commitish  "Default is master"                                                  <>:name="master"
+    --prerelease        "Is pre-release version"                                             <>:Bool="false"
+    --target_commitish  "Default is master"                                                  <>="master"
 '
     param:run
-
+    local gen_gt_json
+    gen_gt_json="$(param:option2json tag_name=tag -tag)"
     ___x_cmd_gt_param_init_owner_repo
 
-    ___x_cmd_gt_http post "/v5/repos/${owner_repo}/releases" \
-        tag_name="$tag" name body prerelease target_commitish 1>/dev/null 2>&1
-    [ $? -ne 0 ] && gt_log error "Create release failure: $name by $owner_repo $tag" && return 1
-    ___x_cmd_ui tf "true" "Success release" "name: $name" "owner_repo: $owner_repo" "tag: $tag"  && return 0
+    printf "%s" "$gen_gt_json" | ___x_cmd_gt_http post "/v5/repos/${owner_repo}/releases" - | \
+        ___x_cmd_gt_repo_release_create_status_handler
+}
+
+___x_cmd_gt_repo_release_create_status_handler(){
+    if [ ! -t 1 ] || [ -n "$ENFORCE_JSON" ]; then
+        cat
+        return
+    fi
+
+    ___x_cmd_git_json_query_rename name=.name tag_name=.tag_name prerelease=.prerelease
+    if [ -n "$tag_name" ]; then
+        ___x_cmd_ui_tf true     "Release Successfully" "name: $name"
+    else
+        ___x_cmd_ui_tf false    "Release failure: $name."
+        return 1
+    fi
 }
 
 

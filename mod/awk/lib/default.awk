@@ -3,7 +3,7 @@ BEGIN {
     FALSE = 0
     true = 1
     TRUE = 1
-    S = "\001"
+    S = SUBSEP
     T = "\002"
     L = "\003"
 }

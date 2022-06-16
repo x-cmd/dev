@@ -1,58 +1,37 @@
-# shellcheck shell=sh disable=SC3043 # xrc
+# Author:       Li Junhao                   l@x-cmd.com
+# shellcheck    shell=sh disable=SC3043     # xrc
 
-# shellcheck shell=sh
-# author:       Li Junhao           l@x-cmd.com
-
+x log init zuz
+xrc:mod:lib zuz     cat ls z uz
 # Section: main
-
-# TODO: Use Param Generator SYMPOSIS
-xrc param/latest
 ___x_cmd_zuz(){
-    param:dsl <<A
-subcommand:
-    z|compress          "compress file"
-    uz|decompress       "decompress zipfile"
-    uzr                 "decompress zipfile then remove the original file"
-    ls                  "list compress inside file"
-A
-    param:run
-    if [ -z "$PARAM_SUBCMD" ] || [ -z "$*" ]; then
-        printf "\n%s\n    %s\n    %s\n    %s\n    %s\n" \
-                "SYMPOSIS:" \
-                "x z   <zipfile> <source...>" \
-                "x uz  <zipfile>" \
-                "x uzr <zipfile>" \
-                "x zl  <zipfile>"
-        ___x_cmd_zuz help
-        return 0
-    fi
-
-    eval "___x_cmd_zuz_$PARAM_SUBCMD" "$@"
+    case "$1" in
+        z|compress)             shift; ___x_cmd_zuz_z      "$@" ;;
+        uz|decompress)          shift; ___x_cmd_zuz_uz     "$@" ;;
+        uzr)                    shift; ___x_cmd_zuz_uzr    "$@" ;;
+        ls)                     shift; ___x_cmd_zuz_ls     "$@" ;;
+        help|-h|--help)         shift; ___x_cmd_zuz_help   "$@" ;;
+        _x_cmd_advise_json)     cat "$___X_CMD_ROOT_MOD/zuz/lib/zuz.advise.json" >&2 ;;
+        *)                      ___x_cmd_zuz_help; zuz:error "subcommand Not found." ;;
+    esac
 }
 
-# EndSection
+___x_cmd_zuz_help(){ cat "$___X_CMD_ROOT_MOD/zuz/lib/help.txt" >&2 ;}
+## EndSection
 
 # Section: other
 # NOTICE: tar czf - "$@" | split -b "$size" -a 3 - "$target_file."
 # NOTICE: In some environments, split doesnot have -d option. Thus we are using 7zip to compress
-
-x log init zuz
 ___x_cmd_zuz_run(){
     local IFS=' '
     # shellcheck disable=SC2154
-    zuz_log info "Command to execute => $* $logger_msg"
-    IFS=
-    eval "$@"
-    local exit_code="$?"
-    if [ "$exit_code" != 0 ];then
-        zuz_log debug "$*;Error Code: $exit_code"
-        return $exit_code
-    else
-        return 0
-    fi
-
+    zuz:info "Command to execute => $* $extra_logger_msg"
+    # IFS=
+    "$@"
+    local exit_code=$?
+    [ "$exit_code" = 0 ] || zuz:error "EXIT=$exit_code: $*"
+    return $exit_code
 }
-# EndSection
+## EndSection
 
-xrc zuz/lib/cat zuz/lib/ls zuz/lib/uz zuz/lib/z
 xrc setmain ___x_cmd_zuz

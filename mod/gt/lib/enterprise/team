@@ -15,6 +15,7 @@ ___x_cmd_gt_enterprise_team(){
     param:run
 
     if [ -z "$PARAM_SUBCMD" ]; then
+        ___x_cmd_gt_enterprise_team _param_help_doc
         gt_log error "subcmd not found. show help."
         return 0
     fi
@@ -142,12 +143,9 @@ ___x_cmd_gt_enterprise_team_member(){
     param:subcmd:try
     param:run
 
-    if [ -z "$PARAM_SUBCMD" ]; then
-        gt_log error "subcmd not found. show help."
-        return 0
-    fi
-
-    "___x_cmd_gt_enterprise_team_member_$PARAM_SUBCMD" "$@"
+    ___x_cmd_gt_enterprise_team_member _param_help_doc
+    gt_log warn "Subcmd Not Found."
+    return 1
 }
 
 # https://gitee.com/api/v8/swagger#/getEnterpriseIdGroupsGroupIdMembers

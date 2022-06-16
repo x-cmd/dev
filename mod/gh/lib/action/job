@@ -1,7 +1,7 @@
 # shellcheck shell=sh
 # shellcheck disable=SC2039,3043
 ___x_cmd_gh_job_ls() {
-    param:scope "github/$O"
+    param:scope ___x_cmd_github
     param:dsl <<A
 options:
     --repo      "Provide owner name and repo name.(default:the current user repo)"      <>:RepoName="$(_____x_cmd_git_repo)"
@@ -20,7 +20,7 @@ A
 }
 
 ___x_cmd_gh_job() {
-    param:scope "github/$O"
+    param:scope ___x_cmd_github
     param:dsl <<A
 options:
     --repo      "Provide owner name and repo name.(default:the current user repo)"      <>:RepoName="$(_____x_cmd_git_repo)"
@@ -34,7 +34,7 @@ A
 }
 
 ___x_cmd_gh_action_job_log() {
-    param:scope "github/$O"
+    param:scope ___x_cmd_github
     param:dsl <<A
 options:
     --repo      "Provide owner name and repo name.(default:the current user repo)"      <>:RepoName="$(_____x_cmd_git_repo)"

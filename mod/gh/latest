@@ -41,19 +41,17 @@ ___x_cmd_gh(){
 
 ____x_cmd_gh_make() {
     param:void
-    local O_ORIGINAL=${1:?Provide client name by O environment}
-    local O="___x_cmd_gh_$O_ORIGINAL"
-
+    local O="___x_cmd_gh_${1:?Provide client name by O environment}"
     http make  'https://api.github.com'
     http header put Accept "application/vnd.github.v3+json"
 
     local token
-    token="$(O="$O_ORIGINAL" ___x_cmd_gh_config_get "oauth_token")"
+    token="$(___x_cmd_gh_config_get "oauth_token")"
 
     if [ -n "$token" ]; then
-        O="___x_cmd_gh_$O_ORIGINAL" http header put Authorization "token $token"
+        http header put Authorization "token $token"
         local user
-        user="$(O="$O_ORIGINAL" ___x_cmd_gh_current_owner)" || return 1
+        user="$(___x_cmd_gh_current_owner)" || return 1
         gh_log info "Hi $user! You've successfully authenticated."
         return 0
     fi

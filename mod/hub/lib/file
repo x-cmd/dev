@@ -22,39 +22,32 @@ ___x_cmd_hub_file_normalize_respath(){
 
 # Section(list): ls、 la
 
-___x_cmd_hub_file_ls(){
+___x_cmd_hub_file_list(){
     local respath="${1:-@me/}"
+    local type="${2:-""}"
+    local recursive="${3:-""}"
     respath="$(___x_cmd_hub_file_normalize_respath "$respath")"
 
     local res
-    if ! res="$(___x_cmd_hub_client_file_ls "$respath")" ; then
+    if ! res="$(___x_cmd_hub_client_file_ls "$respath" "$type" "$recursive")" ; then
         hub:error "Failed to ls file: $res"
         return 1
     fi
     hub:debug "response: ${res}"
 
-    # TODO: Use jo or ja
-    local code
-    code="$(xrc cat awk/lib/default.awk awk/lib/json.awk awk/lib/jiter.awk )"
-    printf "%s" "$res" | awk "$code"'
-        { jiget_after_tokenize_unquote($0, ".") }'
-}
-
-___x_cmd_hub_file_la(){
-    local respath="${1:-@me/}"
-    respath="$(___x_cmd_hub_file_normalize_respath "$respath")"
-
-    local res
-    if ! res="$(___x_cmd_hub_client_file_la "$respath")" ; then
-        hub:error "Failed to ls file: $res"
-        return 1
-    fi
-
-    if [ -t 1 ]; then
-        x ui table json PATH=.path IS_PUBLIC=.isPublic \
-            -- 'printf "%s" "$res"'
+    if [ -z "$type" ] ; then
+        # TODO: Use jo or ja
+        local code
+        code="$(xrc cat awk/lib/default.awk awk/lib/json.awk awk/lib/jiter.awk )"
+        printf "%s" "$res" | awk "$code"'
+            { jiget_after_tokenize_unquote($0, ".") }'
     else
-        printf "%s" "$res" #| x ja '(k() ~ "_id|filePath|userId|isPublic") { print v(); }'
+        if [ -t 1 ]; then
+            x ui table json PATH=.path IS_PUBLIC=.isPublic SIZE=.size MD5=.md5 CREATE_AT=.createdAt UPDATE_AT=.updateAt \
+                -- 'printf "%s" "$res"'
+        else
+            printf "%s" "$res"
+        fi
     fi
 }
 
@@ -114,36 +107,15 @@ ___x_cmd_hub_file_upload_dist(){
     }
 
     respath="$(___x_cmd_hub_file_normalize_respath "$respath")"
-    ___x_cmd_hub_client_file_upload ___x_cmd_hub_tmp.wx "$respath"
+
+    if ! res=$(___x_cmd_hub_client_file_upload ___x_cmd_hub_tmp.wx "$respath"); then
+        hub:error "Failed: $res. Please check the respath."
+        rm -rf ___x_cmd_hub_tmp.wx
+        return 1
+    fi
+
+    printf "%s\n" "$res"
     rm -rf ___x_cmd_hub_tmp.wx
-}
-
-# EndSection
-
-# Section(share): share, private
-
-___x_cmd_hub_file_share(){
-    local respath="${1:?Please provide path}"
-    respath="$(___x_cmd_hub_file_normalize_respath "$respath")"
-
-    if ! res="$(___x_cmd_hub_client_file_share "${respath}")" ; then
-        hub:error "Failed to share file: $res"
-        return 1
-    fi
-
-    hub:info "File shared successfully: $res"
-}
-
-___x_cmd_hub_file_private(){
-    local respath="${1:?Please provide path}"
-    respath="$(___x_cmd_hub_file_normalize_respath "$respath")"
-
-    if ! res="$(___x_cmd_hub_client_file_private "${respath}")" ; then
-        hub:error "Failed to private file: $res"
-        return 1
-    fi
-
-    hub:info "File private successfully: $res"
 }
 
 # EndSection

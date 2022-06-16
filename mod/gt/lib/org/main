@@ -17,8 +17,8 @@ ___x_cmd_gt_org(){
     param:subcmd:try
     param:run
 
-    gt_log warn "Subcmd Not Found."
     ___x_cmd_gt_org _param_help_doc
+    gt_log warn "Subcmd Not Found."
     return 1
 }
 
@@ -112,13 +112,9 @@ ___x_cmd_gt_org_repo(){
     param:subcmd:try
     param:run
 
-    if [ -z "$PARAM_SUBCMD" ]; then
-        gt_log warn "Subcmd Not Found."
-        ___x_cmd_gt_org_repo _param_help_doc
-        return 1
-    fi
-
-    "___x_cmd_gt_org_repo_${PARAM_SUBCMD}" "$@"
+    ___x_cmd_gt_org_repo _param_help_doc
+    gt_log warn "Subcmd Not Found."
+    return 1
 }
 
 # https://gitee.com/api/v5/swagger#/getV5OrgsOrgRepos

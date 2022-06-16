@@ -16,13 +16,10 @@ ___x_cmd_gt_repo_pr(){
         testers         "Designation pull requests testers"
     param:subcmd:try
     param:run
-    if [ -z "$PARAM_SUBCMD" ]; then
-        gt_log warn "Subcmd Not Found."
-        ___x_cmd_gt_repo_pr _param_help_doc
-        return 1
-    fi
 
-    "___x_cmd_gt_repo_pr_${PARAM_SUBCMD}" "$@"
+    ___x_cmd_gt_repo_pr _param_help_doc
+    gt_log warn "Subcmd Not Found."
+    return 1
 }
 
 

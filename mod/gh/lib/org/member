@@ -16,7 +16,7 @@ ___x_cmd_gh_org_member(){
 
 # Section: List
 ___x_cmd_gh_org_member_ls() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     --filter        "Filter members returned in the list."      <>:OrgMemberFilter="all"
@@ -40,7 +40,7 @@ options:
 
 # Section: info & add & rm
 ___x_cmd_gh_org_member_info() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl      '
 options:
     --username          "username:space address"    <>
@@ -60,7 +60,7 @@ options:
 }
 
 ___x_cmd_gh_org_member_add() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 type:
     role = admin member
@@ -91,7 +91,7 @@ options:
 }
 
 ___x_cmd_gh_org_member_rm() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     --org       "org space address"         <>:Address

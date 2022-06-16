@@ -2,7 +2,7 @@
 # shellcheck disable=SC2039,3043
 
 ___x_cmd_gh_repo(){
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:subcmd ___x_cmd_gh_repo               \
         create          "create repo"           \
         rm              "Remove repo"           \
@@ -35,7 +35,7 @@ ___x_cmd_gh_repo_ls() {
 
 # Section: Info
 ___x_cmd_gh_repo_info() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     #1|--repo    "Provide owner name and repo name.(default:the current user repo)"      <>:RepoName
@@ -64,9 +64,8 @@ ___x_cmd_gh_repo_info_status(){
 
 # Section: Creation
 ___x_cmd_gh_repo_create() {
-    local O="${O:-GITHUB_DEFAULT}"
 
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 type:
     access  =   private public
@@ -132,7 +131,7 @@ ___x_cmd_gh_repo_create_status_handler(){
 
 # Section: rm
 ___x_cmd_gh_repo_rm() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     #n      "Provide repo list"    <>
@@ -157,9 +156,8 @@ options:
 
 # Section: Update
 ___x_cmd_gh_repo_update() {
-    local O="${O:-GITHUB_DEFAULT}"
 
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 type:
     Access  =   private " " public

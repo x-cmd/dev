@@ -12,7 +12,7 @@ ___x_cmd_gh_workflows() {
 }
 
 ___x_cmd_gh_workflows_view() {
-    param:scope "github/$O"
+    param:scope ___x_cmd_github
     param_type github runID - <<A
 $(___x_cmd_gh_workflows_ls "$@" | x jo .workflows.\* .path)
 A
@@ -43,7 +43,7 @@ A
 }
 
 ___x_cmd_gh_workflows_ls() {
-    param:scope "github/$O"
+    param:scope ___x_cmd_github
     param:dsl <<A
 options:
     --repo      "Provide owner name and repo name.(default:the current user repo)"      <>:RepoName="$(_____x_cmd_git_repo)"

@@ -1,17 +1,10 @@
-# shellcheck shell=sh disable=SC2034,SC2154
+# shellcheck shell=sh disable=SC2034,SC2154,SC3043
+
 # Section: zip the file
 ___x_cmd_zuz_z(){
-    param:dsl <<A
-advise:
-    #n          ___advise_ls
-option:
-    --size        ""  <size>=0       =~   [^.]+
-    #n          "target file"
-A
-    param:run
-
+    local size="${size:-0}"
     if [ $# = 0 ]; then
-        ___x_cmd_zuz_z help
+        ___x_cmd_zuz_help
     fi
 
     local target_file="${1:-filename}"; shift
@@ -44,7 +37,7 @@ A
                 # TODO: We should use 7zip
                 ___x_cmd_zuz_run x 7z -v"$size" "$target_file" "$@"
             else
-                local logger_msg="&& xz $target_file"
+                local extra_logger_msg="&& xz ${target_file%.*}"
                 ___x_cmd_zuz_run tar cvf "${target_file%.*}" "$@" && xz "${target_file%.*}"
             fi
             ;;
@@ -63,8 +56,9 @@ A
             fi
             ;;
         *.xz)
-            # xz: Can't zip directory, Will skipping. Can use tar container.
+            # NOTE: xz: Can't compress directory, Will skipping. Can use tar container.
             # We can use 7zip to handle xz ? Little footprint.
+            local extra_logger_msg="> $target_file"
             ___x_cmd_zuz_run xz -c -kz "$@" > "$target_file"
             ;;
         *.zip)
@@ -87,9 +81,9 @@ A
             fi
             ;;
         *)
-            ___x_cmd_zuz_z --help
+            ___x_cmd_zuz --help; zuz:warn "Unsupported to compress as $target_file format.";
             return 1
             ;;
     esac
 }
-# EndSection
+## EndSection

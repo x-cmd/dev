@@ -33,8 +33,8 @@ ___x_cmd_gt(){
     param:subcmd:try
     param:run
 
-    gt_log warn "Subcmd Not Found."
     ___x_cmd_gt _param_help_doc
+    gt_log warn "Subcmd Not Found."
     return 1
 }
 

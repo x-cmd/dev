@@ -13,7 +13,7 @@ ___x_cmd_gh_org_repo(){
 }
 
 ___x_cmd_gh_org_repo_ls() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     --type     "type"                   <>="all"    = all private public
@@ -31,7 +31,7 @@ options:
 }
 
 ___x_cmd_gh_org_repo_create() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 type:
     Access  =   private public internal

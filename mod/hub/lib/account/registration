@@ -1,7 +1,5 @@
 # shellcheck shell=sh disable=SC3043
 
-# Section: official_site, weixin
-
 ___x_cmd_hub_register_official_site(){
 
     local username="${1}"
@@ -54,8 +52,6 @@ ___x_cmd_hub_register_weixin(){
     fi
 }
 
-# EndSection
-
 # Section: email(frozen)
 ___x_cmd_hub_register_email_witharg(){
     local email="${1:?Provide email}"
@@ -64,7 +60,7 @@ ___x_cmd_hub_register_email_witharg(){
     token_to_activate="$(___x_cmd_hub_token_generate)"
 
     local res
-    if ! res="$(___x_cmd_hub_client_login_by_email "$email" "$token_to_activate" "$username")" ; then
+    if ! res="$(___x_cmd_hub_client_register_by_email "$email" "$token_to_activate" "$username")" ; then
         hub:error "Failed to login with email: $email, res: $res"
         return 1
     fi

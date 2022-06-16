@@ -2,7 +2,7 @@
 # shellcheck disable=SC2039,3043
 
 ___x_cmd_gh_org(){
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:subcmd ___x_cmd_gh_org                \
         info        "Show information"          \
         repo        "List all repos"            \
@@ -43,7 +43,7 @@ ___x_cmd_gh_org_ls() {
 
 
 ___x_cmd_gh_org_info() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     #1|--org        "org space address"    <>:Address
@@ -65,7 +65,7 @@ options:
 
 # Section: Install github app list
 ___x_cmd_gh_org_app(){
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     #1|--org        "org space address"                         <>:Address

@@ -1,7 +1,7 @@
 # shellcheck shell=sh
 # shellcheck disable=SC2039,3043
 ___x_cmd_gh_run_ls() {
-    param:scope "github/$O"
+    param:scope ___x_cmd_github
     param:dsl <<A
 options:
     --repo      "Provide owner name and repo name.(default:the current user repo)"      <>:RepoName="$(_____x_cmd_git_repo)"
@@ -26,7 +26,7 @@ A
 }
 
 ___x_cmd_gh_run_view() {
-    param:scope "github/$O"
+    param:scope ___x_cmd_github
     param_type github runID - <<A
 $(_____x_cmd_run_options)
 A
@@ -53,7 +53,7 @@ A
 }
 
 ___x_cmd_gh_run_log() {
-    param:scope "github/$O"
+    param:scope ___x_cmd_github
     param:dsl <<A
 type:
     Filters = latest all
@@ -84,7 +84,7 @@ A
 }
 
 ___x_cmd_gh_run_download() {
-    param:scope "github/$O"
+    param:scope ___x_cmd_github
     param:dsl <<A
 options:
     --repo      "Provide owner name and repo name.(default:the current user repo)"  <>:RepoName="$(_____x_cmd_git_repo)"

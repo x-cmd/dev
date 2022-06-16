@@ -2,7 +2,7 @@
 # shellcheck disable=SC2039,3043
 
 ___x_cmd_gh_user(){
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:subcmd ___x_cmd_gh_user       \
         info        "Show information"  \
         email       "get user email"    \
@@ -18,7 +18,7 @@ ___x_cmd_gh_user(){
 }
 
 ___x_cmd_gh_user_info() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     #1              "Username, if not set, show the user information of current owner, or owner of this token"
@@ -36,7 +36,7 @@ options:
 }
 
 ___x_cmd_gh_user_repo(){
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:subcmd ___x_cmd_gh_user_repo       \
         ls          "List all repos"
     param:subcmd:try
@@ -45,7 +45,7 @@ ___x_cmd_gh_user_repo(){
 }
 
 ___x_cmd_gh_user_repo_ls() {
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 options:
     --visibility    "visibility"                                <>:Authority="all"
@@ -80,7 +80,7 @@ ___x_cmd_gh_user_email(){
 }
 
 ___x_cmd_gh_user_issue(){
-    param:scope     "github/$O"
+    param:scope     ___x_cmd_github
     param:dsl       '
 type:
     screen = all assigned created

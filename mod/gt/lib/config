@@ -8,13 +8,10 @@ ___x_cmd_gt_config(){
         set         "Update configuration with a value for the given key"
     param:subcmd:try
     param:run
-    if [ -z "$PARAM_SUBCMD" ]; then
-        gt_log warn "Subcmd Not Found."
-        ___x_cmd_gt_config _param_help_doc
-        return 1
-    fi
 
-    "___x_cmd_gt_config_${PARAM_SUBCMD}" "$@"
+    ___x_cmd_gt_config _param_help_doc
+    gt_log warn "Subcmd Not Found."
+    return 1
 }
 
 ___x_cmd_gt_config_which(){

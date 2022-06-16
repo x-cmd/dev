@@ -1,7 +1,5 @@
 # shellcheck shell=sh disable=SC3043,SC2120
 
-# Section: userinfo
-
 ___x_cmd_hub_user(){
     ___x_cmd_hub_get_userinfo_by_token "$(___x_cmd_hub_token)"
 }
@@ -35,5 +33,3 @@ A
     username="${username#username=}"
     printf "%s\n" "${username} ${userid}"
 }
-
-# EndSection

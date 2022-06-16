@@ -13,7 +13,7 @@ BEGIN {
     T_ROOT = "\006"
 
     T_KEY = "\007"
-    T_LEN = "\010"
+    T_LEN = L
 }
 
 # Section: handler: jkey, _jpath,
@@ -370,56 +370,56 @@ function jlist_grep_to_arr( obj, keypath, reg,  arr,        _arrl,    _k, _len, 
 # EndSection
 
 # Section: jdict
-# TODO: rename to jdict_keys2arr
-function jdict_keys(arr, keypath, klist, _l){
-    _l = split(arr[ keypath T_KEY ], klist, S)
-    klist[ L ] = _l
-    # TODO: klist[ L ] = _l-1
-    return _l
-}
 
-function jdict_rm(arr, keypath, key,  _key_str){
-    _key_str = arr[ keypath T_KEY]
-    if (match(_key_str, S key)){
-        arr[ keypath T_KEY ] = substr(_key_str, 1, RSTART - 1) substr(_key_str, RSTART + RLENGTH)
-        arr[ keypath T_LEN ] = arr[ keypath T_LEN ] - 1
+# NOTICE: argument key is already quoted
+function jdict_rm(arr, keypath, key,  _key_str, i, l){
+    # _key_str = arr[ keypath T_KEY]
+    # if (match(_key_str, S key)){
+    #     arr[ keypath T_KEY ] = substr(_key_str, 1, RSTART - 1) substr(_key_str, RSTART + RLENGTH)
+    #     arr[ keypath T_LEN ] = arr[ keypath T_LEN ] - 1
+    # }
+
+    _l = arr[ keypath L ]
+    for (i=1; i<=_l; ++i) {
+        _k = arr[ keypath, i ]
+        if ( key == _k ) {
+            delete arr[ keyapth, _k ] # arr[ keyapth, _k ] = ""
+            for (arr[ keypath L ]=--_l; i<=_l; ++i) arr[ keypath, i ] = arr[ keypath, i+1 ]
+            return true
+        }
     }
+    return false
 }
 
 # TODO: We should quote
-function jdict_push(arr, keypath, key, value,  _v){
-    _v = arr[keypath S key]
-    if ( _v != "" ) {
-        arr[keypath S key] = value
-    } else {
-        arr[ keypath T_LEN ] = arr[ keypath T_LEN ] + 1
-        arr[ keypath T_KEY ] = arr[ keypath T_KEY ] S key
-        # TODO: arr[ keypath T_KEY ] = arr[ keypath T_KEY ] key S
-        arr[keypath S key] = value
+function jdict_put(arr, keypath, key, value,  _v, _l){
+    _v = arr[ keypath, key ]
+    arr[ keypath, key ] = value
+    if ( _v == "" ) {
+        _l = arr[ keypath L ] + 1
+        arr[ keypath L ] = _l
+        arr[ keypath, _l ] = key
     }
     return _v
 }
 
 function jdict_has(arr, keypath, key,  _v) {
-    _v = arr[keypath S key]
+    _v = arr[ keypath, key ]
     return (_v == "") ? false : true
 }
 
 function jdict_get(arr, keypath, key){
-    return arr[keypath S key]
+    return arr[ keypath, key ]
 }
 
 function jdict_len(arr, keypath){
-    return arr[ keypath T_LEN ]
+    return arr[ keypath L ]
 }
 
 # TODO: to check
-function jdict_value2arr(obj, keypath, arr,    _keyarr, i, l){
-    l = jdict_keys2arr(obj, keypath, _keyarr)
-    for (i=1; i<=l; ++i) {
-        arr[i] = jstr(obj, keypath S _keyarr[i])
-    }
-    arr[ L ] = l
+function jdict_value2arr(obj, keypath, arr, i, l){
+    arr[ L ] = l = obj[ keypath L ]
+    for (i=1; i<=l; ++i) arr[i] = obj[ keypath, obj[ keypath, i ] ]
     return l
 }
 
@@ -477,45 +477,43 @@ function jstr0(arr, keypath){
 # EndSection
 
 # Section
-function jdict_keys2arr(arr, keypath, klist, _l){
-    _l = split(substr(arr[ keypath T_KEY ],2), klist, S)
-    klist[ L ] = _l
-    # TODO: klist[ L ] = _l-1
-    return _l
+function jdict_keys2arr(obj, keypath, arr, i, l){
+    l = arr[ L ] = obj[ keypath L ]
+    for (i=1; i<=l; ++i) arr[i] = obj[ keypath, i ]
+    return l
 }
 # EndSection
 
 # Section: Compact Stringify
 function ___json_stringify_compact_dict(arr, keypath,     _klist, _l, _i, _key, _val, _ret){
-
-    _l = jdict_keys2arr(arr, keypath, _klist)
-
+    _l = arr[ keypath L ]
     if (_l == 0) return "{}"
 
-    for (_i=1; _i<=_l; _i++){
-        _key = _klist[ _i ]
-        # _val = arr[ keypath S _key ]
-        _ret = _ret "," _key ":" ___json_stringify_compact_value( arr, keypath S _key )
+    _key = arr[ keypath, 1 ]
+    _ret = _key ":" ___json_stringify_compact_value( arr, keypath SUBSEP _key )
+    for (_i=2; _i<=_l; _i++){
+        _key = arr[ keypath, _i ]
+        _ret = _ret "," _key ":" ___json_stringify_compact_value( arr, keypath SUBSEP _key )
     }
-    _ret = substr(_ret, 2)
     return "{" _ret "}"
 }
 
 function ___json_stringify_compact_list(arr, keypath,     _l, _i, _ret){
-    _l = arr[ keypath T_LEN ]
+    _l = arr[ keypath L ]
     if (_l == 0) return "[]"
-    _ret = ___json_stringify_compact_value( arr, keypath S "\"" 1 "\"" )
+
+    _ret = ___json_stringify_compact_value( arr, keypath SUBSEP "\"" 1 "\"" )
     for (_i=2; _i<=_l; _i++){
-        _ret = _ret "," ___json_stringify_compact_value( arr, keypath S "\"" _i "\"" )
+        _ret = _ret "," ___json_stringify_compact_value( arr, keypath SUBSEP "\"" _i "\"" )
     }
     return "[" _ret "]"
 }
 
 function ___json_stringify_compact_value(arr, keypath,      _t, _klist, _i){
     _t = arr[ keypath ]
-    if (_t == T_DICT) {
+    if (_t == "{") {
         return ___json_stringify_compact_dict(arr, keypath)
-    } else if (_t == T_LIST) {
+    } else if (_t == "[") {
         return ___json_stringify_compact_list(arr, keypath)
     } else {
         return _t
@@ -540,45 +538,44 @@ function json_stringify_compact(arr, keypath,      _i, _len,_ret){
 # EndSection
 
 # Section: Machine Stringify
-function ___json_stringify_machine_dict(arr, keypath,     _klist, _l, _i, _key, _val, _ret){
+function ___json_stringify_machine_dict(arr, keypath, sep,    _klist, _l, _i, _key, _val, _ret){
+    _l = arr[ keypath L ]
+    if (_l == 0) return "{" sep "}" sep
 
-    _l = jdict_keys2arr(arr, keypath, _klist)
-
-    if (_l == 0) return "{\n}"
-
-    for (_i=1; _i<=_l; _i++){
-        _key = _klist[ _i ]
-        # _val = arr[ keypath S _key ]
-        _ret = _ret "\n,\n" _key "\n:\n" ___json_stringify_machine_value( arr, keypath S _key )
-    }
-    _ret = substr(_ret, 4)
-    return "{\n" _ret "\n}"
-}
-
-function ___json_stringify_machine_list(arr, keypath,     _l, _i, _ret){
-    _l = arr[ keypath T_LEN ]
-    if (_l == 0) return "[\n]"
-    _ret = ___json_stringify_machine_value( arr, keypath  S "\"" 1 "\"" )
-
+    _key = arr[ keypath, 1 ]
+    _ret = _key sep ":" sep  ___json_stringify_compact_value( arr, keypath SUBSEP _key, sep )
     for (_i=2; _i<=_l; _i++){
-        _ret = _ret "\n,\n" ___json_stringify_machine_value( arr, keypath S "\""  _i "\"" )
+        _key = arr[ keypath, _i ]
+        _ret = _ret "," sep _key sep ":" sep  ___json_stringify_compact_value( arr, keypath SUBSEP _key, sep )
     }
-
-    return "[\n" _ret "\n]"
+    return "{" sep  _ret "}" sep
 }
 
-function ___json_stringify_machine_value(arr, keypath,     _t, _klist, _i, _ret){
+function ___json_stringify_machine_list(arr, keypath, sep,    _l, _i, _ret){
+    _l = arr[ keypath L ]
+    if (_l == 0) return "[" sep "]" sep
+
+    _ret = ___json_stringify_compact_value( arr, keypath SUBSEP "\"" 1 "\"", sep )
+    for (_i=2; _i<=_l; _i++){
+        _ret = _ret "," sep ___json_stringify_compact_value( arr, keypath SUBSEP "\"" _i "\"", sep )
+    }
+    return "[" sep  _ret "]" sep
+}
+
+function ___json_stringify_machine_value(arr, keypath, sep,    _t, _klist, _i, _ret){
     _t = arr[ keypath]
-    if (_t == T_DICT) {
-        return ___json_stringify_machine_dict(arr, keypath)
-    } else if (_t == T_LIST) {
-        return ___json_stringify_machine_list(arr, keypath)
+    if (_t == "{") {
+        return ___json_stringify_machine_dict(arr, keypath, sep)
+    } else if (_t == "[") {
+        return ___json_stringify_machine_list(arr, keypath, sep)
     } else {
-        return _t
+        return _t sep
     }
 }
 
-function json_stringify_machine(arr, keypath,    _i, _len,_ret){
+function json_stringify_machine(arr, keypath, sep,   _i, _len,_ret){
+    if (sep == "") sep = "\n"
+
     if (keypath != "") {
         keypath=jpath(keypath)
         return ___json_stringify_machine_value(arr, keypath)
@@ -586,9 +583,8 @@ function json_stringify_machine(arr, keypath,    _i, _len,_ret){
     _len = arr[ T_LEN ]
     if (_len < 1)  return ""
 
-    _ret = ___json_stringify_machine_value( arr,  S "\"" 1 "\"")
-    for (_i=2; _i<=_len; ++_i) {
-        _ret = _ret "\n"___json_stringify_machine_value( arr,  S "\"" _i "\"")
+    for (_i=1; _i<=_len; ++_i) {
+        _ret = _ret ___json_stringify_machine_value( arr,  S "\"" _i "\"")
     }
 
     return _ret

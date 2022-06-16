@@ -357,7 +357,7 @@ function jiparse( obj, item ){
                 obj[ JITER_FA_KEYPATH S "\"" JITER_CURLEN "\"" ] = item
             } else {
                 JITER_LAST_KP = item
-                obj[ JITER_FA_KEYPATH T_KEY ] = obj[ JITER_FA_KEYPATH T_KEY ] S item
+                obj[ JITER_FA_KEYPATH, JITER_CURLEN ] = item
             }
         }
     } else if (item ~ /^[\[\{]$/) {
