@@ -46,22 +46,22 @@ ___x_cmd___curl___not_secure_get(){
 
     if command -v bash 1>/dev/null; then
         ___x_cmd___curl_not_secure_request(){
-            ___x_cmd___curl___not_secure_request_bash
+            ___x_cmd___curl___not_secure_request_bash | ___x_cmd_curl___not_secure_request_handler "$file"
         }
     elif command -v wget >/dev/null; then
         ___x_cmd___curl_not_secure_request(){
-            wget "http://${host}${path}" -O - 2>&1
+            wget "http://${host}${path}" -O "$file"
         }
     elif command -v nc 1>/dev/null; then
         ___x_cmd___curl_not_secure_request(){
-           ___x_cmd___curl___not_secure_request_nc
+           ___x_cmd___curl___not_secure_request_nc | ___x_cmd_curl___not_secure_request_handler "$file"
         }
     else
         printf "Not support without wget, bash or nc." >&2
         return 1
     fi
 
-    ___x_cmd___curl_not_secure_request | ___x_cmd_curl___not_secure_request_handler "$file"
+    ___x_cmd___curl_not_secure_request
 }
 
 ___x_cmd___curl___download_curl(){

@@ -8,13 +8,6 @@ ___x_cmd_gh_resp_header() {
    O="${O:-___x_cmd_gh_GITHUB_DEFAULT}" http resp header "$@"
 }
 
-# TODO: Not supported yet
-___x_cmd_gh_resp_body() {
-    O="${O:-___x_cmd_gh_GITHUB_DEFAULT}" http resp body "$@"
-}
-
-
-
 ___x_cmd_gh_get_multi() {
     if [ -n "$page" ] || [ -n "$per_page" ]; then
         ___x_cmd_gh_http get "$@" page per_page
@@ -68,8 +61,7 @@ ___x_cmd_gh_param_normalize_repo() {
             printf "No repo provided. Default repo NOT set.\n" >&2
             return 1
         fi
-
-        owner_repo="$(printf "%s/%s" "$_owner" "$_repo")"
+        owner_repo="$(printf "%s" "$_owner/$op")"
         ;;
     *)
         local _owner
@@ -112,4 +104,16 @@ _____x_cmd_git_repo(){
 }
 _____x_cmd_git_branch(){
     git symbolic-ref -q --short HEAD 2>/dev/null
+}
+
+___gh_ui_mutual(){
+    if [ -t 1 ]; then
+       if ! eval "$(cat)" && [ -n "$___gh_error_msg" ];then
+            ___x_cmd_ui_tf false "$___gh_error_msg"
+            return 1
+       fi
+    else
+        "$@"
+    fi
+    return
 }

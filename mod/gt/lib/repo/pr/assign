@@ -2,7 +2,7 @@
 # shellcheck disable=SC2039,3043
 
 ___x_cmd_gt_repo_pr_assign(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:subcmd ___x_cmd_gt_repo_pr_assign             \
         add             "Add assignee"                  \
         del             "Del assignee"                  \
@@ -17,7 +17,7 @@ ___x_cmd_gt_repo_pr_assign(){
 }
 
 ___x_cmd_gt_repo_pr_assign_add(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--pr             "pr id"                                                     <>:number
@@ -32,7 +32,7 @@ options:
 }
 
 ___x_cmd_gt_repo_pr_assign_del(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--pr             "pr id"                                                     <>:number
@@ -45,7 +45,7 @@ options:
 }
 
 ___x_cmd_gt_repo_pr_assign_reset(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--pr             "pr id"                 <>:number
@@ -60,7 +60,7 @@ options:
 }
 
 ___x_cmd_gt_repo_pr_assign_review(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--pr         "pr id"                     <>:number

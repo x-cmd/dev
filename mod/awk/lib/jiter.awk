@@ -52,7 +52,7 @@ function jiget_unquote( item, arrl, arr){
         JITER_EQARR_PRINT = 1
     }
     jiter_skip( item )
-    if ( item ~ /^[tfn"0-9+-]/ ) printf("%s\n", json_str_unquote2(item)) #/"
+    if ( item ~ /^[tfn"0-9+-]/ ) printf("%s\n", juq(item)) #/"
     if ( JITER_SKIP_LEVEL > 0 ) return false
     JITER_EQARR_PRINT = 0
     return true
@@ -349,25 +349,25 @@ function jiparse( obj, item ){
     if (item ~ /^[tfn"0-9+-]/)   #"        # (item !~ /^[\{\}\[\]]$/)
     {
         if ( JITER_LAST_KP != "" ) {
-            obj[ JITER_FA_KEYPATH S JITER_LAST_KP ] = item
+            obj[ JITER_FA_KEYPATH SUBSEP JITER_LAST_KP ] = item
             JITER_LAST_KP = ""
         } else {
             JITER_CURLEN = JITER_CURLEN + 1
-            if (JITER_STATE != T_DICT) {
-                obj[ JITER_FA_KEYPATH S "\"" JITER_CURLEN "\"" ] = item
+            if (JITER_STATE != "{") {
+                obj[ JITER_FA_KEYPATH SUBSEP "\"" JITER_CURLEN "\"" ] = item
             } else {
                 JITER_LAST_KP = item
-                obj[ JITER_FA_KEYPATH, JITER_CURLEN ] = item
+                obj[ JITER_FA_KEYPATH SUBSEP JITER_CURLEN ] = item
             }
         }
     } else if (item ~ /^[\[\{]$/) {
-        if ( JITER_STATE != T_DICT ) {
+        if ( JITER_STATE != "{" ) {
             JITER_CURLEN = JITER_CURLEN + 1
-            obj[ JITER_FA_KEYPATH T_LEN ] = JITER_CURLEN
-            JITER_FA_KEYPATH = JITER_FA_KEYPATH S "\"" JITER_CURLEN "\""
+            obj[ JITER_FA_KEYPATH L ] = JITER_CURLEN
+            JITER_FA_KEYPATH = JITER_FA_KEYPATH SUBSEP "\"" JITER_CURLEN "\""
         } else {
-            obj[ JITER_FA_KEYPATH T_LEN ] = JITER_CURLEN
-            JITER_FA_KEYPATH = JITER_FA_KEYPATH S JITER_LAST_KP
+            obj[ JITER_FA_KEYPATH L ] = JITER_CURLEN
+            JITER_FA_KEYPATH = JITER_FA_KEYPATH SUBSEP JITER_LAST_KP
             JITER_LAST_KP = ""
         }
         JITER_STATE = item
@@ -376,11 +376,11 @@ function jiparse( obj, item ){
         obj[ JITER_FA_KEYPATH ] = item
         obj[ ++JITER_LEVEL ] = JITER_FA_KEYPATH
     } else {
-        obj[ JITER_FA_KEYPATH T_LEN ] = JITER_CURLEN
+        obj[ JITER_FA_KEYPATH L ] = JITER_CURLEN
 
         JITER_FA_KEYPATH = obj[ --JITER_LEVEL ]
         JITER_STATE = obj[ JITER_FA_KEYPATH ]
-        JITER_CURLEN = obj[ JITER_FA_KEYPATH T_LEN ]
+        JITER_CURLEN = obj[ JITER_FA_KEYPATH L ]
     }
 }
 # EndSection

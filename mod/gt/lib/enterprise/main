@@ -4,7 +4,7 @@
 # ___x_cmd_definelazyloader   ___x_cmd_gt_enterprise_member        gt/lib/enterprise/member
 
 ___x_cmd_gt_enterprise(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:subcmd ___x_cmd_gt_enterprise                     \
         ls              "List all enterprise"               \
         info            "Show enterprise information"       \
@@ -25,7 +25,7 @@ ___x_cmd_gt_enterprise(){
 # shellcheck disable=SC2154
 # https://gitee.com/api/v5/swagger#/getV5UserEnterprises
 ___x_cmd_gt_enterprise_ls(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     --admin      "list only managed enterprise"     <>:bool=false
@@ -50,7 +50,7 @@ options:
 # shellcheck disable=SC2154
 # https://gitee.com/api/v5/swagger#/getV5EnterprisesEnterprise
 ___x_cmd_gt_enterprise_info(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 
 options:
@@ -86,7 +86,7 @@ ___x_cmd_gt_enterprise_repo(){
 
 # https://gitee.com/api/v5/swagger#/getV5EnterprisesEnterpriseRepos
 ___x_cmd_gt_enterprise_repo_ls(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 type:
     Genre = all public internal private

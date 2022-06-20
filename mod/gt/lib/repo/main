@@ -2,7 +2,7 @@
 # shellcheck disable=SC2039,3043
 
 ___x_cmd_gt_repo(){
-    param:scope     "gitee/$O"
+    param:scope         ___x_cmd_gt
     param:subcmd ___x_cmd_gt_repo                                       \
         create          "Create repo"                                   \
         ls              "List repo of owner"                            \
@@ -27,7 +27,7 @@ ___x_cmd_gt_repo(){
 ___x_cmd_gt_repo_create(){
     local O="${O:-GITEE_DEFAULT}"
 
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 option:
     #n                      "repo names"                    <>:RepoName
@@ -87,7 +87,7 @@ ___x_cmd_gt_repo_create_status_handler(){
 ___x_cmd_gt_org_repo_create(){
     # TODO: I don't know what does path means for an organization repo
     # path is null default repo name as path
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 option:
     #n                      "repo names"
@@ -145,7 +145,7 @@ ___x_cmd_gt_org_repo_create_status_handler(){
 # https://gitee.com/api/v5/swagger#/postV5EnterprisesEnterpriseRepos
 # shellcheck disable=SC2154,SC2034
 ___x_cmd_gt_enterprise_repo_create(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 type:
     Access  =   private public innerSource
@@ -228,7 +228,7 @@ ___x_cmd_gt_repo_ls(){
 # shellcheck disable=SC2154,SC2034
 # TODO: https://gitee.com/api/v5/swagger#/patchV5ReposOwnerRepo need to design
 ___x_cmd_gt_repo_update(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 type:
     Access  =   public private ""
@@ -291,7 +291,7 @@ ___x_cmd_gt_repo_update_status_handler(){
 # shellcheck disable=SC2154
 # https://gitee.com/api/v5/swagger#/getV5ReposOwnerRepo
 ___x_cmd_gt_repo_info(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--repo          "Provide owner name and repo name.(default:the current user repo)"   <>:RepoName
@@ -319,7 +319,7 @@ options:
 # shellcheck disable=SC2181,SC2154
 ___x_cmd_gt_repo_rm(){
     # TODO: -y force del
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #n      "Provide repo path list"    <>
@@ -342,7 +342,7 @@ options:
 # shellcheck disable=SC2181
 # https://gitee.com/api/v5/swagger#/putV5ReposOwnerRepoClear
 ___x_cmd_gt_repo_clear(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--repo          "Provide owner name and repo path.(default:the current user repo)"   <>:RepoName
@@ -366,7 +366,7 @@ options:
 # shellcheck disable=SC2154,SC2181
 # https://gitee.com/api/v5/swagger#/putV5ReposOwnerRepoReviewer
 ___x_cmd_gt_repo_review(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--repo             "Provide owner name and repo name.(default:the current user repo)"   <>:RepoName

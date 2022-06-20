@@ -5,7 +5,7 @@
 # ___x_cmd_definelazyloader   ___x_cmd_gt_org_member           gt/lib/org/member
 
 ___x_cmd_gt_org(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:subcmd ___x_cmd_gt_org                            \
         ls                      "List all org"              \
         info                    "Show org information"      \
@@ -26,7 +26,7 @@ ___x_cmd_gt_org(){
 # shellcheck disable=SC2154
 # https://gitee.com/api/v5/swagger#/getV5UserOrgs
 ___x_cmd_gt_org_ls(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     --admin         "admin"             <>:Bool=false
@@ -51,7 +51,7 @@ options:
 # shellcheck disable=SC2154
 # https://gitee.com/api/v5/swagger#/getV5OrgsOrg
 ___x_cmd_gt_org_info(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--org            "organization path"     <>=""
@@ -76,7 +76,7 @@ options:
 # shellcheck disable=SC2181
 # https://gitee.com/api/v5/swagger#/postV5UsersOrganization
 ___x_cmd_gt_org_create(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     --org           "organization path"     <>=""
@@ -119,7 +119,7 @@ ___x_cmd_gt_org_repo(){
 
 # https://gitee.com/api/v5/swagger#/getV5OrgsOrgRepos
 ___x_cmd_gt_org_repo_ls(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--org        "Please provide organization"       <>:Address
@@ -150,7 +150,7 @@ options:
 # shellcheck disable=SC2181
 # https://gitee.com/api/v5/swagger#/deleteV5UserMembershipsOrgsOrg
 ___x_cmd_gt_org_quit(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #n      "orgs"

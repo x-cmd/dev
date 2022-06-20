@@ -70,7 +70,7 @@ else
         local IFS
         IFS=" "
         read -r LINES COLUMNS <<A
-$(stty size)
+$(stty size 2>/dev/null)
 A
     }
     ___x_cmd_ui_update_lines_columns

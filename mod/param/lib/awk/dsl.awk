@@ -145,17 +145,16 @@ function parse_param_dsl_for_positional_argument(line,
         option_alias_2_option_id[ _arg_name ] = option_id
     }
 
-    option_desc_set( option_id, _arg_tokenarr[2] )
 
     if ( _arg_tokenarr[ L ] >= 3 ) {
-        _optarg_id = option_id SUBSEP 1
+        option_desc_set( option_id, _arg_tokenarr[2] )
 
         arr_shift( _arg_tokenarr, 2 )
-        handle_optarg_declaration( _arg_tokenarr, _optarg_id )
+        handle_optarg_declaration( _arg_tokenarr, option_id )
 
         # NOTICE: this is correct. Only if has default value, or it is required !
         if (final_rest_argv[ L ] < _arg_no)   final_rest_argv[ L ] = _arg_no
-        final_rest_argv[ _arg_no ] = optarg_default_get( _optarg_id )
+        final_rest_argv[ _arg_no ] = optarg_default_get( option_id )
         # TODO: validate this argument
         # debug( "final_rest_argv[ " _arg_no " ] = " final_rest_argv[ _arg_no ] )
     }
@@ -171,9 +170,8 @@ function parse_param_dsl_for_all_positional_argument(line,
     option_id = _arg_tokenarr[1]  # Should be #n
 
     restopt_add_id( option_id )
-    option_desc_set( option_id, _arg_tokenarr[2] )
-
     if ( _arg_tokenarr[ L ] >= 3) {
+        option_desc_set( option_id, _arg_tokenarr[2] )
         arr_shift( _arg_tokenarr, 2 )
         handle_optarg_declaration( _arg_tokenarr, option_id )
     }

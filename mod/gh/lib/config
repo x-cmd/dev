@@ -3,7 +3,7 @@
 
 ___x_cmd_gh_config(){
     param:subcmd ___x_cmd_gh_config                                 \
-        which      "Show current config path"                        \
+        which      "Show current config path"                       \
         get        "Print the value of a given configuration key"   \
         set        "Update configuration with a value for the given key"
     param:subcmd:try
@@ -40,11 +40,11 @@ ___x_cmd_gh_config_set() {
     param:scope     ___x_cmd_github
     param:dsl       '
 type:
-    ConfigName  =   oauth_token user git_protocol
+    ConfigName  =   oauth_token user git_protocol                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 ken user git_protocol
 options:
-    --host      "host name"                           <>="github.com"
-    #1        "Please provide configuration key"      <>:ConfigName
-    #2        "Please provide configuration val"      <>
+    --host    "host name"                           <>="github.com"
+    #1        "Please provide configuration key"    <>:ConfigName
+    #2        "Please provide configuration val"    <>
 '
     param:run
     local O="${O:-___x_cmd_gh_GITHUB_DEFAULT}"

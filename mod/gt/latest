@@ -45,19 +45,19 @@ ___x_cmd_gt(){
 ___x_cmd_gt_make(){
     param:void
 
-    local O_ORIGINAL="${1:?Provide client name by O environment}"
-    local O="___x_cmd_gt_$O_ORIGINAL"
+    local O="___x_cmd_gt_${1:?Provide client name by O environment}"
 
     http make  'https://gitee.com/api'
     http header put type  "application/json;charset=utf-8"
 
     local token
-    token="$(O="$O_ORIGINAL" ___x_cmd_gt_config_get "oauth_token")"
+    token="$(___x_cmd_gt_config_get "oauth_token")"
 
     if [ -n "$token" ]; then
-        O="___x_cmd_gt_$O_ORIGINAL" http header put Authorization "token $token"
-        O="$O_ORIGINAL" ___x_cmd_gt_current_owner 1>/dev/null || return 1
-        gt_log info "Hi $___X_CMD_GITEE_DEFAULT_OWNER! You've successfully authenticated."
+        http header put Authorization "token $token"
+        local user
+        user="$(___x_cmd_gt_current_owner)" || return 1
+        gt_log info "Hi $user! You've successfully authenticated."
         return 0
     fi
 

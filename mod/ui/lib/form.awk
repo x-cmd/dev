@@ -72,7 +72,7 @@ NR==1{
 
 # Section: ctrl
 BEGIN {
-    if (exit_strategy == "")  exit_strategy = "execute|save|exit"
+    if (exit_strategy == "")  exit_strategy = "execute"                  # "execute|save|exit"
     exit_strategy_arrl = split(exit_strategy, exit_strategy_arr, "|")
     ctrl_exit_strategy =  ctrl_rstate_init( EXIT, 1, exit_strategy_arrl )
 }

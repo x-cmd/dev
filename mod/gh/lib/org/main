@@ -29,16 +29,9 @@ ___x_cmd_gh_org_ls() {
         gt_log info "Get current user's organization"
         url="/user/orgs"
     fi
-
-    if [ -t 1 ] && ___ui_table_json Id=.id Name=.login \
-        -- "___x_cmd_gh_get_multi" "$url"; then
-        return 0
-    fi
-
-    ___x_cmd_gh_get_multi $url && return 0
-
-    ___x_cmd_ui_tf false "get $1 organizations ls fail"
-    return 1
+    ___gh_ui_mutual ___x_cmd_gh_get_multi $url <<A
+        ___ui_table_json Id=.id Name=.login -- \$@
+A
 }
 
 
@@ -73,13 +66,10 @@ options:
     --page          "Page number of the results to fetch."      <>=1
 '
     param:run
-    if [ -t 1 ] && ___ui_table_json Id=.id Name=.login \
-        -- "___x_cmd_gh_get_multi" "/orgs/$1/installations" per_page page ; then
-        return 0
-    fi
-    ___x_cmd_gh_get_multi "/orgs/$1/installations" per_page page && return 0
 
-    ___x_cmd_ui_tf false "get $1 organizations github app fail"
-    return 1
+    ___gh_ui_mutual  ___x_cmd_gh_get_multi "/orgs/$1/installations" per_page page <<A
+        ___ui_table_json Id=.id Name=.login -- \$@
+A
+    [ $? -eq 0 ] || ___x_cmd_ui_tf false "get $1 organizations github app fail"
 }
 # EndSection

@@ -27,7 +27,7 @@ ___x_cmd_gt_enterprise_team(){
 # @see: https://gitee.com/api/v8/swagger#/getEnterpriseIdGroups
 # shellcheck disable=SC2154
 ___x_cmd_gt_enterprise_team_ls(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 type:
     QueryType = "" path
@@ -51,7 +51,7 @@ options:
 # shellcheck disable=SC2154
 # https://gitee.com/api/v8/swagger#/getEnterpriseIdGroupsGroupId
 ___x_cmd_gt_enterprise_team_info(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 type:
     QueryType = "" path
@@ -74,7 +74,7 @@ ___x_cmd_gt_enterprise_team_repo() {
 # Section: create & update & rm
 # https://gitee.com/api/v8/swagger#/postEnterpriseIdGroups
 ___x_cmd_gt_enterprise_team_create(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--enterprise_id    "provide enterprise id"       <>
@@ -93,7 +93,7 @@ options:
 # shellcheck disable=SC2034,SC2154
 # https://gitee.com/api/v8/swagger#/putEnterpriseIdGroupsGroupId
 ___x_cmd_gt_enterprise_team_update(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 type:
     Access  =   private public outsourcing
@@ -120,7 +120,7 @@ options:
 
 # TODO: strange parameters： https://gitee.com/api/v8/swagger#/deleteEnterpriseIdGroupsGroupId
 ___x_cmd_gt_enterprise_team_rm(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--enterprise_id    "provide enterprise id"       <>
@@ -150,7 +150,7 @@ ___x_cmd_gt_enterprise_team_member(){
 
 # https://gitee.com/api/v8/swagger#/getEnterpriseIdGroupsGroupIdMembers
 ___x_cmd_gt_enterprise_team_member_ls(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 type:
     QueryType = "" path
@@ -174,7 +174,7 @@ options:
 
 # https://gitee.com/api/v8/swagger#/deleteEnterpriseIdGroupsGroupIdMembers
 ___x_cmd_gt_enterprise_team_member_rm(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--enterprise_id    "provide enterprise id"       <>

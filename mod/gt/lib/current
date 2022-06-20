@@ -20,7 +20,7 @@ ___x_cmd_gt_current(){
 # shellcheck disable=SC2120
 ___x_cmd_gt_current_repo(){
     param:void
-    local O="${O:-GITEE_DEFAULT}"
+    local O="${O:-___x_cmd_gt_GITEE_DEFAULT}"
 
     if [ -n "$1" ]; then
         param_default set "gitee_$O" "repo" "$@"
@@ -34,7 +34,7 @@ ___x_cmd_gt_current_repo(){
 # https://gitee.com/api/v5/swagger#/getV5User
 ___x_cmd_gt_current_owner(){
     param:void
-    local O="${O:-GITEE_DEFAULT}"
+    local O="${O:-___x_cmd_gt_GITEE_DEFAULT}"
     if [ -n "$1" ]; then
         ___X_CMD_GITEE_DEFAULT_OWNER="$1"
         ___x_cmd_gt_config_set  "user" "$___X_CMD_GITEE_DEFAULT_OWNER"
@@ -46,7 +46,7 @@ ___x_cmd_gt_current_owner(){
 
     local owner
     owner="$(___x_cmd_gt_default get "gitee_$O" owner)"
-    [ -n "$owner" ] && printf "%s" "$owner" && return
+    [ -n "$owner" ] && printf "%s" "$owner" && return 0
 
     ___X_CMD_GITEE_DEFAULT_OWNER="$(___x_cmd_gt_http get "/v5/user" | ___x_cmd_git_json_query ".login")"
     if [ -n "$___X_CMD_GITEE_DEFAULT_OWNER" ];then

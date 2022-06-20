@@ -4,10 +4,10 @@
 if [ -n "$KSH_VERSION" ]; then
 
 ___x_cmd_ui_region_read_char(){
-    stty -echo
+    stty -echo 2>/dev/null
     read -s -n 1 "$@"
     local code=$?
-    stty echo
+    stty echo 2>/dev/null
     return $code
 }
 
@@ -49,10 +49,10 @@ else
 
 # echo "Using stty for read1" >&2
 ___x_cmd_ui_region_getchar_read1(){
-    stty raw
+    stty raw 2>/dev/null
     ___X_CMD_UI_GETCHAR_CHAR="$(dd bs=1 count="${1:-1}" 2>/dev/null)"
     local code=$?
-    stty -raw
+    stty -raw 2>/dev/null
     if [ "$___X_CMD_UI_GETCHAR_CHAR" = "$(printf "\003")" ]; then return 130; fi
     return $code
 }

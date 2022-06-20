@@ -23,7 +23,7 @@ ___x_cmd_gt_repo_member(){
 
 # https://gitee.com/api/v5/swagger#/getV5ReposOwnerRepoCollaborators
 ___x_cmd_gt_repo_member_ls(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--repo           "Provide owner name and repo name.(default:the current user repo)"   <>:RepoName
@@ -49,7 +49,7 @@ options:
 # shellcheck disable=SC2181,SC2154
 # https://gitee.com/api/v5/swagger#/putV5ReposOwnerRepoCollaboratorsUsername
 ___x_cmd_gt_repo_member_add(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     --repo|-r           "Provide owner name and repo name.(default:the current user repo)"   <>:RepoName
@@ -91,7 +91,7 @@ ___x_cmd_gt_repo_member_add_json_status_handler(){
 # shellcheck disable=SC2181
 # https://gitee.com/api/v5/swagger#/deleteV5ReposOwnerRepoCollaboratorsUsername
 ___x_cmd_gt_repo_member_rm(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     --repo|-r       "Provide owner name and repo name.(default:the current user repo)"   <>:RepoName

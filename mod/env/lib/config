@@ -1,6 +1,7 @@
 # shellcheck    shell=sh            disable=SC3043      # xrc
 
 ___X_CMD_ENV_VERSION_CONFIG_PATH="$___X_CMD_ROOT/.boot/env"
+xrc path
 
 ___x_cmd_env_config_load(){
     local configstr
@@ -12,7 +13,10 @@ ___x_cmd_env_config_load(){
     local line
     while read -r line; do
         [ -n "$line" ] || continue
-        ___x_cmd_env_try "$line"
+        #___x_cmd_env_try "$line"
+        local version=${line#*=}
+        local name=${line%=*}
+        ___x_cmd_pkg activate  "$name" "$version"
     done <<A
 $configstr
 A

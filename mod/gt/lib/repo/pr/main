@@ -27,7 +27,7 @@ ___x_cmd_gt_repo_pr(){
 
 ___x_cmd_gt_repo_pr_ls(){
 
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 type:
     State = open merged closed all
@@ -78,7 +78,7 @@ alias ___parse_pr_init_owner_repo_and_pr='
 '
 
 ___x_cmd_gt_repo_pr_info(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--pr             "pr id"     <>:number
@@ -92,7 +92,7 @@ options:
 
 
 ___x_cmd_gt_repo_pr_log(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 type:
     State  = desc asc
@@ -107,7 +107,7 @@ options:
 }
 
 ___x_cmd_gt_repo_pr_commit(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--pr             "pr id"                <>
@@ -119,7 +119,7 @@ options:
 }
 
 ___x_cmd_gt_repo_pr_view(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--pr             "pr id"         <>:number
@@ -138,7 +138,7 @@ options:
 # shellcheck disable=SC2154,SC2181
 ___x_cmd_gt_repo_pr_create(){
     local O="${O:-GITEE_DEFAULT}"
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 type:
     Bool = true false
@@ -179,7 +179,7 @@ options:
 
 ___x_cmd_gt_repo_pr_update(){
     local O="${O:-GITEE_DEFAULT}"
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
 ##TODO:state
     param:dsl       '
 type:
@@ -202,7 +202,7 @@ options:
 }
 
 ___x_cmd_gt_repo_pr_merge(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 type:
     Merge = squash  merge

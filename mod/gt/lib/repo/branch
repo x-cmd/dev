@@ -19,7 +19,7 @@ ___x_cmd_gt_repo_branch(){
 # shellcheck disable=SC2154
 # https://gitee.com/api/v5/swagger#/getV5ReposOwnerRepoBranches
 ___x_cmd_gt_repo_branch_ls(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--repo       "Provide owner name and repo name.(default:the current user repo)"   <>:RepoName
@@ -45,7 +45,7 @@ options:
 # shellcheck disable=SC2154
 # https://gitee.com/api/v5/swagger#/getV5ReposOwnerRepoBranchesBranch
 ___x_cmd_gt_repo_branch_info(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--branch     "branch name"                                                        <>
@@ -71,7 +71,7 @@ options:
 # shellcheck disable=SC2154
 # https://gitee.com/api/v5/swagger#/postV5ReposOwnerRepoBranches
 ___x_cmd_gt_repo_branch_add(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--branch_name     "Branch name"                                                        <>
@@ -122,7 +122,7 @@ subcommand:
 
 # https://gitee.com/api/v5/swagger#/putV5ReposOwnerRepoBranchesBranchProtection
 ___x_cmd_gt_repo_branch_protection_set(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--branch     "target branch name"                                                 <>
@@ -145,7 +145,7 @@ options:
 
 # https://gitee.com/api/v5/swagger#/deleteV5ReposOwnerRepoBranchesBranchProtection
 ___x_cmd_gt_repo_branch_protection_unset(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--branch     "target branch name"                                                 <>

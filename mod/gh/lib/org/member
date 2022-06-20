@@ -26,15 +26,10 @@ options:
     #1|--org        "org space address"    <>:address
 '
     param:run
-    if [ -t 1 ] && ___ui_table_json Id=.id UserName=.login Url=.html_url \
-        --  "___x_cmd_gh_get_multi" "/orgs/${org##*/}/members" role filter per_page page ; then
-        return 0
-    fi
-
-    ___x_cmd_gh_get_multi "/orgs/${org##*/}/members" role filter per_page page && return 0
-
-    ___x_cmd_ui_tf false "get member list fail"
-    return 1
+    ___gh_ui_mutual ___x_cmd_gh_get_multi "/orgs/${org##*/}/members" role filter per_page page <<A
+        ___ui_table_json Id=.id UserName=.login Url=.html_url -- \$@
+A
+    [ $? -eq 0 ] || ___x_cmd_ui_tf false "get member list fail"
 }
 # EndSection
 

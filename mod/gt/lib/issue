@@ -8,6 +8,7 @@
 
 # gt repo issue +el:admin -user-a +user-b
 ___x_cmd_gt_issue(){
+    param:scope         ___x_cmd_gt
     param:subcmd ___x_cmd_gt_issue                  \
         create          "create issue"              \
         update          "update issue"              \
@@ -25,7 +26,7 @@ ___x_cmd_gt_issue(){
 # shellcheck disable=SC2154,SC2034
 # https://gitee.com/api/v5/swagger#/postV5ReposOwnerIssues
 ___x_cmd_gt_issue_create(){
-    param:scope     "gitee/$O"
+    param:scope         ___x_cmd_gt
     param:dsl      '
 options:
     --title         "title"                                                              <>
@@ -61,7 +62,7 @@ options:
 # shellcheck disable=SC2154,SC2034
 # https://gitee.com/api/v5/swagger#/patchV5ReposOwnerIssuesNumber
 ___x_cmd_gt_issue_update(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 type:
     State = open progressing closed
@@ -100,7 +101,7 @@ options:
 # shellcheck disable=SC2154
 # https://gitee.com/api/v5/swagger#/getV5ReposOwnerIssuesNumberOperateLogs
 ___x_cmd_gt_issue_logs(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     --repo          "Provide owner name and repo name.(default:the current user repo)"   <>:RepoName
@@ -127,7 +128,7 @@ options:
 # shellcheck disable=SC2039,3043,SC2154
 # https://gitee.com/api/v5/swagger#/getV5ReposOwnerRepoIssuesComments
 ___x_cmd_gt_repo_issue(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 type:
     State = open progressing closed rejected all
@@ -184,7 +185,7 @@ options:
 # shellcheck disable=SC2154
 # https://gitee.com/api/v5/swagger#/getV5OrgsOrgIssues
 ___x_cmd_gt_org_issue(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     --org           "organization path"                            <>
@@ -218,7 +219,7 @@ options:
 # shellcheck disable=SC2154
 # https://gitee.com/api/v5/swagger#/getV5EnterprisesEnterpriseIssues
 ___x_cmd_gt_enterprise_issue(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     --enterprise    "enterprise path"                              <>
@@ -255,7 +256,7 @@ options:
 # Section : comment
 
 ___x_cmd_gt_issue_comment(){
-    param:scope     "gitee/$O"
+    param:scope         ___x_cmd_gt
     param:subcmd ___x_cmd_gt_issue_comment          \
         ls              "list all comment"          \
         create          "create a comment"          \
@@ -273,7 +274,7 @@ ___x_cmd_gt_issue_comment(){
 
 # https://gitee.com/api/v5/swagger#/getV5ReposOwnerRepoIssuesNumberComments
 ___x_cmd_gt_issue_comment_ls(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     --number        "issue number"                                                       <>
@@ -302,7 +303,7 @@ options:
 # shellcheck disable=SC2086,SC2154
 # https://gitee.com/api/v5/swagger#/postV5ReposOwnerRepoIssuesNumberComments
 ___x_cmd_gt_issue_comment_create(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     --repo          "Provide owner name and repo name.(default:the current user repo)"   <>:RepoName
@@ -329,7 +330,7 @@ options:
 
 # https://gitee.com/api/v5/swagger#/patchV5ReposOwnerRepoIssuesCommentsId
 ___x_cmd_gt_issue_comment_update(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     --repo          "Provide owner name and repo name.(default:the current user repo)"   <>:RepoName
@@ -356,7 +357,7 @@ options:
 # shellcheck disable=SC2181
 # https://gitee.com/api/v5/swagger#/deleteV5ReposOwnerRepoIssuesCommentsId
 ___x_cmd_gt_issue_comment_del(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     --repo          "Provide owner name and repo name.(default:the current user repo)"   <>:RepoName

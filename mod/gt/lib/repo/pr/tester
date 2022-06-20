@@ -2,7 +2,7 @@
 # shellcheck disable=SC2039,3043
 
 ___x_cmd_gt_repo_pr_testers(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:subcmd ___x_cmd_gt_repo_pr_testers                \
         add             "Add assignee"                      \
         del             "Del assignee"                      \
@@ -18,7 +18,7 @@ ___x_cmd_gt_repo_pr_testers(){
 
 # https://gitee.com/api/v5/swagger#/postV5ReposOwnerRepoPullsNumberTesters
 ___x_cmd_gt_repo_pr_testers_add(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--pr         "pr id"                     <>
@@ -32,7 +32,7 @@ options:
 
 # https://gitee.com/api/v5/swagger#/deleteV5ReposOwnerRepoPullsNumberTesters
 ___x_cmd_gt_repo_pr_testers_del(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--pr         "pr id"                     <>:number
@@ -46,7 +46,7 @@ options:
 
 # https://gitee.com/api/v5/swagger#/patchV5ReposOwnerRepoPullsNumberTesters
 ___x_cmd_gt_repo_pr_testers_reset(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--pr         "pr id"                     <>:number
@@ -61,7 +61,7 @@ options:
 
 #
 ___x_cmd_gt_repo_pr_testers_test(){
-    param:scope     "gitee/$O"
+    param:scope     ___x_cmd_gt
     param:dsl       '
 options:
     #1|--pr         "pr id"                     <>:number

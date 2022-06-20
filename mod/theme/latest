@@ -137,10 +137,14 @@ ___x_cmd_theme_control_zinit(){
     # load theme
     [ -n "$(command -v ___x_cmd_theme_prompt_format)" ] || ___x_cmd_theme_control_use ""
     # load zsh plugins
-    # TODO: wait pkg can not repeat activate bug fix
     if [ -z "$ZSH_AUTOSUGGEST_COMPLETIONS_PTY_NAME" ] || [ -z "$ZSH_HIGHLIGHT_REVISION" ]; then
-        printf "\033[90m%s\033[0m\n" "$ ZSH_PLUGIN=\"zsh-syntax-highlighting,zsh-autosuggestions\" x pkg activate zsh-plugin"
+        # TODO: wait x pkg ls output empty
+        if ! x pkg ls i | grep "zsh-plugin" >/dev/null; then
+            x pkg install zsh-plugin
+        fi
         ZSH_PLUGIN="zsh-syntax-highlighting,zsh-autosuggestions" x pkg activate zsh-plugin
+        x boot rc add "x-zsh-plugin" \
+            "[ -n \"\$ZSH_VERSION\" ] && ZSH_PLUGIN=\"zsh-syntax-highlighting,zsh-autosuggestions\" x pkg activate zsh-plugin"
     fi
     # load font
     [ -n "$SSH_CONNECTION" ] || [ -f "/.dockerenv" ] || ___x_cmd_theme_control_font
@@ -149,8 +153,7 @@ ___x_cmd_theme_control_zinit(){
 
 ___x_cmd_theme_control_unplugin(){
     param:void
-    printf "\033[90m%s\033[0m\n" "$ ZSH_PLUGIN=\"zsh-syntax-highlighting,zsh-autosuggestions\" x pkg deactivate zsh-plugin"
-    if ZSH_PLUGIN="zsh-syntax-highlighting,zsh-autosuggestions" x pkg deactivate zsh-plugin; then
+    if x boot rc del "x-zsh-plugin"; then
         printf "\033[32m%s \033[1;33m%s\033[0m \n" "Unset ZSH plugins successfully!" "Now you can restart your terminal."
     else
         printf "\033[31m%s\033[0m \n" "Unset ZSH plugins failed."
