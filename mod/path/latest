@@ -15,8 +15,7 @@ ___x_cmd_path(){
 if [ -z "$ZSH_VERSION" ]; then
 ___x_cmd_path_ls_native(){
     local IFS=:
-    local p
-    for p in $PATH; do
+    local p; for p in $PATH; do
         printf "%s\n" "$p"
     done
 }
@@ -24,8 +23,7 @@ ___x_cmd_path_ls_native(){
 ___x_cmd_path_uniq(){
     local IFS=:
     local newpath=:
-    local p
-    for p in $PATH; do
+    local p; for p in $PATH; do
         [ "$newpath" != "${newpath#*:$p:}" ] || newpath="${newpath}${p}:"
     done
     PATH="${newpath#:}"
@@ -41,8 +39,7 @@ ___x_cmd_path_uniq(){
     local IFS=:
     local newpath=:
     local path_tmp="$PATH"
-    local p
-    while :; do
+    local p; while :; do
         p="${path_tmp%%:*}"
         [ "$p" != "$path_tmp" ] || break
         path_tmp="${path_tmp#*:}"

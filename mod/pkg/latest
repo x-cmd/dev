@@ -38,7 +38,7 @@ ___x_cmd_pkg(){
 xrc:mod:lib     pkg \
     util                xbin                main \
     info/ls             info/ll             info/ls_installed  \
-    mutate/download     mutate/install      mutate/activate     mutate/deactivate
+    mutate/download     mutate/install      mutate/activate     mutate/deactivate      advise
 
 ___X_CMD_PKG_RAWPATH="$___X_CMD_ROOT_TMP/pkg/raw"
 ___X_CMD_PKG_DOWNLOAD_PATH="$___X_CMD_ROOT_TMP/pkg/download"

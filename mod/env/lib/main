@@ -39,7 +39,11 @@ ___x_cmd_env_use(){
             env:warn "Not found $___X_CMD___ENV_PARSE_PKG version."
             continue
         fi
-        code="$code $___X_CMD___ENV_PARSE_PKG=$___X_CMD___ENV_PARSE_VERSION"
+
+        local script_path
+        script_path="$(___x_cmd_pkg___get_script_path "$___X_CMD___ENV_PARSE_PKG" "$___X_CMD___ENV_PARSE_VERSION" "" activate)"
+        env:debug "script_path: ""$script_path" "___X_CMD___ENV_PARSE_PKG: " "$___X_CMD___ENV_PARSE_PKG" "___X_CMD___ENV_PARSE_VERSION: " "$___X_CMD___ENV_PARSE_VERSION"
+        code="$code $___X_CMD___ENV_PARSE_PKG=$___X_CMD___ENV_PARSE_VERSION=$script_path"
     done
 
     local ___X_CMD_ENV___CONFIGSTR_SET_;    eval "$code"
@@ -53,7 +57,7 @@ ___x_cmd_env_unuse(){
 
     local unuse_tmp; unuse_tmp="$(cat "$___X_CMD_ENV_VERSION_CONFIG_PATH")$___X_CMD_UNSEENCHAR_NEWLINE"
     local i; for i in "$@"; do
-        ___x_cmd_env___sdict rm unuse_tmp "${i%=*}"
+        ___x_cmd_env___sdict rm unuse_tmp "${i%%=*}"
     done
 
     ___x_cmd_env_config___write "$unuse_tmp" "$___X_CMD_ENV_VERSION_CONFIG_PATH"

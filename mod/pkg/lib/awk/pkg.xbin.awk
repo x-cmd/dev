@@ -1,7 +1,3 @@
-ch
-
-# Provide
-
 function print_binpath( binpath ){
     print INSTALL_PATH "/" binpath
     exit(0)
