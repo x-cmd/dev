@@ -15,8 +15,9 @@ ___x_cmd_env_config_load(){
         #___x_cmd_env_try "$line"
         local name="${line%%=*}"
         local versionandsrcipt="${line#"$name"=}"
-        local version="${versionandsrcipt%=*}"
-        local script_path="${line##*=}"
+        local version="${versionandsrcipt%%=*}"
+        local script_path="${versionandsrcipt#"$version"}"
+        script_path="${script_path#=}"
 
         ___x_cmd_pkg activate  "$name" "$version" "$script_path"
 
