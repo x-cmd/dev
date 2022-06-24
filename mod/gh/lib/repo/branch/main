@@ -29,10 +29,10 @@ options:
     param:run
 
     ___x_cmd_gh_param_init_owner_repo
+    local ___gh_error_msg="get reppo ${owner_repo} branch list fail"
     ___gh_ui_mutual  ___x_cmd_gh_get_multi "/repos/${owner_repo}/branches" protected per_page page <<A
         ___ui_table_json BranchName=.name Protected=.protected  \
         EnforcementLevel=.protection.required_status_checks.enforcement_level -- \$@
-        [ $? -eq 0 ] || ___x_cmd_ui_tf false "get reppo ${owner_repo} branch list fail"
 A
 }
 

@@ -15,7 +15,7 @@ function selector_normalize_generic( selector, arr,     e, l ){
         gsub("\\*", "[^" S "]*", e)
         # SPECIAL_LINE_END
 
-        arr[j] = q( e )    # quote
+        arr[j] = jqu( e )    # quote
     }
 
     return l

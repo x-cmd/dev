@@ -80,11 +80,11 @@ function generate_advise_json_except_subcmd(      i, j, _option_id, _option_argc
 function generate_advise_json(){
     generate_advise_json_except_subcmd()
     generate_advise_json_subcmd( )
-    AJADD( "'\n}'" )
+    AJADD( "'\n}';" )
     CDADD( " A=" ADVISE_JSON )
 
     gsub("\"", "\\\"", CODE)
-    CODE = sprintf("( set -o errexit; %s; printf \"%%s\" \"\\$A\"; )", CODE  )
+    CODE = sprintf("( set -o errexit; %s printf \\\"%%s\\\" \\\"\\$A\\\"; )", CODE  )
     CODE = "eval \"" CODE "\""
     printf("%s", CODE)
 }

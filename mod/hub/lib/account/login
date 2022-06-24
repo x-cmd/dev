@@ -1,11 +1,20 @@
 # shellcheck shell=sh disable=SC3043
 
 ___x_cmd_hub_login_telegram_qr(){
-    local TOKEN_TO_ACTIVATE
-    TOKEN_TO_ACTIVATE="$(___x_cmd_hub_token_generate)"
-    ___x_cmd_hub_token "${TOKEN_TO_ACTIVATE}"
+    local token_to_activate
+    token_to_activate="$(___x_cmd_hub_token_generate)"
 
-    echo x qrencode -t ANSI "https://....${TOKEN_TO_ACTIVATE}"
+    ___x_cmd_hub_qrcode "https://hub.x-cmd.com/t/${token_to_activate}"
+    printf "Please scan the QR code above, then press [Enter] to continue: "
+    read -r _
+
+    local userinfo
+    if userinfo="$(___x_cmd_hub_get_userinfo_by_token "${token_to_activate}")" ; then
+        ___x_cmd_hub_token "${token_to_activate}"
+        hub:info "Login Successfully, ${userinfo}, save token to ${___X_CMD_HUB_ENV}/.token"
+    else
+        hub:error "Login Failed"
+    fi
 }
 
 ___x_cmd_hub_login_weixin_qr(){

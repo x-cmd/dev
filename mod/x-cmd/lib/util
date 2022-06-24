@@ -320,3 +320,7 @@ ___x_cmd_json2yml(){
 ___x_cmd_j2y(){
     ___x_cmd_json2yml "$@"
 }
+
+___x_cmd_osc52(){
+    "$@" | tee /dev/stderr | awk -f "${___X_CMD_ROOT_MOD}/x-cmd/lib/osc52.awk"
+}

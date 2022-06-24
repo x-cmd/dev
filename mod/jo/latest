@@ -58,11 +58,11 @@ ___x_cmd_jo_wrap(){
 
 # arg: indent
 ___x_cmd_jo_fmt(){
-    command awk -v INDENT="${INDENT:-2}}" -f "$___X_CMD_ROOT_MOD/jo/lib/fmt.awk"
+    command awk -v INDENT="${INDENT:-2}" -f "$___X_CMD_ROOT_MOD/jo/lib/fmt.awk"
 }
 
 ___x_cmd_jo_color(){
-    command awk -v INDENT="${INDENT:-2}}" -f "$___X_CMD_ROOT_MOD/jo/lib/color.awk"
+    command awk -v INDENT="${INDENT:-2}" -f "$___X_CMD_ROOT_MOD/jo/lib/color.awk"
 }
 
 ___x_cmd_jo_data(){

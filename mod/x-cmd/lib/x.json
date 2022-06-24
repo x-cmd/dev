@@ -7,7 +7,7 @@
         "rc": {
             "add|+": null,
             "del|-": {
-                "#exec": "x initrc mod ls"
+                "#exec": "candidate_exec_arr=( $(x initrc mod ls) )"
             },
             "ls": null,
             "#desc": "Modifiy rc file"
@@ -15,7 +15,7 @@
         "mod": {
             "add|+": null,
             "del|-": {
-                "#exec": "x initrc mod ls"
+                "#exec": "candidate_exec_arr=( $(x initrc mod ls) )"
             },
             "path": null,
             "load": null,
@@ -50,7 +50,7 @@
             }
         },
         "#n": {
-            "#exec": ". $___X_CMD_ROOT_MOD/log/lib/advise && ___x_cmd_log_advise"
+            "#exec": "candidate_exec_arr=( $(. $___X_CMD_ROOT_MOD/log/lib/advise && ___x_cmd_log_advise) )"
         }
     },
     "upgrade|update": {
@@ -64,31 +64,31 @@
     "z|uz|zl": {
         "#desc": "compress and decompress file",
         "#n": {
-            "#exec": "___advise_ls"
+            "#exec": "___x_cmd_advise__ls"
         }
     },
     "sh|bash|zsh|fish|ksh|dash|ash": {
         "#desc": "Execute your script use the corresponding shell",
         "#1": {
-            "#exec": "___advise_ls"
+            "#exec": "___x_cmd_advise__ls"
         }
     },
     "md5|sha1|sha2|sha256|sha3|sha384|sha5|sha512": {
         "#desc": "Calculate the hashsum of file",
         "#n": {
-            "#exec": "___advise_ls"
+            "#exec": "___x_cmd_advise__ls"
         }
     },
     "yml2json|y2j": {
         "#desc": "Yaml from stdin convert to JSON to stdout",
         "#1": {
-            "#exec": "___advise_ls"
+            "#exec": "___x_cmd_advise__ls"
         }
     },
     "j2y|json2yml": {
         "#desc": "JSON from stdin convert to YAML to stdout",
         "#1": {
-            "#exec": "___advise_ls"
+            "#exec": "___x_cmd_advise__ls"
         }
     },
     "nvm": null,
@@ -98,10 +98,10 @@
     },
     "jq|yq": null,
     "cat|du": {
-        "#exec": "___advise_ls"
+        "#exec": "___x_cmd_advise__ls"
     },
     "ls|ll": {
-        "#exec": "___advise_ls"
+        "#exec": "___x_cmd_advise__ls"
     },
     "ps|procs": null,
     "nmap": null,
@@ -120,7 +120,7 @@
     "ws": {
         "#desc": "Execute a file in workspace, usually the .x-cmd directory in the repository",
         "#1": {
-            "#exec": "xrc advise/lib/advise_get && ___x_cmd_advise_get_complete \"$(x advise which ___x_cmd_dev)\" mod ''"
+            "#exec": "candidate_exec_arr=( $(xrc advise/lib/advise_get && ___x_cmd_advise_get_complete \"$(x advise which ___x_cmd_dev)\" mod '') )"
         }
     },
     "rmrf": {
@@ -134,7 +134,7 @@
             "#desc": "Clear all rules"
         },
         "#n": {
-            "#exec": "___advise_ls"
+            "#exec": "___x_cmd_advise__ls"
         }
     },
     "#1": {
@@ -174,6 +174,6 @@
         }
     },
     "#n": {
-        "#exec": "___x_cmd_advise_get_result"
+        "#exec": "___x_cmd_advise__get_result"
     }
 }

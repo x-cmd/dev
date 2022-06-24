@@ -34,10 +34,9 @@ options:
     param:run
 
     ___x_cmd_gh_param_init_owner_repo
-
+    local ___gh_error_msg="get $owner_repo pull request list fail"
     ___gh_ui_mutual ___x_cmd_gh_http get "/repos/$owner_repo/pulls" state head base sort direction <<A
         ___ui_table_json number=.number state=.state title=.title url=.html_url -- \$@
-        [ $? -eq 0 ] || ___x_cmd_ui_tf false "get $owner_repo pull request list fail"
 A
 }
 
@@ -175,9 +174,9 @@ options:
 '
     param:run
     ___x_cmd_gh_param_init_owner_repo
+    local ___gh_error_msg="get $owner_repo pull request comments list fail"
     ___gh_ui_mutual ___x_cmd_gh_http get "/repos/${owner_repo}/pulls/$number/comments" <<A
         ___ui_table_json id=.id body=.body url=.url -- \$@
-        [ $? -eq 0 ] || ___x_cmd_ui_tf false "get $owner_repo pull request comments list fail"
 A
 }
 
