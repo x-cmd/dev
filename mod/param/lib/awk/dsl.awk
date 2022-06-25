@@ -146,8 +146,8 @@ function parse_param_dsl_for_positional_argument(line,
     }
 
 
+    option_desc_set( option_id, _arg_tokenarr[2] )
     if ( _arg_tokenarr[ L ] >= 3 ) {
-        option_desc_set( option_id, _arg_tokenarr[2] )
 
         arr_shift( _arg_tokenarr, 2 )
         handle_optarg_declaration( _arg_tokenarr, option_id )
@@ -170,8 +170,8 @@ function parse_param_dsl_for_all_positional_argument(line,
     option_id = _arg_tokenarr[1]  # Should be #n
 
     restopt_add_id( option_id )
+    option_desc_set( option_id, _arg_tokenarr[2] )
     if ( _arg_tokenarr[ L ] >= 3) {
-        option_desc_set( option_id, _arg_tokenarr[2] )
         arr_shift( _arg_tokenarr, 2 )
         handle_optarg_declaration( _arg_tokenarr, option_id )
     }

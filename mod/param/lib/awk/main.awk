@@ -147,7 +147,7 @@ function handle_arguments_restargv(         final_rest_argv_len, i, arg_val, opt
                 continue                # Already check
             }
 
-            arg_val = optarg_default_get( option_id SUBSEP 1 )
+            arg_val = optarg_default_get( option_id )
             if ( optarg_default_value_eq_require(arg_val) ) {
                 # Don't define a default value
                 # TODO: Why can't exit here???

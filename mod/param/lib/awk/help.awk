@@ -126,7 +126,7 @@ function generate_rest_argument_help(        _res, _option_after, l) {
     for (i=1; i <= restopt_len(); ++i) {
         option_id       = restopt_get( i )
 
-        _option_after = option_desc_get( option_id ) UI_END generate_optarg_rule_string( option_id SUBSEP 1 )
+        _option_after = option_desc_get( option_id ) UI_END generate_optarg_rule_string( option_id )
 
         _res = _res HELP_INDENT_STR sprintf( "%s" DESC_INDENT_STR "%s\n",
             FG_BLUE         str_padr(option_id, _max_len),

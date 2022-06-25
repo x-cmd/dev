@@ -1,49 +1,43 @@
-
+# shellcheck disable=SC2207,SC2034
 # Section : adviser helper function: ls lsd seq get_result
 
-___advise_lsd(){
+___x_cmd_advise__lsd(){
     local l
     local localdir="${1:-${cur:-""}}"
-    compgen -d "${localdir}" 2>/dev/null | while read -r l; do
+    candidate_exec_arr=( $(compgen -d "${localdir}" 2>/dev/null | while read -r l; do
         printf "%s/\n" "${l%/}"
-    done
+    done ) )
 }
 
-___advise_ls_grep(){
-    local localopt="${1:-${cur:-""}}"
-    ls | grep -E "${localopt}" 2>/dev/null
+___x_cmd_advise__ls(){
+    candidate_exec_arr=( $(ls "$@") )
 }
 
-___advise_ls(){
-    local localdir="${1:-${cur:-""}}"
+# TODO: same as _files
+___x_cmd_advise__file(){
+    local localdir="${cur:-""}"
 
-    if [ -z "$localdir" ]; then
-        ls
+    if [ -n "$ZSH_VERSION" ]; then
+        _files
         return
     fi
-
-    if [ "${localdir%/*}" = "${localdir}" ]; then
-        folder=""
-        pattern="${localdir}"
-
-    else
-        folder="${localdir%/*}"
-        pattern="${localdir##*/}"
-    fi
-
-    ls "${folder:-.}" | awk -v folder="$folder" -v pattern="$pattern" 'match($0, "^" pattern){
-        if (folder == "") {
-            print $0
-        } else {
-            print folder "/" $0
-        }
-    }' 2>/dev/null
+    ___x_cmd_advise_set_nospace
+    candidate_exec_arr=( $(compgen -f -- "$localdir") )
 }
 
+___x_cmd_advise_set_nospace(){
+    if [[ ! "$BASH_VERSION" =~ ^3.* ]];then
+        compopt -o nospace
+    fi
+    # TODO: ZSH
+    if [ -n "$ZSH_VERSION" ]; then
+        zstyle ':completion:*' add-space false
+    fi
+}
 # 1-10
-___advise_seq(){
+___x_cmd_advise__seq(){
     local cur="${cur:-""}"
-    awk -v range="$1" -v cur="$cur" '
+    candidate_exec_arr=( $(awk -v range="$1" -v cur="$cur" '
 function inside(num, start, end, step){
     if ( (num < start) || (num > end) ) return 0
     if ( ( num - start ) % step == 0 ) return 1
@@ -78,10 +72,11 @@ BEGIN{
 }
 ' <<A
 A
+    ))
 
 }
 
-___x_cmd_advise_get_result(){
+___x_cmd_advise__get_result(){
     local offset="${1:-1}"
     local remain_len=$((COMP_CWORD-offset))
     [ -n "$ZSH_VERSION" ] && offset=$((offset+1)) && setopt aliases
@@ -112,13 +107,10 @@ ___x_cmd_advise_get_result(){
     COMP_WORDS=("${tmp[@]}")
     COMP_CWORD="$(( ${#tmp[@]}-1 ))"
 
-    local candidate_arr candidate_exec
+    candidate_exec=
     eval "$(___advise_get_result_from_awk)" 2>/dev/null
     local IFS=$'\n'
-    local candidate_exec_arr=( $(eval "$candidate_exec" 2>/dev/null) )
-
-    printf "%s" "${candidate_arr[*]}
-${candidate_exec_arr[*]}"
+    eval "$candidate_exec" 2>/dev/null
 }
 
 ## EndSection

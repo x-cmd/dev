@@ -3,15 +3,16 @@
 
 # jo q a=.bcd b=.cde c=.abc
 
+# TODO: Add merge
+# TODO: Fix color and fmt definition
+
 ___x_cmd_jo(){
     case "${1}" in
         data)                                       ___x_cmd_jo_data "$@" ;;
-        fmt)        if [ -t 1 ]; then               ___x_cmd_jo_color "$@"
-                    else                            ___x_cmd_jo_fmt "$@"
-                    fi ;;
+        fmt)                                        ___x_cmd_jo_awk "$@" | ___x_cmd_jo_fmt ;;
         v|valid)    ;;
         u|uniq)     ;;
-        color)                                      ___x_cmd_jo_color "$@" ;;
+        color)                                      ___x_cmd_jo_awk "$@" | ___x_cmd_jo_color ;;
         l|list)       shift;                        ___x_cmd_jo_wrap ___x_cmd_jo_list "$@" ;;
         d|dict)       shift;                        ___x_cmd_jo_wrap ___x_cmd_jo_dict "$@" ;;
 

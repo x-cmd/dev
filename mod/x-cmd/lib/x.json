@@ -64,31 +64,31 @@
     "z|uz|zl": {
         "#desc": "compress and decompress file",
         "#n": {
-            "#exec": "___x_cmd_advise__ls"
+            "#exec": "___x_cmd_advise__file"
         }
     },
     "sh|bash|zsh|fish|ksh|dash|ash": {
         "#desc": "Execute your script use the corresponding shell",
         "#1": {
-            "#exec": "___x_cmd_advise__ls"
+            "#exec": "___x_cmd_advise__file"
         }
     },
     "md5|sha1|sha2|sha256|sha3|sha384|sha5|sha512": {
         "#desc": "Calculate the hashsum of file",
         "#n": {
-            "#exec": "___x_cmd_advise__ls"
+            "#exec": "___x_cmd_advise__file"
         }
     },
     "yml2json|y2j": {
         "#desc": "Yaml from stdin convert to JSON to stdout",
         "#1": {
-            "#exec": "___x_cmd_advise__ls"
+            "#exec": "___x_cmd_advise__file"
         }
     },
     "j2y|json2yml": {
         "#desc": "JSON from stdin convert to YAML to stdout",
         "#1": {
-            "#exec": "___x_cmd_advise__ls"
+            "#exec": "___x_cmd_advise__file"
         }
     },
     "nvm": null,
@@ -98,10 +98,10 @@
     },
     "jq|yq": null,
     "cat|du": {
-        "#exec": "___x_cmd_advise__ls"
+        "#exec": "___x_cmd_advise__file"
     },
     "ls|ll": {
-        "#exec": "___x_cmd_advise__ls"
+        "#exec": "___x_cmd_advise__file"
     },
     "ps|procs": null,
     "nmap": null,
@@ -134,7 +134,7 @@
             "#desc": "Clear all rules"
         },
         "#n": {
-            "#exec": "___x_cmd_advise__ls"
+            "#exec": "___x_cmd_advise__file"
         }
     },
     "#1": {
