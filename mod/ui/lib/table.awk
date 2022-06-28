@@ -95,7 +95,7 @@ function view_body(             model_row_i, col_i, _col_start, model_start_row,
         }
         _data = _data "\n"
     }
-    return _data th_statusline_text( sprintf("SELECT: %s\n", data[ _tmp_currow KSEP ctrl_rstate_get( CURRENT_COLUMN ) ]) )
+    return _data th_statusline_text( sprintf("SELECT: %s\n", data[ model[_tmp_currow] KSEP ctrl_rstate_get( CURRENT_COLUMN ) ]) )
 }
 
 function update_view_print_cell(model_row_i, data_row_i, col_i,       h, _size, _tmp_currow, _data){

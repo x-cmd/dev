@@ -61,7 +61,7 @@ ___x_cmd_gt_current_owner(){
 # shellcheck disable=SC2120
 ___x_cmd_gt_current_owner_type(){
     param:void
-    local O="${O:-GITEE_DEFAULT}"
+    local O="${O:-___x_cmd_gt_GITEE_DEFAULT}"
     if [ -n "$1" ]; then
         # Set owner type
         ___x_cmd_gt_default put "gitee_$O" owner_type "$1"

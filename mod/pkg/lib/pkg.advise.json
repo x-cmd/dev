@@ -1,9 +1,10 @@
 {
     "ls": {
+        "#desc": "List candidate and version",
         "installed|i": {
             "#desc" : "Display installed language or application",
             "#n":{
-                "#exec": "___x_cmd_pkg_rawpath_name_advise_ls"
+                "#exec": "___x_cmd_pkg___advise_ls_installed_name"
             }
         },
         "activate|a": {
@@ -11,7 +12,7 @@
         },
         "all|A": {
             "#desc": "List all deactivated language or application",
-            "#n": {
+            "#1": {
                 "#exec": "___x_cmd_pkg___advise_ls_all_candidate"
             }
         }
@@ -20,19 +21,15 @@
     "update": {
         "#desc": "update the latest yml and version of all candidate"
     },
-
-    "version": null,
     "default_version": {
         "#desc": "Display default version of language and application",
         "#1": {
             "#exec": "___x_cmd_pkg___advise_ls_all_candidate"
         }
     },
-
     "ll": {
         "#desc": "Display all candidates and classification"
     },
-
     "download": {
         "#desc": "Download language or application package",
         "#1": {
@@ -62,17 +59,16 @@
     "reinstall":{
         "#desc": "Reuninstall language or application",
         "#1": {
-            "#desc": "___x_cmd_pkg___advise_ls_installed_name"
+            "#exec": "___x_cmd_pkg___advise_ls_installed_name"
         },
         "#2": {
-            "#desc": "___x_cmd_pkg___adivse_ls_installed_version"
+            "#exec": "___x_cmd_pkg___adivse_ls_installed_version"
         }
     },
-
     "activate": {
         "#desc": "Activate language or application",
         "#1": {
-            "#1": "___x_cmd_pkg___advise_ls_installed_name"
+            "#exec": "___x_cmd_pkg___advise_ls_installed_name"
         },
         "#2": {
             "#exec": "___x_cmd_pkg___adivse_ls_installed_version"
@@ -89,6 +85,7 @@
     },
 
     "xbin": {
+        "#desc": "Display bin path",
         "init" : {
             "#desc": "generate a function and use candidate through this function",
             "#1": {

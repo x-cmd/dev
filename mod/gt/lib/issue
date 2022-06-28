@@ -111,17 +111,10 @@ options:
     param:run
     ___x_cmd_gt_param_init_owner_repo
 
-    if [ -t 1 ]; then
-        if ___ui_table_json Time=.created_at User=.user.login Type=.action_type Content=.content \
-            -- ___x_cmd_gt_http get "/v5/repos/${owner_repo##*/}/issues/${number}/operate_logs" repo sort; then
-            return 0
-        fi
-    else
-        ___x_cmd_gt_http get "/v5/repos/${owner_repo##*/}/issues/${number}/operate_logs" repo sort && \
-            return 0
-    fi
-    gt_log error "Couldn't find any data by: $repo $number"
-    return 1
+    local ___gt_error_msg="Couldn't find any data by: $repo $number"
+    ___gt_ui_mutual ___x_cmd_gt_http get "/v5/repos/${owner_repo##*/}/issues/${number}/operate_logs" repo sort <<A
+        ___ui_table_json Time=.created_at User=.user.login Type=.action_type Content=.content -- \$@
+A
 }
 
 # shellcheck shell=sh
@@ -140,8 +133,8 @@ options:
     --assignee      "assignee"                                                           <>=""
     --creator       "creator"                                                            <>=""
     --program       "program"                                                            <>=""
-    --page          "page"                                                               <>:number=1
-    --per_page      "per_page"                                                           <>:number=20
+    --page          "page"                                                               <>:NatureNumber=1
+    --per_page      "per_page"                                                           <>:NatureNumber=20
     --sort          "sort"                                                               <>="created"
     --direction     "direction"                                                          <>="desc"
     --number        "repo issue number"                                                  <>=""
@@ -153,19 +146,10 @@ options:
     gen_gt_json="$(param:option2json -repo -page -per_page)"
 
     if [ -z "$number" ]; then
-        if [ -t 1 ]; then
-            if ___ui_table_json IssueNumber=.number Title=.title State=.issue_state Assigner=.assignee.name Body=.body \
-                -- "___x_cmd_gt_get_multi" "/v5/repos/${owner_repo}/issues" state labels milestone \
-                    assignee creator program sort direction number; then
-                return 0
-            fi
-        else
-            ___x_cmd_gt_get_multi "/v5/repos/${owner_repo}/issues" state labels milestone \
-                    assignee creator program sort direction number && \
-                return 0
-        fi
-        gt_log error "Couldn't find any data by: ${owner_repo}"
-        return 1
+        ___gt_ui_mutual ___x_cmd_gt_get_multi "/v5/repos/${owner_repo}/issues" state labels milestone \
+            assignee creator program sort direction number <<A
+        IssueNumber=.number Title=.title State=.issue_state Assigner=.assignee.name Body=.body -- \$@
+A
     else
         ___x_cmd_gt_http get "/v5/repos/${owner_repo}/issues/${number}" | \
         {
@@ -194,26 +178,20 @@ options:
     --labels        "labels"                                       <>=""
     --sort          "sort(created,updated)"                        <>="created"
     --direction     "direction(asc、desc)"                         <>="desc"
-    --page          "page"                                         <>:number=1
-    --per_page      "per_page"                                     <>:number=20
+    --page          "page"                                         <>:NatureNumber=1
+    --per_page      "per_page"                                     <>:NatureNumber=20
 '
     param:run
 
     local gen_gt_json
     gen_gt_json="$(param:option2json -org -page -per_page)"
 
-    if [ -t 1 ]; then
-        if ___ui_table_json IssueNumber=.number State=.issue_state Assigner=.assignee.name Repository=.repository.full_name Type=.issue_type Title=.title Url=.html_url \
-            -- ___x_cmd_gt_get_multi "/v5/orgs/${org##*/}/issues" filter state labels sort direction since page per_page; then
-            return 0
-        fi
-    else
-        ___x_cmd_gt_get_multi "/v5/orgs/${org##*/}/issues" filter state labels sort direction since page per_page && \
-            return 0
-    fi
-    gt_log error "Couldn't find any data by: ${org}"
-    return 1
-
+    local ___gt_error_msg="Couldn't find any data by: ${org}"
+    ___gt_ui_mutual ___x_cmd_gt_get_multi "/v5/orgs/${org##*/}/issues" filter state labels \
+        sort direction since page per_page <<A
+        ___ui_table_json IssueNumber=.number State=.issue_state Assigner=.assignee.name \
+            Repository=.repository.full_name Type=.issue_type Title=.title Url=.html_url -- \$@
+A
 }
 
 # shellcheck disable=SC2154
@@ -232,25 +210,17 @@ options:
     --assignee      "assignee"                                     <>=""
     --creator       "creator"                                      <>=""
     --program       "program"                                      <>=""
-    --page          "page"                                         <>:number=1
-    --per_page      "per_page"                                     <>:number=50
+    --page          "page"                                         <>:NatureNumber=1
+    --per_page      "per_page"                                     <>:NatureNumber=50
 '
     param:run
 
-    if [ -t 1 ]; then
-        if ___ui_table_json IssueNumber=.number State=.issue_state Assigner=.assignee.name AssignerMarkName=.assignee.remark \
-            Repository=.repository.full_name Type=.issue_type Title=.title Url=.html_url \
-            -- ___x_cmd_gt_get_multi "/v5/enterprises/${enterprise##*/}/issues" filter state labels sort direction \
-                milestone assignee creator program; then
-            return 0
-        fi
-    else
-        ___x_cmd_gt_get_multi "/v5/enterprises/${enterprise##*/}/issues" filter state labels sort direction \
-            milestone assignee creator program && \
-            return 0
-    fi
-    gt_log error "Couldn't find any data by: ${enterprise}"
-    return 1
+    local ___gt_error_msg="Couldn't find any data by: ${enterprise}"
+    ___gt_ui_mutual ___x_cmd_gt_get_multi "/v5/enterprises/${enterprise##*/}/issues" filter state labels sort direction \
+        milestone assignee creator program <<A
+        ___ui_table_json IssueNumber=.number State=.issue_state Assigner=.assignee.name AssignerMarkName=.assignee.remark \
+            Repository=.repository.full_name Type=.issue_type Title=.title Url=.html_url -- \$@
+A
 }
 
 # Section : comment
@@ -287,17 +257,10 @@ options:
     param:run
     ___x_cmd_gt_param_init_owner_repo
 
-    if [ -t 1 ]; then
-        if ___ui_table_json CommitId=.id IssueNumber=.target.issue.number Title=.target.issue.title User=.user.login Body=.body \
-            -- "___x_cmd_gt_get_multi" "/v5/repos/${owner_repo}/issues/$number/comments" since order; then
-            return 0
-        fi
-    else
-        ___x_cmd_gt_get_multi "/v5/repos/${owner_repo}/issues/$number/comments" since order && \
-            return 0
-    fi
-    gt_log error "Couldn't find any data by: ${owner_repo}"
-    return 1
+    local ___gt_error_msg="Couldn't find any data by: ${owner_repo}"
+    ___gt_ui_mutual ___x_cmd_gt_get_multi "/v5/repos/${owner_repo}/issues/$number/comments" since order <<A
+        ___ui_table_json CommitId=.id IssueNumber=.target.issue.number Title=.target.issue.title User=.user.login Body=.body -- \$@
+A
 }
 
 # shellcheck disable=SC2086,SC2154

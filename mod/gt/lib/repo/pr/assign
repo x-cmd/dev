@@ -20,8 +20,8 @@ ___x_cmd_gt_repo_pr_assign_add(){
     param:scope     ___x_cmd_gt
     param:dsl       '
 options:
-    #1|--pr             "pr id"                                                     <>:number
-    #2|--assignees     "reviewer username list. Format: <username>[,<username>]"    <>:name
+    #1|--pr             "pr id"                                                     <>:NatureNumber
+    #2|--assignees     "reviewer username list. Format: <username>[,<username>]"    <>:UserName
 '
     param:run
 
@@ -35,8 +35,8 @@ ___x_cmd_gt_repo_pr_assign_del(){
     param:scope     ___x_cmd_gt
     param:dsl       '
 options:
-    #1|--pr             "pr id"                                                     <>:number
-    #2|--assignees     "reviewer username list. Format: <username>[,<username>]"    <>:name
+    #1|--pr             "pr id"                                                     <>:NatureNumber
+    #2|--assignees     "reviewer username list. Format: <username>[,<username>]"    <>:UserName
 '
     param:run
 
@@ -48,8 +48,8 @@ ___x_cmd_gt_repo_pr_assign_reset(){
     param:scope     ___x_cmd_gt
     param:dsl       '
 options:
-    #1|--pr             "pr id"                 <>:number
-    --reset_all         "reset all"             <>:bool="false"
+    #1|--pr             "pr id"                 <>:NatureNumber
+    --reset_all         "reset all"             <>:Bool="false"
 '
     param:run
 
@@ -63,8 +63,8 @@ ___x_cmd_gt_repo_pr_assign_review(){
     param:scope     ___x_cmd_gt
     param:dsl       '
 options:
-    #1|--pr         "pr id"                     <>:number
-    --force         "force"                     <>:bool="false"
+    #1|--pr         "pr id"                     <>:NatureNumber
+    --force         "force"                     <>:Bool="false"
 '
     param:run
 

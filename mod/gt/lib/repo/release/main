@@ -32,17 +32,10 @@ options:
     param:run
     ___x_cmd_gt_param_init_owner_repo
 
-    if [ -t 1 ]; then
-        if ___ui_table_json Id=.id ReleaseName=.name TagName=.tag_name Message=.body IsPreRelease=.prerelease User=.author.login Time=.created_at \
-            -- "___x_cmd_gt_http get" "/v5/repos/${owner_repo}/releases" direction page per_page; then
-            return 0
-        fi
-    else
-        ___x_cmd_gt_http get "/v5/repos/${owner_repo}/releases" direction page per_page && \
-            return 0
-    fi
-    gt_log error "Couldn't find any data by: $owner_repo"
-    return 1
+    ___gt_ui_mutual ___x_cmd_gt_http get "/v5/repos/${owner_repo}/releases" direction page per_page <<A
+        ___ui_table_json Id=.id ReleaseName=.name TagName=.tag_name Message=.body \
+            IsPreRelease=.prerelease User=.author.login Time=.created_at -- \$@
+A
 }
 
 # shellcheck disable=SC2086,SC2154
@@ -63,8 +56,6 @@ options:
 # shellcheck disable=SC2154,SC2181
 # https://gitee.com/api/v5/swagger#/postV5ReposOwnerRepoReleases
 ___x_cmd_gt_repo_release_create(){
-    local O="${O:-GITEE_DEFAULT}"
-
     param:scope  ___x_cmd_gt
     param:dsl    '
 options:
@@ -118,15 +109,14 @@ alias ______x_cmd_gt_repo_release_init_owner_repo_and_release="
 # shellcheck disable=SC2154,SC2181
 # TODO:https://gitee.com/api/v5/swagger#/patchV5ReposOwnerRepoReleasesId
 ___x_cmd_gt_repo_release_update(){
-    local O="${O:-GITEE_DEFAULT}"
     param:scope  ___x_cmd_gt
     param:dsl    '
 options:
-    #1|--release        "Release ID"                <>:number
+    #1|--release        "Release ID"                <>:NatureNumber
     --tag               "Please provide tag name"   <>
     --name              "Release name"              <>
     --body              "Release Description"       <>
-    --prerelease        "Is release version"        <>:bool="false"
+    --prerelease        "Is release version"        <>:Bool="false"
 '
     param:run
     ______x_cmd_gt_repo_release_init_owner_repo_and_release
@@ -138,11 +128,10 @@ options:
 
 # TODO: https://gitee.com/api/v5/swagger#/deleteV5ReposOwnerRepoReleasesId
 ___x_cmd_gt_repo_release_rm(){
-    local O="${O:-GITEE_DEFAULT}"
     param:scope  ___x_cmd_gt
     param:dsl    '
 options:
-    #1|--release        "Release ID"                <>:number
+    #1|--release        "Release ID"                <>:NatureNumber
 '
     param:run
 
@@ -152,7 +141,6 @@ options:
 
 # TODO: https://gitee.com/api/v5/swagger#/getV5ReposOwnerRepoReleasesLatest
 ___x_cmd_gt_repo_release_latest(){
-    local O="${O:-GITEE_DEFAULT}"
     param:scope     ___x_cmd_gt
     param:dsl    '
 options:
@@ -166,11 +154,10 @@ options:
 
 # TODO: https://gitee.com/api/v5/swagger#/getV5ReposOwnerRepoReleasesId
 ___x_cmd_gt_repo_release_info(){
-    local O="${O:-GITEE_DEFAULT}"
     param:scope     ___x_cmd_gt
     param:dsl    '
 options:
-    #1|--release        "Release ID"                <>:number
+    #1|--release        "Release ID"                <>:NatureNumber
 '
     param:run
 

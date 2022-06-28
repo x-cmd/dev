@@ -1,0 +1,11 @@
+# https://static.rust-lang.org/rustup/rustup-init.sh
+
+___x_cmd_os_endiness(){
+    :
+}
+
+___x_cmd_os_work(){
+    :
+}
+
+

@@ -1,5 +1,15 @@
 {
-    "t|tokenized": "--- Tokenized json data",
-    "kp": "--- Gain keypath ang value",
-    "kpo": "--- Hanlde json object"
+    "t|tokenized": {
+        "#desc": "Tokenized json data"
+    },
+    "kp": {
+        "#desc": "Gain keypath and value",
+        "#1": []
+    },
+    "kpo": {
+        "#desc": "Hanlde json object",
+        "#n" : {
+            "#cand": ["-f", "-v"]
+        }
+    }
 }

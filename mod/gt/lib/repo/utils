@@ -62,7 +62,7 @@ ___x_cmd_gt_repo_fork(){
     param:dsl       '
 options:
     --repo              "Provide owner name and repo name.(default:the current user repo)"   <>:RepoName
-    --organization=""   "Provide organization"                                               <>:org
+    --organization=""   "Provide organization"                                               <>:OrgSpaceName
 '
     param:run
 

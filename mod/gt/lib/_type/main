@@ -7,6 +7,8 @@
 # Define in param
 param_type      ___x_cmd_gt     Bool                  =       true   false
 param_type      ___x_cmd_gt     RepoPerm              =       pull    push     admin
+param_type      ___x_cmd_gt     RepoAllAccess         =       all     private  public
+param_type      ___x_cmd_gt     RepoAccess            =       private public
 param_type      ___x_cmd_gt     RepoAccess            =       private public
 param_type      ___x_cmd_gt     ExtraAccess           =       private public   innerSource
 param_type      ___x_cmd_gt     UserRole              =       all member admin

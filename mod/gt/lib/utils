@@ -19,12 +19,12 @@ ___x_cmd_gt_get_multi(){
         return "$?"
     fi
     local i=1
-    local total_page=100000
-    while [ "$i" -le "$total_page" ]; do
+    local total_count=100000
+    while [ "$i" -le "$total_count" ]; do
         ___x_cmd_gt_http get "$@" page="$i" per_page=100
-        total_page="$(___x_cmd_gt_resp_header "total_page")"
-        [ -z "$total_page" ] && return
-        # echo "total_page:$total_page" >&2
+        total_count="$(___x_cmd_gt_resp_header "total_count")"
+        [ -z "$total_count" ] && return
+        # echo "total_count:$total_count" >&2
         i=$((i+1))
     done
 }
@@ -101,4 +101,14 @@ ___x_cmd_gt_default(){
     param_default "$@" 2>/dev/null || return 1
 }
 
+___gt_ui_mutual(){
+    if [ -t 1 ]; then
+        eval "$(cat)"
+    else
+        "$@"
+    fi
 
+    local ___gt_exit_code="$?"
+    [ "$___gt_exit_code" -eq 0 ] || gt_log error "${___gt_error_msg:-"Couldn't find any data"}"
+    return "$___gt_exit_code"
+}

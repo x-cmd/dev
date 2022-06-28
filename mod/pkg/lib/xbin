@@ -47,7 +47,6 @@ ___x_cmd_pkg_xbin_init(){
     local version="${2:-$(___x_cmd_pkg_default_version "${pkg_name}")}"
     local bin_path
     bin_path="$(___x_cmd_pkg_xbin_path "$pkg_name" "$version")"
-    [ -f $bin_path ] || pkg:error " The bin_path of $pkg_name is wrong "
     pkg:debug "xbin_init. bin_mod_name: $bin_mod_name package: $pkg_name $version binpath: $bin_path"
 
     [ -f "$bin_path" ] || ___x_cmd_pkg_install "$pkg_name" "$version"

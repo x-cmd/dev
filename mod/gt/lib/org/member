@@ -31,22 +31,15 @@ ___x_cmd_gt_org_member_ls(){
 options:
     --role          "role"                  <>:UserRole="all"
     #1|--org        "org space address"     <>:Address
-    --page          "page"                  <>:number=1
-    --per_page      "per_page"              <>:number=20
+    --page          "page"                  <>:NatureNumber=1
+    --per_page      "per_page"              <>:NatureNumber=20
 '
     param:run
 
-    if [ -t 1 ]; then
-        if ___ui_table_json NameSpace=.login Name=.name Role=.member_role Url=.html_url \
-            -- "___x_cmd_gt_get_multi" "/v5/orgs/${org##*/}/members" role ; then
-            return 0
-        fi
-    else
-        ___x_cmd_gt_get_multi "/v5/orgs/${org##*/}/members" role && \
-            return 0
-    fi
-    gt_log error "Couldn't find any data by $org"
-    return 1
+    local ___gt_error_msg="Couldn't find any data by: $org"
+    ___gt_ui_mutual ___x_cmd_gt_get_multi "/v5/orgs/${org##*/}/members" role <<A
+        ___ui_table_json NameSpace=.login Name=.name Role=.member_role Url=.html_url -- \$@
+A
 }
 
 # shellcheck disable=SC2154
@@ -55,7 +48,7 @@ ___x_cmd_gt_org_member_user(){
     param:scope     ___x_cmd_gt
     param:dsl      '
 options:
-    --username          "username: user space address"   <>:name
+    --username          "username: user space address"   <>:UserName
     #1|--org            "org space address"              <>:address
 '
     param:run
@@ -95,7 +88,7 @@ options:
     local username
     for username in "$@"; do
         # TODO:http handle，delete repo return data is null.Status: 204 No Content
-        if ___x_cmd_gt_http put "/v5/orgs/${org##*/}/memberships/${username##*/}" "$gen_gt_json" >/dev/null; then
+        if ___x_cmd_gt_http put "/v5/orgs/${org##*/}/memberships/${username##*/}" "$role" >/dev/null; then
             gt_log info  "Add $username successfully"
         else
             gt_log error "Add $username failure"

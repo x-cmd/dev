@@ -251,7 +251,7 @@ ___x_cmd_varset_without_end(){
 # x until 3/12 [ -e "file" ]
 
 ___x_cmd_until_is_int(){
-    if [ "$1" -gt 0 ] || [ "$1" -le 0 ]; then
+    if [ "$#" -gt 0 ] && { [ "$1" -gt 0 ] || [ "$1" -le 0 ]; }; then
         return 0
     fi 2>/dev/null
     return 1
@@ -260,7 +260,7 @@ ___x_cmd_until_is_int(){
 ___x_cmd_until(){
     local ___x_cmd_until___local_interval=1
     local ___x_cmd_until___local_timeout=1000000
-    if ___x_cmd_until_is_int "$1" 2>/dev/null; then
+    if ___x_cmd_until_is_int "$@" 2>/dev/null; then
         ___x_cmd_until___local_interval="$1"
         shift
     else
@@ -278,8 +278,10 @@ ___x_cmd_until(){
 
     local ___x_cmd_until___local_time="$(( ___x_cmd_until___local_timeout / ___x_cmd_until___local_interval ))"
     local ___x_cmd_until___local_rest="$(( ___x_cmd_until___local_timeout - ___x_cmd_until___local_time * ___x_cmd_until___local_interval ))"
-    local ___x_cmd_until___local_i
-    for ((___x_cmd_until___local_i=1; ___x_cmd_until___local_i<=___x_cmd_until___local_time; ++___x_cmd_until___local_i)); do
+    local ___x_cmd_until___local_i=1
+    while [ "$___x_cmd_until___local_i" -le "$___x_cmd_until___local_time" ]
+    do
+        ___x_cmd_until___local_i=$((___x_cmd_until___local_i+1))
         sleep "$___x_cmd_until___local_interval" || return
         ! "$@" || return 0
     done

@@ -14,11 +14,11 @@ ___x_cmd_ffmpeg(){
 }
 
 ___x_cmd_ffmpeg_origin(){
-    if ! ___x_cmd_pkg_xbin_init ffmpeg ___x_cmd_ffmpeg_origin; then
+    if ! ___x_cmd_pkg_xbin_init ffmpeg "N-105323-gdd17c86aa1-tessus" "" ___x_cmd_ffmpeg_origin; then
         x:error "Fail to pkg_xbin_init ffmpeg"
         return 1
     fi
-    ___x_cmd_ffmpeg_origin "$@"
+    ___x_cmd_ffmpeg_origin "$@" 2>/dev/null
 }
 
 ___x_cmd_ffmpeg_show(){

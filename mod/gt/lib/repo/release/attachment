@@ -17,13 +17,10 @@ ___x_cmd_gt_repo_release_attachment(){
 
 # Section: main
 ___x_cmd_gt_repo_release_attachment_ls(){
-
-    local O="${O:-GITEE_DEFAULT}"
-
     param:scope     ___x_cmd_gt
     param:dsl    '
 options:
-    #1|--release        "Release ID"                <>:number
+    #1|--release        "Release ID"                <>:NatureNumber
 '
     param:run
 
@@ -32,12 +29,10 @@ options:
 
 # Provide multiple files
 ___x_cmd_gt_repo_release_attachment_add(){
-
-    local O="${O:-GITEE_DEFAULT}"
     param:scope     ___x_cmd_gt
     param:dsl    '
 options:
-    #1|--release        "Release ID"                <>:number
+    #1|--release        "Release ID"                <>:NatureNumber
 '
     param:run
 
@@ -46,13 +41,10 @@ options:
 
 # Delete the file in attachment list
 ___x_cmd_gt_repo_release_attachment_rm(){
-
-    local O="${O:-GITEE_DEFAULT}"
-
     param:scope     ___x_cmd_gt
     param:dsl    '
 options:
-    #1|--release        "Release ID"                <>:number
+    #1|--release        "Release ID"                <>:NatureNumber
 '
     param:run
 

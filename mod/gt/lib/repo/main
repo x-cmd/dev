@@ -25,8 +25,6 @@ ___x_cmd_gt_repo(){
 # shellcheck disable=SC2154
 # https://gitee.com/api/v5/swagger#/postV5UserRepos
 ___x_cmd_gt_repo_create(){
-    local O="${O:-GITEE_DEFAULT}"
-
     param:scope     ___x_cmd_gt
     param:dsl       '
 option:
@@ -56,7 +54,7 @@ option:
     gen_gt_json="$(
         param:option2json +name +private -access \
             has_issues=^no_issue        has_wiki=^no_wiki \
-            can_comment=^no_comment     auto_init=^no_auto_init)"
+            can_comment=^no_comment     auto_init=^^no_auto_init)"
 
     for name in "$@"; do
         printf "%s" "${gen_gt_json}" | sed s/%%name%%/"${name##%/}"/g | \
@@ -76,7 +74,7 @@ ___x_cmd_gt_repo_create_status_handler(){
     if [ -n "$repo_id" ]; then
         ___x_cmd_ui_tf true  "Creating repo $name successfully" "repo_id: $repo_id" "repo_owner: $repo_owner" "url: $url"
     else
-        ___x_cmd_ui_tf false "Creating repo failure: $name."
+        ___x_cmd_ui_tf false "Creating repo failure: $name"
         return 1
     fi
 }
@@ -117,7 +115,7 @@ option:
     gen_gt_json="$(
         param:option2json +name +private -access \
             has_issues=^no_issue            has_wiki=^no_wiki \
-            can_comment=^no_comment         auto_init=^no_auto_init )"
+            can_comment=^no_comment         auto_init=^^no_auto_init )"
 
     # TODO: owner may be personal
     for name in "$@"; do
@@ -180,7 +178,7 @@ option:
     gen_gt_json="$(
         param:option2json +name +private -access \
         has_issues=^no_issue            has_wiki=^no_wiki              outsourced=^^outsourced \
-        can_comment=^no_comment         auto_init=^no_auto_init)"
+        can_comment=^no_comment         auto_init=^^no_auto_init)"
 
     for name in "$@"; do
         printf "%s" "${gen_gt_json}" | sed s/%%name%%/"${name##%/}"/g | \
@@ -217,9 +215,7 @@ ___x_cmd_gt_repo_ls(){
         local owner="$1"
         owner_type="$(______x_cmd_gt_owner_type_query "$owner")"
     fi
-
-    ___x_cmd_gt_"${owner_type}"_repo ls "$@" && return 0
-    return 1
+    ___x_cmd_gt_"${owner_type}"_repo ls "$@"
 }
 # EndSection
 

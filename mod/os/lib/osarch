@@ -1,5 +1,46 @@
 # shellcheck    shell=sh    disable=SC3043  # xrc
 
+# Section: uname
+___x_cmd_os_lsuname(){
+    printf "%s" "linux
+darwin
+sunos
+freebsd
+openbsd
+aix
+cygwin
+msys
+mingw
+"
+}
+
+___x_cmd_os_uname_(){
+    [ -z "$___X_CMD_OS_UNAME_" ] || return 0
+
+    case "$(command uname -a)" in
+        Linux\ *)                   ___X_CMD_OS_UNAME_=linux ;;
+        Darwin\ *)                  ___X_CMD_OS_UNAME_=darwin ;;
+        SunOS\ *)                   ___X_CMD_OS_UNAME_=sunos ;;
+        FreeBSD\ *)                 ___X_CMD_OS_UNAME_=freebsd ;;
+        OpenBSD\ *)                 ___X_CMD_OS_UNAME_=openbsd ;;         # TODO: Netbsd?
+        AIX\ *)                     ___X_CMD_OS_UNAME_=aix ;;
+        CYGWIN* | MSYS* | MINGW*)   ___X_CMD_OS_UNAME_=win ;;
+    esac
+
+}
+
+___x_cmd_os_uname() {
+    ___x_cmd_os_uname_ || return
+    if [ "$#" -eq 0 ]; then
+        printf "%s\n" "$___X_CMD_OS_UNAME_"
+    else
+        x case "$___X_CMD_OS_UNAME_" "$@"
+    fi
+}
+
+# EndSection
+
+
 # Section: name
 ___x_cmd_os_lsname(){
     printf "%s" "linux
@@ -36,6 +77,7 @@ ___x_cmd_os_name() {
 }
 
 # EndSection
+
 
 # Section: arch
 ___x_cmd_os_lsarch(){

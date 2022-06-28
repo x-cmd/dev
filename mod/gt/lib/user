@@ -80,8 +80,8 @@ options:
     --affiliation   "affiliation"       <>:Group="owner"
     --sort          "sort"              <>:Sort="created"
     --direction     "direction"         <>:Direction="desc"
-    --page          "page"              <>:number=1
-    --per_page      "per_page"          <>:number=20
+    --page          "page"              <>:NatureNumber=1
+    --per_page      "per_page"          <>:NatureNumber=20
 '
     param:run
 
@@ -92,17 +92,9 @@ options:
         url="/v5/user/repos"
     fi
 
-    if [ -t 1 ]; then
-        if ___ui_table_json Id=.id Name=.name Owner=.owner.login Url=.html_url \
-            -- ___x_cmd_gt_get_multi "$url" visibility affiliation sort direction; then
-            return 0
-        fi
-    else
-        ___x_cmd_gt_get_multi "$url" visibility affiliation sort direction && \
-            return 0
-    fi
-    gt_log error "Couldn't find any data"
-    return 1
+    ___gt_ui_mutual ___x_cmd_gt_get_multi "$url" visibility affiliation sort direction <<A
+        ___ui_table_json Id=.id Name=.name Owner=.owner.login Url=.html_url -- \$@
+A
 }
 
 # https://gitee.com/api/v5/swagger#/getV5Emails
@@ -110,22 +102,14 @@ ___x_cmd_gt_user_email(){
     param:scope     ___x_cmd_gt
     param:dsl       '
 options:
-    --page          "page"                        <>:number=1
-    --per_page      "per_page"                    <>:number=20
+    --page          "page"                        <>:NatureNumber=1
+    --per_page      "per_page"                    <>:NatureNumber=20
 '
     param:run
 
-    if [ -t 1 ]; then
-        if ___ui_table_json Email=.email State=.state \
-            -- ___x_cmd_gt_get_multi "/v5/emails"; then
-            return 0
-        fi
-    else
-        ___x_cmd_gt_get_multi "/v5/emails" && \
-            return 0
-    fi
-    gt_log error "Couldn't find any data"
-    return 1
+    ___gt_ui_mutual ___x_cmd_gt_get_multi "/v5/emails" <<A
+        ___ui_table_json Email=.email State=.state -- \$@
+A
 }
 
 # https://gitee.com/api/v5/swagger#/getV5UserIssues
@@ -141,8 +125,8 @@ options:
     --state         "state(open,progerssing,closed,rejected)"      <>:Sort="open"
     --direction     "direction(asc、desc)"                         <>:Direction="desc"
 
-    --page          "page"                                         <>:number=1
-    --per_page      "per_page"                                     <>:number=20
+    --page          "page"                                         <>:NatureNumber=1
+    --per_page      "per_page"                                     <>:NatureNumber=20
     --labels        "labels"                                       <>=""
     --since         "since"                                        <>=""
     --schedule      "schedule"                                     <>=""
@@ -152,20 +136,11 @@ options:
 '
     param:run
 
-    if [ -t 1 ]; then
-        if ___ui_table_json ID=.number State=.issue_state Assigner=.assignee.name \
-            Repo=.repository.full_name Type=.issue_type Title=.title Url=.html_url \
-            -- "___x_cmd_gt_get_multi" "/v5/user/issues" filter state direction labels \
-                since schedule deadline created_at finished_at; then
-            return 0
-        fi
-    else
-        ___x_cmd_gt_get_multi "/v5/user/issues" filter state direction labels \
-                since schedule deadline created_at finished_at && \
-            return 0
-    fi
-    gt_log error "Couldn't find any data"
-    return 1
+    ___gt_ui_mutual ___x_cmd_gt_get_multi "/v5/user/issues" filter state direction labels \
+        since schedule deadline created_at finished_at <<A
+            ___ui_table_json ID=.number State=.issue_state Assigner=.assignee.name \
+                Repo=.repository.full_name Type=.issue_type Title=.title Url=.html_url -- \$@
+A
 }
 
 # EndSection
@@ -193,22 +168,14 @@ ___x_cmd_gt_user_key_ls(){
     param:scope     ___x_cmd_gt
     param:dsl       '
 options:
-    --page        "page"                    <>:number=1
-    --per_page    "per_page"                <>:number=20
+    --page        "page"                    <>:NatureNumber=1
+    --per_page    "per_page"                <>:NatureNumber=20
 '
     param:run
 
-    if [ -t 1 ]; then
-        if ___ui_table_json Id=.id Title=.title Key=.key Url=.url \
-            -- "___x_cmd_gt_get_multi" "/v5/user/keys"; then
-            return 0
-        fi
-    else
-        ___x_cmd_gt_get_multi "/v5/user/keys" && \
-            return 0
-    fi
-    gt_log error "Couldn't find any data"
-    return 1
+    ___gt_ui_mutual ___x_cmd_gt_get_multi "/v5/user/keys" <<A
+        ___ui_table_json Id=.id Title=.title Key=.key Url=.url -- \$@
+A
 }
 
 # shellcheck disable=SC2154
@@ -217,7 +184,7 @@ ___x_cmd_gt_user_key_get(){
     param:scope     ___x_cmd_gt
     param:dsl       '
 options:
-    --id        "provided key id"       <>:number
+    --id        "provided key id"       <>:NatureNumber
 '
     param:run
 
@@ -238,7 +205,7 @@ ___x_cmd_gt_user_key_del(){
     param:scope     ___x_cmd_gt
     param:dsl       '
 options:
-    #1|--id        "provided key id"           <>:number
+    #1|--id        "provided key id"           <>:NatureNumber
 '
     param:run
 
