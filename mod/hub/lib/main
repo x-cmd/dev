@@ -4,13 +4,15 @@ xrc param
 
 ___x_cmd_hub_main(){
     param:subcmd ___x_cmd_hub_main                              \
-        login          "Login to hub service"                   \
-        register       "Register to hub service"                \
-        token          "User token management"                  \
-        user           "Get user info '<username> <userid>'"    \
-        logout         "Logout from hub service"                \
         file           "File management"                        \
-        share          "Share management"
+        share          "Share management"                       \
+        msg            "Send message"                           \
+        user           "Get user info '<username> <userid>'"    \
+        token          "User token management"                  \
+        login          "Login to hub service"                   \
+        logout         "Logout from hub service"                \
+        register       "Register to hub service"
+
     param:subcmd:try
     param:run
     hub:error "Subcommand required"
@@ -260,6 +262,29 @@ option:
 A
     param:run
     ___x_cmd_hub_share_ls "$@"
+}
+
+# EndSection
+
+# Section(msg): telegram、 wechat 、discord
+
+___x_cmd_hub_main_msg(){
+    param:subcmd ___x_cmd_hub_main_msg         \
+        telegram "Send message to your telegram account"
+    param:subcmd:try
+    param:run
+    hub:error "subcommand required"
+    ___x_cmd_hub_main_msg help
+}
+
+___x_cmd_hub_main_msg_telegram(){
+    param:dsl<<A
+option:
+    #1    "Resourse path"
+A
+    param:run
+
+    ___x_cmd_hub_msg_telegram "$@"
 }
 
 # EndSection

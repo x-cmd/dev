@@ -9,7 +9,7 @@ ___x_cmd_ws(){
 
         exec)       shift;  ___x_cmd_ws_exec "$@"       ;;
         execfile)   shift;  ___x_cmd_ws_execfile "$@"   ;;
-
+        _x_cmd_advise_json) printf "{}"                 ;;
         *)                  ___x_cmd_ws_exec "$@"       ;;
     esac
 }

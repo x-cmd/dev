@@ -6,10 +6,9 @@ ___x_cmd_hub_advise_ls_remote(){
     local res
     # TODO: x hub file ls --cache ?
     res="$(x hub file ls "${COMP_WORDS[idx]}")"
-    printf "%s" "$res ss ${COMP_WORDS[idx]}" >>ddd
     if [ -n "${COMP_WORDS[idx]}" ] ; then
-        printf "%s%s" "${COMP_WORDS[idx]%/}/" "$res"
+        candidate_exec_arr=( "${COMP_WORDS[idx]%/}/$res" )
     else
-        printf "%s"   "$res"
+        candidate_exec_arr=( "$res" )
     fi
 }

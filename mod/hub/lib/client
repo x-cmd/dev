@@ -96,3 +96,12 @@ ___x_cmd_hub_client_share_update(){
 }
 
 # EndSection
+
+# Section: msg
+
+___x_cmd_hub_client_send_telegram_msg(){
+    local msg="${1}"
+    curl -X POST --silent "$___X_CMD_HUB_SERVICE_URL/api/v0/telegram/msg?token=$(___x_cmd_hub_token)" \
+        -H 'Content-Type: application/json' \
+        -d '{ "msg": "'"$msg"'" }'
+}

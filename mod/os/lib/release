@@ -33,9 +33,9 @@ ___x_cmd_os_release_name(){
         # redhat or centos
         # CentOS Linux release 7.6.1810 (Core)
         if [ s != "${s#CentOS}" ]; then
-            printf "%s" "centos"
+            printf "%s" centos
         else
-            printf "%s"  "redhat"
+            printf "%s" redhat
         fi
         return 0
     fi

@@ -1,16 +1,23 @@
 # shellcheck shell=sh   disable=
 ###
  # @description: set theme hightlight color
- # @param $1:color => black | red | green | yellow | blue | magenta | cyan | white | rgb-${number}
+ # @param $1:color => black | red | green | yellow | blue | magenta | cyan | white | colour${0~255} | #rrggbb
 ###
 ___x_cmd_theme_set_theme_color() {
     local color_code
-    ___x_cmd_theme___set_color_code "${1:?Please provide correct primary color}"
-    if [ "${1#rgb}" != "$1" ];then
-        color_code="38;5;$color_code"
+    if [ "${1#\#}" != "${1:?Please provide correct primary color}" ];then
+        ___x_cmd_theme___ser_rgb_color_code "$1"
+        color_code="38;2;$color_code"
     else
-        color_code="3$color_code"
+        ___x_cmd_theme___set_color_code "$1"
+        if [ "${1#colour}" != "$1" ];then
+            color_code="38;5;$color_code"
+        else
+            color_code="3$color_code"
+        fi
     fi
+
+    export ___X_CMD_THEME_COLOR_KEY="$1"
     export ___X_CMD_THEME_COLOR_CODE="$color_code"
     _______x_cmd_theme_set_ls_color "$color_code"
     _______x_cmd_theme_set_complate_color "$color_code"
