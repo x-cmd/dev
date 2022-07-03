@@ -8,6 +8,7 @@ xrc:mod:lib el  alpine code container git k8s udpn utils wubi alphabet a2
 + xdk
 alias xdk=xdk   # xdk="x dk"
 alias l='x ll'
+alias xt="x tmux"
 
 if [ -z "$___X_CMD_THEME_NAME" ]; then
     x theme try el

@@ -1,0 +1,18 @@
+
+___x_cmd_tmux_quickenter(){
+    local session="${1}"
+    if [ -n "$session" ]; then
+        session="$(tmux ls | head -n1 | awk '{ print substr($1, 1, length($1)-1); }')"
+        if [ -z "$session" ]; then
+            printf "%s\n" "Please provide session. tmux :<session>" >&2
+            return 1
+        fi
+    fi
+
+    local answer
+    if ! tmux attach -t "$session" 2>/dev/null; then
+        read -p "Session not exists; Ctrl-C to exit. Press any other key to create new session : " -r answer || exit 0
+        tmux new -s "$1"
+    fi
+}
+
