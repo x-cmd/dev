@@ -23,32 +23,28 @@ A
 
 ___x_cmd_proxy_apt_url(){
     param:dsl <<A
-subcommand:
-    ali                 "aliyun mirror url"
-    tuna                "tuna mirror url"
+option:
+    #1    "Mirror name"       <mirror-name>=ali    = ali tuna
 A
     param:run
 
-    case "$PARAM_SUBCMD" in
+    case "$1" in
         ali)                    printf mirrors.aliyun.com                  ;;
         tuna)                   printf mirrors.tuna.tsinghua.edu.cn        ;;
-        *)                      ___x_cmd_proxy_apt_url _param_help_doc >&2          ;;
     esac
 }
 
 # TODO: Just replace the original text, maybe not the best way.
 ___x_cmd_proxy_apt_replace() {
     param:dsl <<A
-subcommand:
-
-    ali                 "aliyun"
-    tuna                "tuna"
+option:
+    #1    "Mirror name"       <mirror-name>=ali    = ali tuna
 A
     param:run
 
     # TODO: Some problem in ubuntu 12.04
     local url
-    if url="$(___x_cmd_proxy_apt_url "${PARAM_SUBCMD:-tuna}")"; then
+    if url="$(___x_cmd_proxy_apt_url "${1}")"; then
         proxy_log info "Setting ___x_cmd_proxy_apt mirror :
     $url"
 
@@ -75,7 +71,7 @@ ___x_cmd_proxy_apt_rollback() {
     param:dsl <<A
 advise:
     #1          x proxy apt rollback ls
-options:
+option:
     #1          "use the selected file to rollback"
 subcommand:
     ls          "list all file you can rollback"

@@ -6,7 +6,10 @@
 # Section: main
 
 ___x_cmd_du(){
-    ___x_cmd_static_build_file      dust dust               "$@"
+    if ! [ -d $___X_CMD_INSTALL_PATH/dust ]; then
+        x pkg install dust 1>/dev/null
+    fi
+    x dust "$@"
 }
 
 # ___x_cmd_du(){

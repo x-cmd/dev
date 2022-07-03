@@ -25,27 +25,21 @@ A
 
 ___x_cmd_proxy_apk_url(){
     param:dsl <<A
-subcommands:
-    ustc           "USTC mirror"
-    official       "Official mirror"
+option:
+    #1    "Mirror name"       <mirror-name>=ustc    = ustc official
 A
     param:run
     
-    case "$PARAM_SUBCMD" in
-        ustc)       printf "mirrors.ustc.edu.cn" ;;
+    case "$1" in
+        ustc)       printf "mirrors.ustc.edu.cn"    ;;
         official)   printf "dl-cdn.alpinelinux.org" ;;
-        *)          
-                    printf "Unknown mirror: %s" "$PARAM_SUBCMD" >&2
-                    ___x_cmd_proxy_apk_url _param_help_doc  >&2
-                    ;;
     esac
 }
 
 ___x_cmd_proxy_apk_replace() {
     param:dsl <<A
-subcommands:
-    ustc           "USTC mirror"
-    official       "Official mirror"
+option:
+    #1    "Mirror name"       <mirror-name>=ustc    = ustc official
 A
     param:run
 
@@ -53,14 +47,14 @@ A
     src_path=/etc/apk/repositories
     ___proxy_backup "$src_path" apk
 
-    sed -i "s/$(___x_cmd_proxy_apk_url official)/$(___x_cmd_proxy_apk_url "${PARAM_SUBCMD:-ustc}")/g" "$src_path"
+    sed -i "s/$(___x_cmd_proxy_apk_url official)/$(___x_cmd_proxy_apk_url "${1:-ustc}")/g" "$src_path"
 }
 
 ___x_cmd_proxy_apk_rollback() {
     param:dsl <<A
 advise:
     #1          x proxy apk rollback ls
-options:
+option:
     #1          "use the selected file to rollback"
 subcommand:
     ls          "list all file you can rollback"

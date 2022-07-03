@@ -3,7 +3,7 @@
 
 ___x_cmd_proxy(){
     x log init proxy
-    xrc proxy/lib/main
+    xrc:mod:lib proxy main
     ___x_cmd_proxy "$@"
 }
 

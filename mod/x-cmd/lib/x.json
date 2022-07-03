@@ -56,7 +56,10 @@
     "upgrade|update": {
         "#desc": "Upgrade or Update x-cmd",
         "#1": {
-            "#cand": ["nightly", "dev"]
+            "#cand": [
+                "nightly",
+                "dev"
+            ]
         }
     },
     "clear": {},
@@ -171,7 +174,10 @@
         },
         "jo": {
             "#desc": "Command-line incomplete JSON processor"
-        }
+        },
+        "#cand": [
+            "license"
+        ]
     },
     "#n": {
         "#exec": "___x_cmd_advise__get_result"

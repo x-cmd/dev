@@ -27,17 +27,14 @@ A
 
 ___x_cmd_proxy_gem_url(){
     param:dsl <<A
-subcommand:
-    ruby-china|cn           "ruby china mirror"
-    official                "Official mirror"
+option:
+    #1    "Mirror name"       <mirror-name>=cn    = cn official
 A
     param:run
 
-    case "$PARAM_SUBCMD" in
-        # https://gems.ruby-china.com
-        ruby-china|cn)          printf https://gems.ruby-china.com                  ;;
-        official)               printf https://rubygems.org                         ;;
-        *)                      ___x_cmd_proxy_gem_url _param_help_doc >&2                   ;;
+    case "$1" in
+        cn)         printf https://gems.ruby-china.com ;;
+        official)   printf https://rubygems.org        ;;
     esac
 }
 
@@ -48,14 +45,13 @@ ___x_cmd_proxy_gem_get(){
 
 ___x_cmd_proxy_gem_set() {
     param:dsl <<A
-subcommand:
-    ruby-china|cn           "ruby china mirror"
-    official                "Official"
+option:
+    #1    "Mirror name"       <mirror-name>=cn    = cn official
 A
     param:run
 
     local url
-    if url="$(___x_cmd_proxy_gem_url "${PARAM_SUBCMD:-ruby-china}")"; then
+    if url="$(___x_cmd_proxy_gem_url "$1")"; then
         printf "Setting ___x_cmd_proxy_gem mirror:\n    %s\n" "$url" >&2
 
         for i in $(___x_cmd_proxy_gem_get); do

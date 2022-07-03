@@ -30,23 +30,17 @@ A
 
 ___x_cmd_proxy_brew_url(){
     param:dsl <<A
-subcommand:
-    tuna|tsinghua|qh        "Qinghua"
-    aliyun|ali              "Ali"
-    tencent                 "tencent"
-    bfsu                    "Beijing"
-    ustc                    "UTSC"
-    custom                  "cutsom"
+option:
+    #1    "Mirror name"       <mirror-name>=bfsu    = bfsu tuna ustc tencent
 A
     param:run
 
-    case "$PARAM_SUBCMD" in
-        bfsu)                   printf https://mirrors.bfsu.edu.cn                 ;;
-        tuna|tsinghua|qh)       printf https://mirrors.tuna.tsinghua.edu.cn ;;
-        ustc)                   printf https://mirrors.ustc.edu.cn ;;
-        tencent)                printf http://mirrors.cloud.tencent.com  ;;
-        aliyun|ali)             printf https://mirrors.aliyun.com/homebrew  ;;
-        *)                      ___x_cmd_proxy_brew_url _param_help_doc >&2                 ;;
+    case "$1" in
+        bfsu)       printf https://mirrors.bfsu.edu.cn          ;;
+        tsinghua)   printf https://mirrors.tuna.tsinghua.edu.cn ;;
+        ustc)       printf https://mirrors.ustc.edu.cn          ;;
+        tencent)    printf http://mirrors.cloud.tencent.com     ;;
+        ali)        printf https://mirrors.aliyun.com/homebrew  ;;
     esac
 }
 
@@ -61,18 +55,17 @@ ___x_cmd_proxy_brew_set(){
     param:dsl <<A
 option:
     --verbose|-v            "Print the directories checked and git operations performed."
-subcommand:
-    bfsu                    "Beijing"
-    tuna|tsinghua|qh        "Qinghua"
-    tencent                 "tencent"
-    aliyun|ali              "Ali"
-    ustc                    "UTSC"
-    custom                  "cutsom"
+    #1    "Mirror name"     <mirror-name>=bfsu    = bfsu tuna ustc tencent official
 A
     param:run
 
+    if [ "$1" = "official" ] ; then
+        ___x_cmd_proxy_brew_unset "$@"
+        return
+    fi
+
     local url
-    url="$(___x_cmd_proxy_brew_url "${PARAM_SUBCMD:-ustc}")"
+    url="$(___x_cmd_proxy_brew_url "${1}")"
     proxy_log info "Setting ___x_cmd_proxy_brew mirror:"
     proxy_log info "    url: $url"
 
@@ -80,9 +73,8 @@ A
     local core_url
     local s
     s="export HOMEBREW_BOTTLE_DOMAIN=$url"
-    case "$PARAM_SUBCMD" in
-        tuna|tsinghua|qh|bfsu|tencent)    url="$url"/git/homebrew ;;
-        *) ;;
+    case "$1" in
+        bfsu|tuna|ustc|tencent)    url="$url"/git/homebrew ;;
     esac
     case "$sys_name" in 
         darwin)
@@ -139,7 +131,7 @@ option:
 A
     param:run
 
-    local url="${1:-https://github.com/Homebrew}"
+    local url="https://github.com/Homebrew"
 
     git -C "$(brew --repo)" remote set-url origin "$url"/brew.git
     git -C "$(brew --repo homebrew/core)" remote set-url origin "$url"/homebrew-core.git
@@ -153,6 +145,7 @@ A
     proxy_log "after HOMEBREW_BOTTLE_DOMAIN: $HOMEBREW_BOTTLE_DOMAIN"
 
     local i
+    local src
     for i in $HOME/.zshrc $HOME/.bashrc $HOME/.kshrc; do
         if [ ! -f "$i" ]; then
             continue

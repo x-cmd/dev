@@ -59,7 +59,7 @@ function panic_match_candidate_error(option_id, value, candidate_list) {
 }
 
 function panic_match_candidate_error_msg(option_id, value, candidate_list) {
-    return ("Fail to match any candidate, option '" FG_YELLOW get_option_string(option_id) UI_END "' is part of value is '" FG_LIGHT_RED value UI_END "'\n" candidate_list)
+    return ("Fail to match any candidate, option '" FG_YELLOW get_option_string(option_id) UI_END "' the part of value is '" FG_LIGHT_RED value UI_END "'\n" candidate_list)
 }
 
 function panic_match_regex_error(option_id, value, regex) {
@@ -67,7 +67,7 @@ function panic_match_regex_error(option_id, value, regex) {
 }
 
 function panic_match_regex_error_msg(option_id, value, regex) {
-    return ("Fail to match any regex pattern, option '" FG_YELLOW get_option_string(option_id) UI_END "' is part of value is '" FG_LIGHT_RED value UI_END "'\n" regex )
+    return ("Fail to match any regex pattern, option '" FG_YELLOW get_option_string(option_id) UI_END "' the part of value is '" FG_LIGHT_RED value UI_END "'\n" regex )
 }
 
 function panic_required_value_error(option_id) {
@@ -225,7 +225,7 @@ function assert(optarg_id, arg_name, arg_val,
     # debug("assert: optarg_id: " optarg_id " arg_name: " arg_name " arg_val: " arg_val " op: " op " oparr_keyprefix: " oparr_keyprefix)
 
     if (op == "=int") {
-        if (! match(arg_val, /[+-]?[0-9]+/) ) {    # float is: /[+-]?[0-9]+(.[0-9]+)?/
+        if (! match(arg_val, "^[+-]?[0-9]+$") ) {    # float is: /[+-]?[0-9]+(.[0-9]+)?/
             return "Arg: [" arg_name "] value is [" arg_val "]\n  Is NOT an integer."
         }
     } else if (op == "=") {
@@ -234,9 +234,16 @@ function assert(optarg_id, arg_name, arg_val,
         for (idx=2; idx<=len; ++idx) {
             val = oparr_get( optarg_id, idx )
             val = str_unquote_if_quoted( val )
-            if (arg_val == val) {
-                sw = true
-                break
+            if (val ~ "^/.*/$") {
+                if (match(arg_val, "^"substr(val, 2, length(val)-2)"$")) {
+                    sw = true
+                    break
+                }
+            } else {
+                if (arg_val == val) {
+                    sw = true
+                    break
+                }
             }
         }
         if (sw == false) {

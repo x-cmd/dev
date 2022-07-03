@@ -36,13 +36,13 @@ ___x_cmd_proxy_go_get(){
 ___x_cmd_proxy_go_auto(){
     param:void
     # if dig sh.x-cmd.com 2>/dev/null | grep gitee 2>/dev/null 1>dev/null; then
-    #     ___x_cmd_proxy_go set aliyun
+    #     ___x_cmd_proxy_go set ali
     #     ___x_cmd_proxy_go sum set qiniu
     # else
     #     : Why
     # fi
 
-    ___x_cmd_proxy_go set aliyun
+    ___x_cmd_proxy_go set ali
     ___x_cmd_proxy_go gosumdb set qiniu
 }
 
@@ -70,19 +70,16 @@ ______x_cmd_proxy_go_set(){
 
 ___x_cmd_proxy_go_set(){
     param:dsl <<A
-subcommand:
-    aliyun|ali                  "Ali"
-    goproxy                     "goproxy.cn"
-    qiniu|io                    "goproxy.io"
-    official                    "Official"
+option:
+    #1    "Mirror name"       <mirror-name>=qiniu    = ali goproxy qiniu official
 A
     param:run
 
-    case "${PARAM_SUBCMD:-qiniu}" in
-        ali|aliyun)            ______x_cmd_proxy_go_set    https://mirrors.aliyun.com/goproxy/ ;;
-        goproxy)               ______x_cmd_proxy_go_set    https://goproxy.io/zh/              ;;
-        qiniu|io)              ______x_cmd_proxy_go_set    https://goproxy.cn                  ;;
-        *) ;;
+    case "${1}" in
+        ali)            ______x_cmd_proxy_go_set    https://mirrors.aliyun.com/goproxy/ ;;
+        goproxy)        ______x_cmd_proxy_go_set    https://goproxy.io/zh/              ;;
+        qiniu)          ______x_cmd_proxy_go_set    https://goproxy.cn                  ;;
+        official)       ___x_cmd_proxy_go_unset     ;;
     esac
 }
 

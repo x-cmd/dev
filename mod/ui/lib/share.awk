@@ -471,9 +471,25 @@ function th( style, text ){
     return style text UI_END
 }
 
-function judgment_of_regexp(obj, _key_prefix,      i){
+function judgment_of_regexp(obj, _key_prefix, val,     i){
     for (i=1; i<=obj[ _key_prefix L]; ++i) {
-        if ( _answer ~ obj[ _key_prefix L i ] ) return true
+        if ( match( val, "^"obj[ _key_prefix L i ]"$") ) return true
+    }
+    return false
+}
+
+function is_regex(val){
+    return (val ~ "^/.*/$") ? true : false
+}
+
+function judgment_of_regexp_or_candidate(obj, _key_prefix, _answer,     i, val){
+    for (i=1; i<=obj[ _key_prefix L]; ++i) {
+        val = obj[ _key_prefix L i ]
+        if ( is_regex(val) ) {
+            if ( match( _answer, "^"substr(val, 2, length(val)-2)"$") ) return true
+        } else {
+            if ( _answer == val ) return true
+        }
     }
     return false
 }

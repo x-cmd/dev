@@ -26,16 +26,14 @@ A
 
 ___x_cmd_proxy_npm_url(){
     param:dsl <<A
-subcommand:
-    aliyun|ali              "Ali mirror"
-    official                "Official mirror"
+option:
+    #1    "Mirror name"       <mirror-name>=ali    = ali official
 A
     param:run
 
-    case "$PARAM_SUBCMD" in
-        aliyun|ali)             printf https://registry.npm.taobao.org/             ;;
-        official)               printf https://registry.npmjs.org/                  ;;
-        *)                      ___x_cmd_proxy_npm_url _param_help_doc >&2                   ;;
+    case "$1" in
+        ali)             printf https://registry.npm.taobao.org/             ;;
+        official)        printf https://registry.npmjs.org/                  ;;
     esac
 }
 
@@ -46,14 +44,13 @@ ___x_cmd_proxy_npm_get(){
 
 ___x_cmd_proxy_npm_set() {
     param:dsl <<A
-subcommand:
-    aliyun|ali              "Ali mirror"
-    official                "Official mirror"
+option:
+    #1    "Mirror name"       <mirror-name>=ali    = ali official
 A
     param:run
 
     local url
-    url="$(___x_cmd_proxy_npm_url "${PARAM_SUBCMD:-aliyun}")"
+    url="$(___x_cmd_proxy_npm_url "$1")"
     printf "Setting ___x_cmd_proxy_npm mirror:\n    %s\n\n" "$url" >&2
     npm config set registry "$url"
 }

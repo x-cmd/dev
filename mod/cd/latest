@@ -114,6 +114,7 @@ A
 
         /*)    ___x_cmd_cd_choose "$(___x_cmd_cd_iter / "${p#/}")" ;;
         */*)   ___x_cmd_cd_choose "$(___x_cmd_cd_iter . "${p}")"   ;;
+        _x_cmd_advise_json)        cat "$___X_CMD_ROOT_MOD/cd/lib/cd.advise.json"        ;;
 
         *)
             ___X_CMD_CD_HISTORY="$(printf "%s" "$___X_CMD_CD_HISTORY" | ___x_cmd_cd_util_uniq_head 200)"

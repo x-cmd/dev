@@ -28,7 +28,7 @@ proxy_maven_url(){
     if [ -n "$1" ]; then
         op=$1
     else 
-        op=aliyun
+        op=ali
     fi
 
     case "$op" in
@@ -72,7 +72,7 @@ A
 </mirror>
 A
         ;;
-        aliyun)                     
+        ali)                     
             cat <<A
 <mirror>
     <id>nexus-aliyun</id>

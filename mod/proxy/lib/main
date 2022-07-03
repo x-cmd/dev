@@ -16,7 +16,6 @@ subcommands:
 
     pip                     "Setting the pip mirror for Python development"
     npm                     "Setting the npm mirror for Javascript/Typescript development"
-    maven                   "Setting the maven mirror for Java development"
     go                      "Setting the go mirror"
     gem                     "Setting the gem mirror for Ruby development"
     cargo                   "Setting the the cargo mirror for Rust development"
@@ -30,6 +29,8 @@ subcommands:
     docker                  "setting the docker mirror"
     dnf                     "setting the dnf mirror"
 A
+# TODO：maven
+#     maven                   "Setting the maven mirror for Java development"
     param:run
 
     if [ -z "$PARAM_SUBCMD" ]; then
@@ -39,10 +40,10 @@ A
     fi
 
     case "$PARAM_SUBCMD" in
-        set)        ___proxy_set "$@" ;;
-        unset)      ___proxy_unset "$@" ;;
-        version)    ___proxy_version ;;
-        *)          ___proxy_exec "${PARAM_SUBCMD}" "$@" ;;
+        set)        ___x_cmd_proxy_set "$@" ;;
+        unset)      ___x_cmd_proxy_unset "$@" ;;
+        version)    ___x_cmd_proxy_version ;;
+        *)          ___x_cmd_proxy_exec "${PARAM_SUBCMD}" "$@" ;;
     esac
 }
 
@@ -53,13 +54,13 @@ for i in brew apt pip npm go apk yum cargo gem pacman yarn docker dnf; do
     xrc "proxy/lib/$i"
 done
 
-___proxy_version(){
+___x_cmd_proxy_version(){
     param:void
     printf "%s" v0
 }
 
 # TODO：There is no advise friendly way to use the subcmd.
-___proxy_exec(){
+___x_cmd_proxy_exec(){
     local subcmd="${1:?Subcmd}"
     shift
 
@@ -115,7 +116,7 @@ ______proxy_inner_set(){
     esac
 }
 
-___proxy_set(){
+___x_cmd_proxy_set(){
     param:void
 
     if [ "$#" -eq 0 ]; then
@@ -149,7 +150,7 @@ ___proxy_set(){
     done
 }
 
-___proxy_unset(){
+___x_cmd_proxy_unset(){
     param:void
 
     if [ "$#" -eq 0 ]; then
