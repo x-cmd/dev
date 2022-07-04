@@ -55,9 +55,7 @@ function find_exec( kp, _code ){
     }
 
     _exec = obj[ ___kp ]
-    if (_exec != "{" ) {
-        _exec = shell_quote_cmd( juq( _exec ) )
-    } else {
+    if (_exec == "{" ) {
         if ("" != obj[ ___kp, jqu("root") ])    _root = obj[___kp, jqu("root")]
         _exec = obj[ ___kp, jqu("x") ]
         if (_exec != "") {
@@ -65,6 +63,11 @@ function find_exec( kp, _code ){
         } else {
             _exec = shell_quote_cmd( juq( obj[ ___kp, jqu("exec") ] ) )
         }
+    } else if (_exec == "[") {
+        # Using Recursive
+        return find_exec( ___kp SUBSEP 0 )
+    } else {
+        _exec = shell_quote_cmd( juq( _exec ) )
     }
 
     if ( _root != "")       _code = _code " -c " _root " "
