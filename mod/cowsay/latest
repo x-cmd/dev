@@ -60,13 +60,4 @@ A
     esac
 }
 
-if [ -n "${BASH_VERSION}${ZSH_VERSION}" ] && [ "${-#*i}" != "$-" ]; then
-    xrc advise/latest
-    advise cowsay
-fi
-
-if [ -n "$___X_CMD_ENABLE_AUTO_RUN" ]; then
-    cowsay "$@"
-fi
-
 xrc setmain cowsay

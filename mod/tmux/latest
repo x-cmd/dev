@@ -35,6 +35,7 @@ ___x_cmd___tmux_origin(){
     if ! command -v tmux 1>/dev/null; then
         x:warn "Tmux Command Not Found. Install tmux."
         x pkg xbin init tmux "" ___x_cmd___tmux_origin
+        # export ___X_CMD_TMUX_BIN=
         ___x_cmd___tmux_origin "$@"
     else
         command tmux "$@"
