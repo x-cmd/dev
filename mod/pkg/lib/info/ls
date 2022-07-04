@@ -32,17 +32,9 @@ ___x_cmd_pkg_ls___installed()(
         -f "$___X_CMD_ROOT_MOD/awk/lib/str.awk" \
         -f "$___X_CMD_ROOT_MOD/pkg/lib/awk/util.awk" \
         -f "$___X_CMD_ROOT_MOD/pkg/lib/awk/pkg.ls.awk"
-
 )
 
 ___x_cmd_pkg_ls_installed(){
-    local i; for i in "$@"; do
-        ___x_cmd_pkg___ls___install "$i"
-    done
-
-}
-
-___x_cmd_pkg___ls___install(){
     local name="$1"
     # [ -n "$name" ] || ___x_cmd_pkg_ls___installed
     if  [ -n "$name" ]; then
@@ -83,9 +75,14 @@ A
 ___x_cmd_pkg_ls_all(){
     if ! [ -d "$___X_CMD_PKG_RAWPATH" ]; then return 0; fi
     pkg_name="${1:?Provide package name}"
-    cat "$___X_CMD_PKG_RAWPATH"/*/"$pkg_name/version.tt.json" | x ja 'O[2]=="\"'"$(os name)/$(os arch)"'\""{
+    cat "$___X_CMD_PKG_RAWPATH"/*/"$pkg_name/version.tt.json" | x ja 'O[2]=="\"'"$(___x_cmd_os name)/$(___x_cmd_os arch)"'\""{
         cur_version = juq(O[1])
         if ( juq(O[1]) != last_version) print cur_version
         last_version = cur_version
     }'
+}
+
+___x_cmd_pkg_ls___all_candidate(){
+    # TODO: Use find to avoid awk
+    ls "$___X_CMD_PKG_RAWPATH"/*/ | awk '{if(($0 != "") && (! match($0, /^\/[..]*/))){print $0}}'
 }

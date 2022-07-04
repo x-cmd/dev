@@ -4,10 +4,6 @@
 # license:      GPLv3
 
 
-if ! command -v tmux 1>/dev/null; then
-    x:warn "Tmux Command Not Found. Fail to load this module."
-    return 1
-else
 
 xrc:mod:lib tmux load util abbr
 
@@ -35,12 +31,15 @@ ___x_cmd_tmux(){
                     ___x_cmd___tmux_origin "$@" ;;
     esac
 }
-
 ___x_cmd___tmux_origin(){
-    command tmux "$@"
+    if ! command -v tmux 1>/dev/null; then
+        x:warn "Tmux Command Not Found. Install tmux."
+        x pkg xbin init tmux "" ___x_cmd___tmux_origin
+        ___x_cmd___tmux_origin "$@"
+    else
+        command tmux "$@"
+    fi
 }
-
-fi
 
 xrc setmain ___x_cmd_tmux
 

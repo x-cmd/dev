@@ -5,7 +5,7 @@
 # Section 2: Wrapping std/http module with object naming changing
 ############################
 ___x_cmd_gh_resp_header() {
-   O="${O:-___x_cmd_gh_GITHUB_DEFAULT}" http resp header "$@"
+   O="${O:-___x_cmd_gh_GITHUB_DEFAULT}" ___x_cmd_http resp header "$@"
 }
 
 ___x_cmd_gh_get_multi() {
@@ -25,10 +25,10 @@ ___x_cmd_gh_get_multi() {
 }
 
 ___x_cmd_gh_http(){
-    if ! O="${O:-___x_cmd_gh_GITHUB_DEFAULT}" http header get Accept 1>/dev/null 2>&1; then
-         O="${O:-___x_cmd_gh_GITHUB_DEFAULT}" http header put Accept application/vnd.github.v3+json
+    if ! O="${O:-___x_cmd_gh_GITHUB_DEFAULT}" ___x_cmd_http header get Accept 1>/dev/null 2>&1; then
+         O="${O:-___x_cmd_gh_GITHUB_DEFAULT}" ___x_cmd_http header put Accept application/vnd.github.v3+json
     fi
-    O="${O:-___x_cmd_gh_GITHUB_DEFAULT}" http "$@"
+    O="${O:-___x_cmd_gh_GITHUB_DEFAULT}" ___x_cmd_http "$@"
 }
 
 ############################

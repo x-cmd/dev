@@ -8,7 +8,7 @@
 
 xrc os
 
-case "$(os name)" in
+case "$(___x_cmd_os name)" in
     darwin)
         xrc x_fs/darwin/ls
         ;;

@@ -69,7 +69,7 @@ A
     proxy_log info "Setting ___x_cmd_proxy_brew mirror:"
     proxy_log info "    url: $url"
 
-    sys_name="$(xrc os && os name)"
+    sys_name="$(xrc os && ___x_cmd_os name)"
     local core_url
     local s
     s="export HOMEBREW_BOTTLE_DOMAIN=$url"

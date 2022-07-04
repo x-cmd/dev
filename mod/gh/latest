@@ -42,14 +42,14 @@ ___x_cmd_gh(){
 ____x_cmd_gh_make() {
     param:void
     local O="___x_cmd_gh_${1:?Provide client name by O environment}"
-    http make  'https://api.github.com'
-    http header put Accept "application/vnd.github.v3+json"
+    ___x_cmd_http make  'https://api.github.com'
+    ___x_cmd_http header put Accept "application/vnd.github.v3+json"
 
     local token
     token="$(___x_cmd_gh_config_get "oauth_token")"
 
     if [ -n "$token" ]; then
-        http header put Authorization "token $token"
+        ___x_cmd_http header put Authorization "token $token"
         local user
         user="$(___x_cmd_gh_current_owner)" || return 1
         gh_log info "Hi $user! You've successfully authenticated."
@@ -58,9 +58,9 @@ ____x_cmd_gh_make() {
 
     local info
     info=$(printf "\n%s %s \n%s" \
-         "$(ui yellow 'You need run command to add token:')" \
-         "$(ui bold cyan "\`gh token <token>\`")" \
-         "$(ui 'https://github.com/settings/tokens')")
+         "$(___x_cmd_ui yellow 'You need run command to add token:')" \
+         "$(___x_cmd_ui bold cyan "\`gh token <token>\`")" \
+         "$(___x_cmd_ui 'https://github.com/settings/tokens')")
     gh_log warn "Token is null.${info}"
 }
 

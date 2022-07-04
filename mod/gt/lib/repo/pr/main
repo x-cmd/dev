@@ -119,7 +119,7 @@ options:
 
     ___parse_pr_init_owner_repo_and_pr
 
-    http browse "https://gitee.com/${owner_repo}/pulls/$pr"
+    ___x_cmd_http browse "https://gitee.com/${owner_repo}/pulls/$pr"
 }
 
 # EndSection

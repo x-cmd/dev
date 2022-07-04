@@ -49,7 +49,7 @@ ___x_cmd_pkg___get_script_path(){
 # Section: osarch
 ___x_cmd_pkg_osarch(){
     if [ -z "$___X_CMD_PKG_OSARCH" ]; then
-        ___X_CMD_PKG_OSARCH="$(os name)/$(os arch)"
+        ___X_CMD_PKG_OSARCH="$(___x_cmd_os name)/$(___x_cmd_os arch)"
     fi
     printf "%s\n" "$___X_CMD_PKG_OSARCH"
 }

@@ -72,8 +72,6 @@ case "$___X_CMD_OS_NAME_" in
     ;;
 esac
 
-tmux set mouse on
-
 # # TODO: better design for this.
 # # copy to X11 clipboard
 # if -b 'command -v xsel > /dev/null 2>&1' 'bind y run -b "tmux save-buffer - | xsel -i -b"'

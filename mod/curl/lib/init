@@ -67,9 +67,9 @@ ___x_cmd___curl___not_secure_get(){
 ___x_cmd___curl___download_curl(){
     xrc os
     local arch
-    arch="$(os arch)"
-    name="$(os name)"
-    if [ "$(os name)" != "linux" ];then
+    arch="$(___x_cmd_os arch)"
+    name="$(___x_cmd_os name)"
+    if [ "$(___x_cmd_os name)" != "linux" ];then
         return 1
     fi
 

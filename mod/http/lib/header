@@ -31,7 +31,7 @@ ___x_cmd_http_header_dump(){
     param:void
     case "${1:-""}" in
         json)
-            O=$O dict scope header | ___x_cmd_dict_pjson
+            O=$O ___x_cmd_dict scope header | ___x_cmd_dict_pjson
             ;;
         curl)
             ___x_cmd_http_header_dump | while read -r line; do
@@ -39,19 +39,19 @@ ___x_cmd_http_header_dump(){
             done
             ;;
         *)
-            O=$O dict scope header | ITEM_SEP="\n" KV_SEP=": " ___x_cmd_dict_pprint ;;
+            O=$O ___x_cmd_dict scope header | ITEM_SEP="\n" KV_SEP=": " ___x_cmd_dict_pprint ;;
 
     esac
 }
 
 ___x_cmd_http_header_get(){
     param:void
-    O=$O dict get header "${1:?header key}"
+    O=$O ___x_cmd_dict get header "${1:?header key}"
 }
 
 ___x_cmd_http_header_put(){
     param:void
-    O=$O dict put header "${1:?header key}" "${2:?value}"
+    O=$O ___x_cmd_dict put header "${1:?header key}" "${2:?value}"
 }
 
 ___x_cmd_http_header_mput(){
@@ -69,7 +69,7 @@ ___x_cmd_http_header_mput(){
 ___x_cmd_http_header_remove(){
     param:void
     for i in "$@"; do
-        O=$O dict drop header "$i"
+        O=$O ___x_cmd_dict drop header "$i"
     done
 }
 

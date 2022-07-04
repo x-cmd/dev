@@ -21,17 +21,17 @@ ___x_cmd_http_del(){
             return
         fi
     fi
-    printf "%s" "No such dict instance: $O" >&2
+    printf "%s" "No such ___x_cmd_dict instance: $O" >&2
 }
 
 ___x_cmd_http_make() {
-    O=$O dict  make
-    [ -n "$1" ] && O=$O dict put url "${1}"
+    O=$O ___x_cmd_dict  make
+    [ -n "$1" ] && O=$O ___x_cmd_dict put url "${1}"
 }
 
 
 ___x_cmd_http_free() {
-    O=$O dict free
+    O=$O ___x_cmd_dict free
 }
 
 
@@ -65,8 +65,8 @@ ___x_cmd_http_browse() {
 ___x_cmd_http_dict() {
     param:void
     case $# in
-        1) O=$O dict get "${1:?Provide dict key}" ;;
-        2) O=$O dict put "${1:?Provide dict key}" "${2:?Provide dict value}" ;;
+        1) O=$O ___x_cmd_dict get "${1:?Provide dict key}" ;;
+        2) O=$O ___x_cmd_dict put "${1:?Provide dict key}" "${2:?Provide dict value}" ;;
         *)
             echo "More than 2 variable provided" >&1
             return 2
@@ -78,23 +78,23 @@ ___x_cmd_http_dict() {
 ___x_cmd_http_cd() {
     param:void
     if [ $# -eq 0 ]; then
-        printf "%s" "$(O=$O dict get url 2>/dev/null)"
+        printf "%s" "$(O=$O ___x_cmd_dict get url 2>/dev/null)"
         return
     fi
 
     local target_url="${1%/}"
 
     local url
-    url="$(O=$O dict get url 2>/dev/null)"
+    url="$(O=$O ___x_cmd_dict get url 2>/dev/null)"
     case "$target_url" in
         http://*|https://*)
-            O=$O dict put url "$target_url"
+            O=$O ___x_cmd_dict put url "$target_url"
             printf "%s" "$target_url"
             ;;
         ..)
             case "$url" in
                 *://*/*)
-                    O=$O dict put url "${url%/*}" ;;
+                    O=$O ___x_cmd_dict put url "${url%/*}" ;;
                 *)
                     http:warn "No parant for %s" "$url"
                     return ;;
@@ -103,7 +103,7 @@ ___x_cmd_http_cd() {
         ../*)
             case "$url" in
                 *://*/*)
-                    O=$O dict put url "${url%/*}"
+                    O=$O ___x_cmd_dict put url "${url%/*}"
                     ___x_cmd_http_cd "${target_url#../}"
                     ;;
                 *)
@@ -120,7 +120,7 @@ ___x_cmd_http_cd() {
             fi
             ;;
         *)
-            O=$O dict put url "${url%/}/${target_url#/}"
+            O=$O ___x_cmd_dict put url "${url%/}/${target_url#/}"
             printf "%s" "${url%/}/${1#/}"
             ;;
     esac
@@ -128,7 +128,7 @@ ___x_cmd_http_cd() {
 
 # ___x_cmd_http_path() {
 #     local url
-#     url="$(O=$O dict get url)"
+#     url="$(O=$O ___x_cmd_dict get url)"
 #     if [ -z "$url" ]; then
 #         printf "%s" "$1"
 #     else

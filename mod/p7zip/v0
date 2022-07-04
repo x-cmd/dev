@@ -16,9 +16,9 @@ _7zd_which(){
     mkdir -p "$target"
     xrc os
     local arch
-    arch="$(os arch)"
+    arch="$(___x_cmd_os arch)"
     local osname
-    osname="$(os name)"
+    osname="$(___x_cmd_os name)"
     local release
     release="$(uname -r)"
 

@@ -58,7 +58,7 @@ A
     $url"
 
     local version_id
-    xrc os && os r - version_id
+    xrc os && ___x_cmd_os r - version_id
     case "$version_id" in
         *5*)
             minorver=5.11

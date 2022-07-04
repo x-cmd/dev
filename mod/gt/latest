@@ -47,14 +47,14 @@ ___x_cmd_gt_make(){
 
     local O="___x_cmd_gt_${1:?Provide client name by O environment}"
 
-    http make  'https://gitee.com/api'
-    http header put type  "application/json;charset=utf-8"
+    ___x_cmd_http make  'https://gitee.com/api'
+    ___x_cmd_http header put type  "application/json;charset=utf-8"
 
     local token
     token="$(___x_cmd_gt_config_get "oauth_token")"
 
     if [ -n "$token" ]; then
-        http header put Authorization "token $token"
+        ___x_cmd_http header put Authorization "token $token"
         local user
         user="$(___x_cmd_gt_current_owner)" || return 1
         gt_log info "Hi $user! You've successfully authenticated."

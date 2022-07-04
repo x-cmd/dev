@@ -1,7 +1,7 @@
 # Author:       Li Junhao   l@x-cmd.com         # xrc
 # shellcheck    shell=sh    disable=SC3043
 
-xrc:mod:lib os      import osarch release loadavg utils
+xrc:mod:lib os      import osarch release loadavg airport utils
 
 ___x_cmd_os(){
     local subcmd="${1:?Provide Sub Command}";   shift
@@ -34,7 +34,14 @@ ___x_cmd_os(){
         help|--help|-h)         ___x_cmd_os_help ;;
         _x_cmd_advise_json)     cat "${___X_CMD_ROOT_MOD}/os/lib/os.advise.json" ;;
 
-        *)                      ___x_cmd_os_help          "$@"    ;;
+        *)                      ___x_cmd_os_other "$@"
+    esac
+}
+
+___x_cmd_os_other(){
+    case "$subcmd" in
+        airport)        ___x_cmd_os_airport "$@" ;;
+        *)              ___x_cmd_os_help    "$@" ;;
     esac
 }
 

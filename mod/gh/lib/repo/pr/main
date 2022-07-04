@@ -147,7 +147,7 @@ options:
 
     ___x_cmd_gh_param_init_owner_repo
 
-    http browse "https://github.com/${owner_repo}/pulls/$pr"
+    ___x_cmd_http browse "https://github.com/${owner_repo}/pulls/$pr"
 }
 
 ___x_cmd_gh_repo_pr_comments(){
