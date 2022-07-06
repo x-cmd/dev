@@ -47,16 +47,23 @@ options:
     param:run
     ___x_cmd_gt_param_init_owner_repo
 
-    ___x_cmd_gt_http get "/v5/repos/${owner_repo}/branches/${branch}" | \
-    {
-        ___x_cmd_git_json_query_rename branch_name=.name is_protected=.protected _links=._links.html;
-        if [ -n "$branch_name" ]; then
-            ___x_cmd_ui_tf true  "Success" "branch_name: $branch_name" "is_protected: $is_protected" "url: $_links"
-        else
-            ___x_cmd_ui_tf false "Fail. Couldn't find any data: ${owner_repo} ${branch}"
-            return 1
-        fi
-    }
+    ___x_cmd_gt_http get "/v5/repos/${owner_repo}/branches/${branch}" | ___x_cmd_gt_repo_branch_info_status_handler
+}
+
+# shellcheck disable=SC2154
+___x_cmd_gt_repo_branch_info_status_handler(){
+    if [ ! -t 1 ] || [ -n "$ENFORCE_JSON" ]; then
+        cat
+        return
+    fi
+
+    ___x_cmd_git_json_query_rename branch_name=.name is_protected=.protected _links=._links.html
+    if [ -n "$branch_name" ]; then
+        ___x_cmd_ui_tf true  "Success" "branch_name: $branch_name" "is_protected: $is_protected" "url: $_links"
+    else
+        ___x_cmd_ui_tf false "Fail. Couldn't find any data: ${owner_repo} ${branch}"
+        return 1
+    fi
 }
 # EndSection
 
@@ -124,15 +131,22 @@ options:
     param:run
     ___x_cmd_gt_param_init_owner_repo
     ___x_cmd_gt_http put "/v5/repos/${owner_repo}/branches/${branch}/protection" | \
-    {
-        ___x_cmd_git_json_query_rename html_url=._links.self;
-        if [ -n "$html_url" ]; then
-            ___x_cmd_ui_tf true  "Success" "branch_name: $branch" "url: $html_url"
-        else
-            ___x_cmd_ui_tf false "Fail. Couldn't find any data: ${owner_repo} ${branch}"
-            return 1
-        fi
-    }
+        ___x_cmd_gt_repo_branch_protection_set_status_handler
+}
+
+___x_cmd_gt_repo_branch_protection_set_status_handler(){
+    if [ ! -t 1 ] || [ -n "$ENFORCE_JSON" ]; then
+        cat
+        return
+    fi
+
+    ___x_cmd_git_json_query_rename html_url=._links.self
+    if [ -n "$html_url" ]; then
+        ___x_cmd_ui_tf true  "Success" "branch_name: $branch" "url: $html_url"
+    else
+        ___x_cmd_ui_tf false "Fail. Couldn't find any data: ${owner_repo} ${branch}"
+        return 1
+    fi
 }
 
 # https://gitee.com/api/v5/swagger#/deleteV5ReposOwnerRepoBranchesBranchProtection

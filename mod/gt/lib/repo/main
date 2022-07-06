@@ -42,12 +42,12 @@ option:
     --no_auto_init          "Not auto init README"
 '
     param:run
-    [ $# -eq 0 ] && gt_log error "Repo name is empty" && return 1
+    [ $# -ne 0 ] || { gt_log error "Please provide repo name"; return 1; }
 
     local private
     case "$access" in
-        public)     private=false ;;
-        private)    private=true ;;
+        public)     private=false   ;;
+        private)    private=true    ;;
     esac
     local name="%%name%%"
     local gen_gt_json
@@ -294,19 +294,25 @@ options:
 '
     param:run
 
-    # get owner_repo by repo
     ___x_cmd_gt_param_init_owner_repo
-    ___x_cmd_gt_http get "/v5/repos/${owner_repo}" | \
-    {
-        ___x_cmd_git_json_query_rename id=.id name=.name html_url=.html_url
-        if [ -n "$id" ]; then
-             ___x_cmd_ui_tf true    "Success" "id: $id" "name: $name" "url: $html_url"
-             return 0
-        else
-             ___x_cmd_ui_tf false   "Couldn't find any repo: $owner_repo"
-            return 1
-        fi
-    }
+
+    ___x_cmd_gt_http get "/v5/repos/${owner_repo}" | ___x_cmd_gt_repo_info_status_handler
+}
+
+# shellcheck disable=SC2154
+___x_cmd_gt_repo_info_status_handler() {
+    if [ ! -t 1 ] || [ -n "$ENFORCE_JSON" ]; then
+        cat
+        return
+    fi
+
+    ___x_cmd_git_json_query_rename id=.id name=.name html_url=.html_url
+    if [ -n "$id" ]; then
+        ___x_cmd_ui_tf true    "Success" "id: $id" "name: $name" "url: $html_url"
+    else
+        ___x_cmd_ui_tf false   "Couldn't find any repo: $owner_repo"
+        return 1
+    fi
 }
 # EndSection
 
@@ -376,15 +382,22 @@ options:
     local gen_gt_json
     gen_gt_json="$(param:option2json)"
 
-    ___x_cmd_gt_http put "/v5/repos/${owner_repo}/reviewer" "$gen_gt_json" | \
-    {
-        ___x_cmd_git_json_query_rename name=.name
-        if [ -n "$name" ]; then
-            ___x_cmd_ui_tf true   "Setuping ${owner_repo} review configure successfully"
-        else
-            ___x_cmd_ui_tf false  "Setuping repo review configure failure: ${owner_repo}"
-            return 1
-        fi
-    }
+    ___x_cmd_gt_http put "/v5/repos/${owner_repo}/reviewer" "$gen_gt_json" | ___x_cmd_gt_repo_review_status_handler
+}
+
+# shellcheck disable=SC2154
+___x_cmd_gt_repo_review_status_handler(){
+    if [ ! -t 1 ] || [ -n "$ENFORCE_JSON" ]; then
+        cat
+        return
+    fi
+
+    ___x_cmd_git_json_query_rename name=.name
+    if [ -n "$name" ]; then
+        ___x_cmd_ui_tf true   "Setuping ${owner_repo} review configure successfully"
+    else
+        ___x_cmd_ui_tf false  "Setuping repo review configure failure: ${owner_repo}"
+        return 1
+    fi
 }
 # EndSection

@@ -8,7 +8,11 @@ ___x_cmd_pkg_activate___min(){
     local name="${1:?Provide pkg name}"
     local version="${2:-$(___x_cmd_pkg_default_version "$name")}"
     local tmp="${___X_CMD_PKG_ACTIVATE___LIST#*"$name=$version"}"
-    [ "$tmp" = "$___X_CMD_PKG_ACTIVATE___LIST" ] || return
+
+    if ! [ "$tmp" = "$___X_CMD_PKG_ACTIVATE___LIST" ]; then
+         pkg:error "$name had been activated"
+         return 1
+    fi
 
     local script_path="$3"
 

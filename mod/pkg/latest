@@ -2,7 +2,7 @@
 # shellcheck    shell=sh            disable=SC3043      # xrc
 
 x log init pkg
-xrc os advise
+xrc os
 ___x_cmd_pkg(){
     # ___x_cmd_pkg___which_p7zip || return
     local op="$1"
@@ -31,14 +31,18 @@ ___x_cmd_pkg(){
         ""|--help|-h)           cat "$___X_CMD_ROOT_MOD/pkg/lib/help.txt" >&2; return 0 ;;
         _x_cmd_advise_json)     cat "$___X_CMD_ROOT_MOD/pkg/lib/pkg.advise.json"        ;;
 
-        *)              return 1
+        *)                      pkg:error "Not found command: x pkg $1"; return 1
     esac
 }
 
 xrc:mod:lib     pkg \
     util                xbin                main \
     info/ls             info/ll             info/ls_installed  \
-    mutate/download     mutate/install      mutate/activate     mutate/deactivate      advise
+    mutate/download     mutate/install      mutate/activate     mutate/deactivate
+
+if ___x_cmd_is_suitable_advise_env; then
+    xrc:mod:lib pkg     advise
+fi
 
 ___X_CMD_PKG_RAWPATH="$___X_CMD_ROOT_TMP/pkg/raw"
 ___X_CMD_PKG_DOWNLOAD_PATH="$___X_CMD_ROOT_TMP/pkg/download"

@@ -77,10 +77,10 @@
     "deactivate": {
         "#desc": "Deactivate language or application",
         "#1": {
-            "#exec": "___x_cmd_pkg___advise_ls_installed_name"
+            "#exec": "___x_cmd_pkg___advise_deactivte_candidate"
         },
         "#2": {
-            "#exec": "___x_cmd_pkg___adivse_ls_installed_version"
+            "#exec": "___x_cmd_pkg___advise_deactivte_version"
         }
     },
 

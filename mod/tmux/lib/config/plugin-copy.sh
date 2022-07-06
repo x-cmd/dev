@@ -3,24 +3,26 @@
 # copy-pipe
 ___X_CMD_TMUX_COPY_CANCEL="${___X_CMD_TMUX_COPY_CANCEL:-copy-pipe-and-cancel}"
 
+___X_CMD_TMUX_COPYBIN="${SHELL:-/bin/sh} $___X_CMD_ROOT_MOD/tmux/lib/config/copybin"
+
 x os name_
 case "$___X_CMD_OS_NAME_" in
     darwin)
         $___X_CMD_TMUX_BIN \
-            bind-key -T copy-mode MouseDragEnd1Pane send-keys -X "$___X_CMD_TMUX_COPY_CANCEL" pbcopy \; \
-            bind y run -b "$___X_CMD_TMUX_BIN save-buffer - | pbcopy" \; # \
+            bind-key -T copy-mode MouseDragEnd1Pane send-keys -X "$___X_CMD_TMUX_COPY_CANCEL" "$___X_CMD_TMUX_COPYBIN/darwin" \; \
+            bind y run -b "$___X_CMD_TMUX_BIN save-buffer - | $___X_CMD_TMUX_COPYBIN/darwin" \; # \
             # bind y run -b "$___X_CMD_TMUX_BIN save-buffer - | reattach-to-user-namespace pbcopy"
         ;;
 
     linux)
         if command -v xsel >/dev/null 2>&1; then
             $___X_CMD_TMUX_BIN \
-                bind-key -T copy-mode MouseDragEnd1Pane send-keys -X "$___X_CMD_TMUX_COPY_CANCEL" 'xsel -i -b' \; \
-                bind-key y run -b "$___X_CMD_TMUX_BIN save-buffer - | xsel -i -b"
+                bind-key -T copy-mode MouseDragEnd1Pane send-keys -X "$___X_CMD_TMUX_COPY_CANCEL" "$___X_CMD_TMUX_COPYBIN/linux-xsel" \; \
+                bind-key y run -b "$___X_CMD_TMUX_BIN save-buffer - | $___X_CMD_TMUX_COPYBIN/linux-xsel"
         elif command -v xclip >/dev/null 2>&1; then
             $___X_CMD_TMUX_BIN \
-                bind-key -T copy-mode MouseDragEnd1Pane send-keys -X "$___X_CMD_TMUX_COPY_CANCEL" 'xclip -i -selection clipboard' \; \
-                bind-key y run -b "$___X_CMD_TMUX_BIN save-buffer - | xclip -i -selection clipboard"
+                bind-key -T copy-mode MouseDragEnd1Pane send-keys -X "$___X_CMD_TMUX_COPY_CANCEL" "$___X_CMD_TMUX_COPYBIN/linux-xclip" \; \
+                bind-key y run -b "$___X_CMD_TMUX_BIN save-buffer - | $___X_CMD_TMUX_COPYBIN/linux-xclip"
         else
             printf "%s\n" "Please install xsel or xclip." >&2
         fi
@@ -29,12 +31,12 @@ case "$___X_CMD_OS_NAME_" in
     win)
         if [ -c /dev/clipboard ]; then
             $___X_CMD_TMUX_BIN \
-                bind-key -T copy-mode MouseDragEnd1Pane send-keys -X "$___X_CMD_TMUX_COPY_CANCEL" 'cat >/dev/clipboard' \; \
-                bind-key y run -b "$___X_CMD_TMUX_BIN save-buffer - > /dev/clipboard"
+                bind-key -T copy-mode MouseDragEnd1Pane send-keys -X "$___X_CMD_TMUX_COPY_CANCEL" "$___X_CMD_TMUX_COPYBIN/win-clipboard" \; \
+                bind-key y run -b "$___X_CMD_TMUX_BIN save-buffer - | $___X_CMD_TMUX_COPYBIN/win-clipboard"
         else
             $___X_CMD_TMUX_BIN \
-                bind-key -T copy-mode MouseDragEnd1Pane send-keys -X "$___X_CMD_TMUX_COPY_CANCEL" clip.exe \; \
-                bind-key y run -b "$___X_CMD_TMUX_BIN save-buffer - | clip.exe"
+                bind-key -T copy-mode MouseDragEnd1Pane send-keys -X "$___X_CMD_TMUX_COPY_CANCEL" "$___X_CMD_TMUX_COPYBIN/win-clip" \; \
+                bind-key y run -b "$___X_CMD_TMUX_BIN save-buffer - | $___X_CMD_TMUX_COPYBIN/win-clip"
         fi
     ;;
 esac

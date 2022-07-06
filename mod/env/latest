@@ -3,7 +3,11 @@
 # License:      GPLv3
 
 x log init env
-xrc:mod:lib env     util exec config main advise ls var
+xrc:mod:lib env     util exec config main ls var
+
+if ___x_cmd_is_suitable_advise_env; then
+    xrc:mod:lib env     advise
+fi
 
 xrc pkg
 
@@ -26,7 +30,7 @@ ___x_cmd_env(){
         prev)                       shift; ___x_cmd_env_prev        "$@" ;;
         current)                    shift; ___x_cmd_env_current     "$@" ;;
 
-        ""|--help|-help)                    cat "$___X_CMD_ROOT_MOD/env/lib/help.txt" >&2; return 0 ;;
+        ""|--help|-help)            cat "$___X_CMD_ROOT_MOD/env/lib/help.txt" >&2; return 0 ;;
         _x_cmd_advise_json )        cat "$___X_CMD_ROOT_MOD/env/lib/env.advise.json"        ;;
     esac
 }

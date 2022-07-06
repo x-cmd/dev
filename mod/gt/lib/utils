@@ -102,10 +102,11 @@ ___x_cmd_gt_default(){
 }
 
 ___gt_ui_mutual(){
-    if [ -t 1 ]; then
-        eval "$(cat)"
-    else
+    if [ ! -t 1 ] || [ -n "$ENFORCE_JSON" ] ; then
         "$@"
+    else
+        # run ui table
+        eval "$(cat)"
     fi
 
     local ___gt_exit_code="$?"

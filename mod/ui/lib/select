@@ -16,7 +16,7 @@ ___x_cmd_ui_select_draw(){
         printf "\0337"
         printf "%s\n" "$prompt"
         for arg in "$@"; do
-            arg="$(printf "$arg\n" | command awk '{
+            arg="$(printf "%s\n" "$arg" | command awk '{
                 gsub(/\033\[([0-9]+;)*[0-9]+m/, "", $0)
                 print $0
             }')"

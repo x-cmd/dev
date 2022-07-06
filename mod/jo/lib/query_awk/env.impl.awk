@@ -21,7 +21,7 @@ function handle_argument(argstr,       e ){
 
 function handle_jsontext( str ){
     if (str !~ /^"/) return str;  # "
-    str = uq(str) # jsontext2string
+    str = juq(str) # jsontext2string
     gsub("'", "\\'", str)
     return "'" str "'"
 }

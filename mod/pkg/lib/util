@@ -74,7 +74,7 @@ ___x_cmd_pkg___all_info(){
 
     cat "$___X_CMD_PKG_RAWPATH/$name/meta.tt.json" || return
     printf "\n"
-    cat "$___X_CMD_PKG_RAWPATH/$name/version.tt.json" || return
+    cat "$___X_CMD_PKG_RAWPATH/$name/version.tt.json" || return 
 }
 # EndSection
 

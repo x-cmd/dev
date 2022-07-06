@@ -25,7 +25,7 @@ ___x_cmd_gt(){
         token                            "set token"
     param:subcmd:try
 
-    param:subcmd ___x_cmd_gt_repo                                        \
+    param:subcmd ___x_cmd_gt_repo                                   \
         pr                               "pull request"             \
         release                          "release management"       \
         member                           "repo member"              \
@@ -63,9 +63,9 @@ ___x_cmd_gt_make(){
 
     local info
     info=$(printf "\n%s %s \n%s" \
-         "$(ui yellow 'You need run command to add token:')" \
-         "$(ui bold cyan "\`gt token <token>\`")" \
-         "$(ui 'https://gitee.com/profile/personal_access_tokens')")
+         "$(___x_cmd_ui yellow 'You need run command to add token:')" \
+         "$(___x_cmd_ui bold cyan "\`gt token <token>\`")" \
+         "$(___x_cmd_ui 'https://gitee.com/profile/personal_access_tokens')")
     gt_log warn "Token is null.${info}"
 }
 

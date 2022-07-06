@@ -18,7 +18,10 @@ $___X_CMD_PKG_ACTIVATE___LIST
 
 A
 
-    [ -n "$version" ] || return
+    if [ -z "$version" ]; then
+        pkg:error "$name had been deactivated"
+        return 1
+    fi
 
     local osarch="${3:-${___X_CMD_PKG_OSARCH:-$(___x_cmd_pkg_osarch)}}"
     local script_path
