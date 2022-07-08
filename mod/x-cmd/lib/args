@@ -37,9 +37,9 @@ ___x_cmd_args(){
         eval "$code_read"
         errcode=$?
         case "$errcode" in
-            0) eval "$code_invoke; $code_reset "; continue ;;
-            1) eval "$code_invoke"; return 0 ;;
-            *) return "$errcode"
+            0)      eval "$code_invoke; $code_reset "; continue ;;
+            1)      eval "$code_invoke"; return 0 ;;
+            *)      return "$errcode"
         esac
     done
 }
@@ -52,6 +52,7 @@ ___x_cmd_arg1(){
     i=1
     while [ $i -le $# ];do
         eval "local _$i; _$i=\"\$$i\""
+        # code_func="$code_func \"\$_$i\" \\\"\\\$@\\\" "
         code_func="$code_func \"\$_$i\" "
         i=$((i+1))
     done
@@ -59,8 +60,6 @@ ___x_cmd_arg1(){
     eval "$code_func"
 
     local code_reset="_a1=;"
-    # echo "$code_func"
-
     while read -r _a1; do
         ___x_cmd_args___run_inner "$_a1"
     done

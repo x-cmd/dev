@@ -10,7 +10,7 @@ xrc:mod:lib tmux load util abbr
 ___x_cmd_tmux___init(){
     [ -z "$___X_CMD_TMUX____INIT" ] || return 0
     grep -q 'source-file "$HOME/.x-cmd/tmux/lib/config/' "$HOME/.tmux.conf" 2>/dev/null || \
-        printf "%s" 'source-file "$HOME/.x-cmd/tmux/lib/config/default.tmux.conf"' >>"$HOME/.tmux.conf"
+        printf "%s" 'source-file "$HOME/.x-cmd/tmux/lib/config/x-cmd.tmux.conf"' >>"$HOME/.tmux.conf"
     ___X_CMD_TMUX____INIT=1
 }
 

@@ -11,7 +11,7 @@ $___X_CMD_TMUX_BIN bind b     display-popup -E "${SHELL:-/bin/sh} $___X_CMD_ROOT
 xrc:mod tmux/lib/config/plugin-util.sh
 
 xrc:mod:lib     tmux \
-                config/plugin-scroll.sh    \
-                config/plugin-copy.sh      \
-                config/plugin-theme-default.sh \
-                config/plugin-control.sh
+                config/plugin-scroll.sh     \
+                config/plugin-copy.sh       \
+                config/plugin-control.sh    \
+                config/plugin-theme-default.sh

@@ -14,7 +14,7 @@ END{
         parse_args_to_env( parsed_argarr, parsed_arglen, obj, "", genv_table, lenv_table )
         # showing candidate code
     }
-    printf( "%s", CODE)
+    printf( "%s\noffset=%s", CODE, OFFSET)
 }
 
 # Section: prepare argument
@@ -98,7 +98,6 @@ function parse_args_to_env( args, argl, obj, obj_prefix, genv_table, lenv_table,
             if (j > argl) return            # Not Running at all
             else if (j != 0) { i = j; continue }
 
-
             _arg_arrl = split(arg, _arg_arr, "")
             for (j=2; j<=_arg_arrl; ++j) {
                 _optarg_id = aobj_get_id_by_name( obj, obj_prefix, "-" _arg_arr[j] )
@@ -121,15 +120,21 @@ function parse_args_to_env( args, argl, obj, obj_prefix, genv_table, lenv_table,
             }
             continue
         }
-        i = i - 1
+        i = i - 1 # subcmd complete
         break
     }
     # handle it into argument
-    for (j=1; i+j-1 < argl; ++j) {
-        rest_arg[ j ] = args[ i+j-1 ]
-    }
+    # for (j=1; i+j-1 < argl; ++j) {
+    #     rest_arg[ j ] = args[ i+j-1 ]
+    # }
+    # _rest_argc = j - 1
+    OFFSET = i
 
-    _rest_argc = j - 1
+    for (j=0; i+j < argl; ++j) {
+        rest_arg[ j ] = args[ i+j ]
+    }
+    _rest_argc = j
+
     if (_rest_argc == 0) {
         advise_complete_option_name_or_argument_value( args[ argl ], genv_table, lenv_table, obj, obj_prefix )
         return

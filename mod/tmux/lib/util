@@ -16,9 +16,17 @@ ___x_cmd_tmux_quickenter(){
                 tmux:info "Entering into session: $session"
                 ___x_cmd_tmux attach -t "$session"
             else
-                printf "%s %s %s" "Session not exists." "Ctrl-C to exit." "OR Press ANY OTHER KEY to CREATE new session[$session]"
-                local answer; read -r answer || exit 0
-                ___x_cmd_tmux new -s "$session"
+                local idx; while true; do
+                    x ui select idx \
+                        "Session [$session] NOT found. Next:" \
+                            "CREATE A new session: $session" \
+                            "Quit" || true
+
+                    case "$idx" in
+                        1)      ___x_cmd_tmux new -s "$session"; break ;;
+                        2)      break ;;
+                    esac
+                done
             fi
     esac
 }

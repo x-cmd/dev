@@ -34,7 +34,6 @@ ___x_cmd_test_cycle_exec(){
 
 # Section: cycle exec file
 ___x_cmd_test___cycle_exec_file(){
-
     local testcase="${1:?Provide testcase in ___x_cmd_test___cycle_exec_file}"
 
     if ! ___x_cmd_test___cycle_exclude "$testcase" "$@"; then
@@ -46,15 +45,12 @@ ___x_cmd_test___cycle_exec_file(){
 
     [ -f ./setup ] && . ./setup
 
-    local err
-    local code
-
-    err="$(
+    local err; err="$(
         ___X_CMD_TEST_CURRENT_TESTCASE="$testcase"
         source "$testcase" 2>/dev/stdout
     )"
 
-    code="$?"
+    local code="$?"
     test:debug "testcase: $testcase code: $code err: $err"
     [ -f ./teardown ] &&  . ./teardown
 

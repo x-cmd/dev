@@ -28,17 +28,14 @@ $___X_CMD_TMUX_BIN    \
     bind \< swap-pane -U \;  \
     bind Tab last-window \; \
     set -g mouse on \; \
-    bind M                      set -g mouse \; \
-    setw -g     automatic-rename    off     \; \
-    set -g      renumber-windows    on      \; \
-    set -g      set-titles          on      \; \
-    set -g      display-panes-time  800     \; \
-    set -g      display-time        1000    \; \
-    bind -n C-l send-keys C-l \; run 'sleep 0.2' \; clear-history \; \
-    set -g      monitor-activity    on      \; \
-    set -g      visual-activity     off     \; \
+    bind M                      set -g mouse \;     \
+    setw -g     automatic-rename    off     \;      \
+    set -g      renumber-windows    on      \;      \
+    set -g      set-titles          on      \;      \
+    set -g      display-panes-time  800     \;      \
+    set -g      display-time        1000    \;      \
+    set -g      monitor-activity    on      \;      \
+    set -g      visual-activity     off
 
-
-
-
-
+# Problem
+# tmux bind -n C-l send-keys C-l \; run 'sleep 0.2' \; clear-history #\
