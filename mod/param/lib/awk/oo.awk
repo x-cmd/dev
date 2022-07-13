@@ -15,7 +15,7 @@ function code_append_assignment(varname, value) {
         varname  = "___x_cmd_param_path"
     }
     code_append( "local " varname " >/dev/null 2>&1" )
-    code_append( varname "=" single_quote_string( value ) )
+    code_append( varname "=" qu1( value ) )
 }
 
 function code_query_append(varname, description, typestr){
@@ -24,9 +24,9 @@ function code_query_append(varname, description, typestr){
         varname = "___x_cmd_param_path"
     }
     code_append( "local " varname " >/dev/null 2>&1" )
-    # code_append( "ui prompt main " quote_string(description) " " varname " " typestr )
-    # code_query_append( quote_string(description) " " varname " " "\"\"" " " typestr )
-    QUERY_CODE=QUERY_CODE " \"--\" \\" "\n" quote_string(description) " " varname " " "\"\"" " " typestr
+    # code_append( "ui prompt main " qu(description) " " varname " " typestr )
+    # code_query_append( qu(description) " " varname " " "\"\"" " " typestr )
+    QUERY_CODE=QUERY_CODE " \"--\" \\" "\n" qu(description) " " varname " " "\"\"" " " typestr
 }
 
 # EndSection

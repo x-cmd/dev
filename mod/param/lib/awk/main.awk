@@ -123,17 +123,9 @@ function handle_arguments_restargv(         final_rest_argv_len, i, arg_val, opt
             }
 
             option_id = option_alias_2_option_id[ "#" i ]
-            tmp = option_name_get_without_hyphen( option_id )
-            if( tmp != "" ) {
-                code_append_assignment( tmp, arg_val )
-                set_arg_namelist[ i ] = tmp
-                _need_set_arg = true
-            } else {
-                code_append_assignment( "_X_CMD_PARAM_ARG_" i , arg_val )
-                set_arg_namelist[ i ] = "_X_CMD_PARAM_ARG_" i
-                _need_set_arg = true
-            }
-
+            tmp = option_name_get_without_hyphen( option_id ); if( tmp == "" ) tmp = "_X_CMD_PARAM_ARG_" i
+            code_append_assignment( tmp, arg_val )
+            set_arg_namelist[ i ] = tmp;                    _need_set_arg = true
             continue
         } else {
             option_id = option_alias_2_option_id[ "#" i ]
@@ -142,8 +134,7 @@ function handle_arguments_restargv(         final_rest_argv_len, i, arg_val, opt
             # TODO: Using something better, like OPTARG_DEFAULT_REQUIRED_VALUE
             if (named_value != "") {
                 tmp = option_name_get_without_hyphen( option_id )
-                set_arg_namelist[ i ] = tmp
-                _need_set_arg = true
+                set_arg_namelist[ i ] = tmp;                _need_set_arg = true
                 continue                # Already check
             }
 
@@ -153,34 +144,17 @@ function handle_arguments_restargv(         final_rest_argv_len, i, arg_val, opt
                 # TODO: Why can't exit here???
                 if (false == IS_INTERACTIVE)   return panic_required_value_error( option_id )
 
-                tmp = option_name_get_without_hyphen( option_id )
-                if( tmp != "" ) {
-                    code_query_append( tmp,
-                        option_desc_get( option_id ),
-                        oparr_join_quoted( optarg_id ) )
-                    set_arg_namelist[ i ] = tmp
-                } else {
-                    code_query_append( "_X_CMD_PARAM_ARG_" i,
-                        option_desc_get( option_id ),
-                        oparr_join_quoted( optarg_id ) )
-                    set_arg_namelist[ i ] = "_X_CMD_PARAM_ARG_" i
-                }
-                _need_set_arg = true
+                tmp = option_name_get_without_hyphen( option_id ); if (tmp == "") tmp = "_X_CMD_PARAM_ARG_" i
+                code_query_append(  tmp,    option_desc_get( option_id ),   oparr_join_quoted( optarg_id ) )
+                set_arg_namelist[ i ] = tmp;                _need_set_arg = true
                 continue
             } else {
                 # Already defined a default value
                 # TODO: Tell the user, it is wrong because of default definition in DSL, not the input.
                 handle_arguments_restargv_typecheck( false, i, arg_val, true )
-                tmp = option_name_get_without_hyphen( option_id )
-                if( tmp != "" ) {
-                    code_append_assignment( tmp, arg_val )
-                    set_arg_namelist[ i ] = tmp
-                    _need_set_arg = true
-                } else {
-                    code_append_assignment( "_X_CMD_PARAM_ARG_" i , arg_val )
-                    set_arg_namelist[ i ] = "_X_CMD_PARAM_ARG_" i
-                    _need_set_arg = true
-                }
+                tmp = option_name_get_without_hyphen( option_id ); if (tmp == "") tmp = "_X_CMD_PARAM_ARG_" i
+                code_append_assignment( tmp, arg_val )
+                set_arg_namelist[ i ] = tmp;                _need_set_arg = true
             }
         }
     }
@@ -219,10 +193,7 @@ function handle_arguments(          i, j, arg_name, arg_name_short, arg_val, opt
         arg_name = arg_arr[ i ]
         # ? Notice: EXIT: Consider unhandled arguments are rest_argv
         if ( arg_name == "--" )  break
-
-        if ( ( arg_name == "--help") && ( arg_name == "-h") ) {
-            exec_help()
-        }
+        if ( ( arg_name == "--help") || ( arg_name == "-h") )   exec_help()
 
         option_id     = option_alias_2_option_id[arg_name]
         if ( option_id == ""  ) {
@@ -328,7 +299,7 @@ function handle_arguments(          i, j, arg_name, arg_name_short, arg_val, opt
     for ( j=i; j<=arg_arr_len; ++j ) {
         arg_arr[ j-i+1 ] = arg_arr[j]
     }
-    arg_arr[ L ]=arg_arr[ L ]-i+1
+    arg_arr[ L ] = arg_arr[ L ]-i+1
 
     handle_arguments_restargv()
     if( HAS_PATH == true ){
@@ -338,10 +309,7 @@ function handle_arguments(          i, j, arg_name, arg_name_short, arg_val, opt
 }
 
 END{
-
-    if (EXIT_CODE == "000") {
-        code_print()
-    }
+    if (EXIT_CODE == "000") code_print()    # TODO: Why?
     if (EXIT_CODE == 0) {
         handle_arguments()
         # debug( CODE )
