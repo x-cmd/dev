@@ -103,14 +103,3 @@ function get_option_string(option_id,
     return _option_string
 }
 
-function arr_clone( src, dst,   l, i ){
-    l = src[ L ]
-    dst[ L ] = l
-    for (i=1; i<=l; ++i)  dst[i] = src[i]
-}
-
-function arr_shift( arr, offset,        l, i ){
-    l = arr[ L ] - offset
-    for (i=1; i<=l; ++i) arr[i] = arr[i+offset]
-    arr[ L ] = l
-}

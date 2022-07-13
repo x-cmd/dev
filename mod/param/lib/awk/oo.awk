@@ -29,6 +29,10 @@ function code_query_append(varname, description, typestr){
     QUERY_CODE=QUERY_CODE " \"--\" \\" "\n" qu(description) " " varname " " "\"\"" " " typestr
 }
 
+function code_query_append_by_optionid_optargid( varname, option_id, optarg_id ){
+    code_query_append( varname, option_desc_get( option_id ), oparr_join_quoted(optarg_id) )
+}
+
 # EndSection
 
 # Section: type
@@ -168,6 +172,19 @@ function option_name_get_without_hyphen( id,    _name ){
 
 function option_desc_set( id, desc ){ option_arr[ id, OPTION_DESC ] = desc; }
 function option_desc_get( id ){ return option_arr[ id, OPTION_DESC ]; }
+
+function option_get_id_by_alias( alias ){
+    return option_alias_2_option_id[ alias ]
+}
+
+function option_set_alias( id, alias ){
+    return option_alias_2_option_id[ alias ] = id
+}
+
+function option_exist_by_alias( alias ){
+    return ( option_alias_2_option_id[ alias ] != "" )
+}
+
 
 # EndSection
 
