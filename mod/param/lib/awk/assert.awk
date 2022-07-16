@@ -48,9 +48,17 @@ function assert_arr_regex(optarg_id, arg_name, value, sep,
     }
 }
 
+function param_assert_range_inner( number, range_str,       l, a, b, e, d ){
+    l = split(range_str, a, ":")
+    if (l == 1) {               b = 1;      d = a[1];   e = 1;  }
+    else if (l == 2) {          b = a[1];   d = a[2];   e = 1;  }
+    else {                      b = a[1];   d = a[2];   e = a[3]; }
+    return ( (number >=b) && (number <= e) && ( 0 == (number - b) % d ) )
+}
+
 # op_arg_idx # token_arr_len, token_arr, op_arg_idx,
 function assert(optarg_id, arg_name, arg_val,
-    op, sw, idx, len, val){
+    op, sw, idx, len, val, _tmp){
 
     op = oparr_get( optarg_id, 1 )
     # debug("assert: optarg_id: " optarg_id " arg_name: " arg_name " arg_val: " arg_val " op: " op " oparr_keyprefix: " oparr_keyprefix)
@@ -109,17 +117,14 @@ function assert(optarg_id, arg_name, arg_val,
         if (! match(arg_val, "^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$") ) {    # float is: /[+-]?[0-9]+(.[0-9]+)?/
             return "Arg: [" arg_name "] value is [" arg_val "]\n  Is NOT a Correct Email Address ."
         }
-    } else if (op == "=httpx") {
-        if (! match(arg_val, "^((http|https)://)(www.)([^.\\.]([a-zA-Z0-9][-a-zA-Z0-9]{0,62}(.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\\w+)*(\\/\\w+.\\w+)*([\\?&]\\w+=\\w*)*$))") ) {    # float is: /[+-]?[0-9]+(.[0-9]+)?/
-            return "Arg: [" arg_name "] value is [" arg_val "]\n  Is NOT a Http or Https Url."
-        }
-    } else if (op ~ "^=url:.*") {      # =url:http   =url:https    =url:ftp
-        if (! match(arg_val, "^=url:^((http|https|ftp)://)?(www.)?([^.\\.]([a-zA-Z0-9][-a-zA-Z0-9]{0,62}(.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\\w+)*(\\/\\w+.\\w+)*([\\?&]\\w+=\\w*)*$))") ) {    # float is: /[+-]?[0-9]+(.[0-9]+)?/
+    } else if (match(op, "^=url:.+")) {      # =url:http   =url:https    =url:ftp
+        _tmp = substr(op, 6)
+        if (! match(arg_val, "(" _tmp "://)?(www.)?([^.\\.]([a-zA-Z0-9][-a-zA-Z0-9]{0,62}(.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\\w+)*(\\/\\w+.\\w+)*([\\?&]\\w+=\\w*)*$))") ) {    # float is: /[+-]?[0-9]+(.[0-9]+)?/
             return "Arg: [" arg_name "] value is [" arg_val "]\n  Is NOT an Url."
         }
-    } else if (op ~ /=int\[([0-9]+)\]/) {
-        if (! match(arg_val, "=int\\[(+|-)?[0-9]+(:(+|-)?[0-9]+(:(+|-)?[0-9]+))\\]") ) {    # float is: /[+-]?[0-9]+(.[0-9]+)?/
-            return "Arg: [" arg_name "] value is [" arg_val "]\n  Is not a  range."
+    } else if (op ~ /=int\[(\+|-)?[0-9]+(:(\+|-)?[0-9]+(:(\+|-)?[0-9]+))\]/) {
+        if ( ! param_assert_range_inner( argval,  substr(op, 5) ) ){
+            return "Arg: [" arg_name "] value is Not within the range: " substr(op, 5)
         }
     } else if (op == "") {
         # Do nothing.

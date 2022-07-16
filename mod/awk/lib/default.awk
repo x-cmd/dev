@@ -63,23 +63,24 @@ function var_set(name, value){
 # Section: jqu
 
 function juq( str ){
-    if (str !~ /^".*"$/) return str
+    if (str !~ /^".*"$/) return str         # TODO: remove in the future
 
     str = substr( str, 2, length(str)-2 )
-    gsub( "/\\\\/", "\001", str )
+    gsub( /\\\\/, "\001", str )
     gsub( /\\"/, "\"", str )
     gsub( "/\\n/", "\n", str )
     gsub( "/\\t/", "\t", str )
     gsub( "/\\v/", "\v", str )
     gsub( "/\\b/", "\b", str )
     gsub( "/\\r/", "\r", str )
-    gsub( "\001", "\\\\", str )
+    gsub( "\001", "\\", str )
     return str
 }
 
 function jqu( str ){
     # if (str ~ /^".*"$/) return str
 
+    gsub( "\\\\", "\\\\", str )
     gsub( "\"", "\\\"", str )
     gsub( "\n", "\\n", str )
     gsub( "\t", "\\t", str )
@@ -102,9 +103,8 @@ function shuq(str){
 
 function shqu(str){
     gsub(/\\/, "\\\\", str)
-    gsub(/'/, "\\'", str)
+    gsub(/'/, "'\\''", str)
     return "'" str "'"
 }
 
 # EndSection
-

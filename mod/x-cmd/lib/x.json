@@ -59,7 +59,7 @@
                 "-.*": {
                     "#exec": "candidate_exec_arr=( $(ls $___X_CMD_ROOT | grep -v BASE64 | awk -v p='-' '{print p $0}'))"
                 },
-                "+.*": {
+                "\\+.*": {
                     "#exec": "candidate_exec_arr=( $(ls $___X_CMD_ROOT | grep -v BASE64 | awk -v p='+' '{print p $0}'))"
                 }
             }
