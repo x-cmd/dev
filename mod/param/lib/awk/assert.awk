@@ -105,6 +105,22 @@ function assert(optarg_id, arg_name, arg_val,
     } else if (op ~ /^=~.$/) {
         sep = substr(op, 3, 1)
         assert_arr_regex( optarg_id, arg_name, arg_val, sep )
+    } else if (op ~ /^=email$/) {
+        if (! match(arg_val, "^[a-zA-Z0-9_-]+@[a-zA-Z0-9_-]+(.[a-zA-Z0-9_-]+)+$") ) {    # float is: /[+-]?[0-9]+(.[0-9]+)?/
+            return "Arg: [" arg_name "] value is [" arg_val "]\n  Is NOT a Correct Email Address ."
+        }
+    } else if (op == "=httpx") {
+        if (! match(arg_val, "^((http|https)://)(www.)([^.\\.]([a-zA-Z0-9][-a-zA-Z0-9]{0,62}(.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\\w+)*(\\/\\w+.\\w+)*([\\?&]\\w+=\\w*)*$))") ) {    # float is: /[+-]?[0-9]+(.[0-9]+)?/
+            return "Arg: [" arg_name "] value is [" arg_val "]\n  Is NOT a Http or Https Url."
+        }
+    } else if (op ~ "^=url:.*") {      # =url:http   =url:https    =url:ftp
+        if (! match(arg_val, "^=url:^((http|https|ftp)://)?(www.)?([^.\\.]([a-zA-Z0-9][-a-zA-Z0-9]{0,62}(.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\\w+)*(\\/\\w+.\\w+)*([\\?&]\\w+=\\w*)*$))") ) {    # float is: /[+-]?[0-9]+(.[0-9]+)?/
+            return "Arg: [" arg_name "] value is [" arg_val "]\n  Is NOT an Url."
+        }
+    } else if (op ~ /=int\[([0-9]+)\]/) {
+        if (! match(arg_val, "=int\\[(+|-)?[0-9]+(:(+|-)?[0-9]+(:(+|-)?[0-9]+))\\]") ) {    # float is: /[+-]?[0-9]+(.[0-9]+)?/
+            return "Arg: [" arg_name "] value is [" arg_val "]\n  Is not a  range."
+        }
     } else if (op == "") {
         # Do nothing.
     } else {

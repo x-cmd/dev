@@ -6,7 +6,7 @@ function exec_help(){
     exit_now(1) # TODO: should I return 0?
 }
 
-BEGIN{
+BEGIN {
     HAS_SPE_ARG = false
     _X_CMD_PARAM_ARG_ = "_X_CMD_PARAM_ARG_"
 }
@@ -25,10 +25,7 @@ NR==4 {
     if ( arg_arr[1] ~ /^(--help|-h)$/ )     if (! option_exist_by_alias( arg_arr[ 1 ] ))                exec_help()
 }
 
-###############################
-# Line 5: Defaults As Map
-###############################
-
+# Section: Defaults As Map
 NR>=5 {
     # Setting default values
     if (keyline == "") {
@@ -79,58 +76,58 @@ function handle_arguments_restargv_typecheck( use_ui_form, i, argval, is_dsl_def
     }
 }
 
-function handle_arguments_restargv(         _final_rest_argv_len, i, _arg_val, _option_id,
-    _named_value, _need_set_arg, _set_arg_namelist, _tmp, _index ){
+function handle_arguments_restargv___( i, _set_arg_namelist,             _arg_val, _option_id, _named_value, _tmp ) {
+
+    _set_arg_namelist[ i ] = i  # TODO: For future optimization.
+    if ( i <= arg_arr[ L ]) {
+        _arg_val = arg_arr[ i ]
+        # To set the input value and continue
+        if ( true != handle_arguments_restargv_typecheck( is_interactive(), i, _arg_val, false ) ) {    # Fail the type check
+            _set_arg_namelist[ i ] = _X_CMD_PARAM_ARG_ i
+        }
+
+        _option_id = option_get_id_by_alias( "#" i )
+
+        _tmp = option_name_get_without_hyphen( _option_id ); if (_tmp == "") _tmp = _X_CMD_PARAM_ARG_ i
+        code_append_assignment( _tmp, _arg_val )
+        _set_arg_namelist[ i ] = _tmp;
+    } else {
+        _option_id = option_get_id_by_alias( "#" i )
+        _named_value = rest_arg_named_value[ _option_id ]
+
+        # TODO: Using something better, like OPTARG_DEFAULT_REQUIRED_VALUE
+        if (_named_value != "") {
+            _tmp = option_name_get_without_hyphen( _option_id )
+            _set_arg_namelist[ i ] = _tmp;
+            return                # Already check
+        }
+
+        _arg_val = optarg_default_get( _option_id )
+        if ( optarg_default_value_eq_require(_arg_val) ) {
+            # Don't define a default value
+            # TODO: Why can't exit here???
+            if (! is_interactive())   return panic_required_value_error( _option_id )
+
+            _tmp = option_name_get_without_hyphen( _option_id ); if (_tmp == "") _tmp = _X_CMD_PARAM_ARG_ i
+            code_query_append_by_optionid_optargid( _tmp, _option_id, optarg_id )
+            _set_arg_namelist[ i ] = _tmp
+        } else {
+            # Already defined a default value
+            # TODO: Tell the user, it is wrong because of default definition in DSL, not the input.
+            handle_arguments_restargv_typecheck( false, i, _arg_val, true )
+            _tmp = option_name_get_without_hyphen( _option_id ); if (_tmp == "") _tmp = _X_CMD_PARAM_ARG_ i
+            code_append_assignment( _tmp, _arg_val )
+            _set_arg_namelist[ i ] = _tmp
+        }
+    }
+}
+
+function handle_arguments_restargv(         _final_rest_argv_len, _set_arg_namelist, i ){
 
     _final_rest_argv_len = final_rest_argv[ L ]
-    for ( i=1; i<=_final_rest_argv_len; ++i) {
-        _set_arg_namelist[ i ] = i
-    }
 
-    _need_set_arg = false
     for ( i=1; i<=_final_rest_argv_len; ++i ) {
-        if ( i <= arg_arr[ L ]) {
-            _arg_val = arg_arr[ i ]
-            # To set the input value and continue
-            if ( true != handle_arguments_restargv_typecheck( is_interactive(), i, _arg_val, false ) ) {
-                _set_arg_namelist[ i ] = _X_CMD_PARAM_ARG_ i
-                _need_set_arg = true
-            }
-
-            _option_id = option_get_id_by_alias( "#" i )
-
-            _tmp = option_name_get_without_hyphen( _option_id ); if( _tmp == "" ) _tmp = _X_CMD_PARAM_ARG_ i
-            code_append_assignment( _tmp, _arg_val )
-            _set_arg_namelist[ i ] = _tmp;                    _need_set_arg = true
-        } else {
-            _option_id = option_get_id_by_alias( "#" i )
-            _named_value = rest_arg_named_value[ _option_id ]
-
-            # TODO: Using something better, like OPTARG_DEFAULT_REQUIRED_VALUE
-            if (_named_value != "") {
-                _tmp = option_name_get_without_hyphen( _option_id )
-                _set_arg_namelist[ i ] = _tmp;                _need_set_arg = true
-                continue                # Already check
-            }
-
-            _arg_val = optarg_default_get( _option_id )
-            if ( optarg_default_value_eq_require(_arg_val) ) {
-                # Don't define a default value
-                # TODO: Why can't exit here???
-                if (! is_interactive())   return panic_required_value_error( _option_id )
-
-                _tmp = option_name_get_without_hyphen( _option_id ); if (_tmp == "") _tmp = _X_CMD_PARAM_ARG_ i
-                code_query_append_by_optionid_optargid( _tmp, _option_id, optarg_id )
-                _set_arg_namelist[ i ] = _tmp;                _need_set_arg = true
-            } else {
-                # Already defined a default value
-                # TODO: Tell the user, it is wrong because of default definition in DSL, not the input.
-                handle_arguments_restargv_typecheck( false, i, _arg_val, true )
-                _tmp = option_name_get_without_hyphen( _option_id ); if (_tmp == "") _tmp = _X_CMD_PARAM_ARG_ i
-                code_append_assignment( _tmp, _arg_val )
-                _set_arg_namelist[ i ] = _tmp;                _need_set_arg = true
-            }
-        }
+        handle_arguments_restargv___( i, _set_arg_namelist )
     }
 
     # TODO: You should set the default value, if you have no .
@@ -144,12 +141,12 @@ function handle_arguments_restargv(         _final_rest_argv_len, i, _arg_val, _
         }
     }
 
-    if (_need_set_arg == true) {
+    if (_final_rest_argv_len >= 1) {
         code_append( "set -- " str_joinwrap( " ", "\"$", "\"", _set_arg_namelist, "", 1, _final_rest_argv_len  ) )
     }
 }
 
-function handle_arguments(          i, j, _arg_name, _arg_name_short, _arg_val, _option_id, _option_name, _option_argc, _arg_arr_len, _tmp, _subcmd_id ) {
+function handle_arguments___(   i, j, _arg_name, _arg_name_short, _arg_val, _option_id, _option_name, _option_argc, _arg_arr_len ){
     _arg_arr_len = arg_arr[ L ]
     arr_clone(arg_arr, tmp_arr)
     i = 1; while (i <= _arg_arr_len) {
@@ -168,6 +165,7 @@ function handle_arguments(          i, j, _arg_name, _arg_name_short, _arg_val, 
                     _option_id       = option_get_id_by_alias( _arg_name_short )
                     _option_name     = option_name_get_without_hyphen( _option_id )
 
+                    # TODO: consider this start rest argument list.
                     if (_option_name == "") {
                         HAS_SPE_ARG = true
                         break
@@ -187,22 +185,17 @@ function handle_arguments(          i, j, _arg_name, _arg_name_short, _arg_val, 
         _option_name     = ( option_alias_2_option_id[  _option_id SPECIAL_OPTION_ID ] != "" ? option_alias_2_option_id[  _option_id SPECIAL_OPTION_ID ] : option_name_get_without_hyphen( _option_id ) )
 
         # If _option_argc == 0, op
-        if ( option_multarg_is_enable( _option_id ) ) {
-            counter = option_assignment_count[ _option_id ] + 1      # option_assignment_count[ _option_id ] can be ""
-            option_assignment_count[ _option_id ] = counter
-            _option_name = _option_name "_" counter
-        }
-        # EXIT: Consider unhandled arguments are rest_argv
-        if ( !( _arg_name ~ /^--?/ ) ) break
+        if ( option_multarg_is_enable( _option_id ) )   _option_name = _option_name "_" option_assign_count_inc( _option_id )
 
-        if (_option_argc == 0) {
-            # print code XXX=true
-            code_append_assignment( _option_name, "true" )
-        } else if (_option_argc == 1) {
+        # EXIT: Consider unhandled arguments are rest_argv
+        if ( !( _arg_name ~ /^--?/ ) )      break
+
+        if (_option_argc == 0)              code_append_assignment( _option_name, "true" )      # print code XXX=true
+        else if (_option_argc == 1) {
             _arg_val = arg_arr[ ++i ]
 
-            if ( _option_id ~ "^#" )     rest_arg_named_value[ _option_id ] = _arg_val     # NAMED REST_ARGUMENT
-            if (i > _arg_arr_len)        panic_required_value_error(_option_id)
+            if ( _option_id ~ "^#" )        rest_arg_named_value[ _option_id ] = _arg_val       # NAMED REST_ARGUMENT
+            if (i > _arg_arr_len)           panic_required_value_error(_option_id)
 
             arg_typecheck_then_generate_code(       _option_id, _option_id S 1,     _option_name,            _arg_val )
         } else {
@@ -215,6 +208,11 @@ function handle_arguments(          i, j, _arg_name, _arg_name_short, _arg_val, 
         }
         i += 1
     }
+    return i
+}
+
+function handle_arguments(          i, _arg_arr_len, _subcmd_id, _tmp ) {
+    i = handle_arguments___()
 
     check_required_option_ready()
 
@@ -234,8 +232,9 @@ function handle_arguments(          i, j, _arg_name, _arg_name_short, _arg_val, 
 
     code_append( "shift " (i-1) )
 
-    if (final_rest_argv[ L ] < _arg_arr_len - i + 1) {
-        final_rest_argv[ L ] = _arg_arr_len - i + 1
+    _arg_arr_len = arg_arr[ L ]
+    if (final_rest_argv[ L ] < _arg_arr_len - (i - 1)) {
+        final_rest_argv[ L ] = _arg_arr_len - (i - 1)
     }
 
     #Remove the processed arg_arr and move the arg_arr back forward

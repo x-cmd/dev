@@ -79,21 +79,16 @@ A
 }
 
 ___x_cmd_advise__shift_comp_words(){
-
-    if [ "$offset" -le 0 ]; then
-        module="${COMP_WORDS[0]}"
-        [ -z "$ZSH_VERSION" ] || module="${COMP_WORDS[1]}"
-    else
+    if [ "$offset" -gt 0 ]; then
         local tmp=("${COMP_WORDS[@]:$offset}")
         COMP_WORDS=("${tmp[@]}")
         COMP_LINE="${tmp[*]}"
         COMP_CWORD="${#tmp[@]}"
-        module="${COMP_WORDS[1]}"
-
-        [ -z "$ZSH_VERSION" ] ||  return
-        COMP_CWORD=$((COMP_CWORD-1))
-        module="${COMP_WORDS[0]}"
+        [ -n "$ZSH_VERSION" ] || COMP_CWORD=$((COMP_CWORD-1))
     fi
+
+    module="${COMP_WORDS[0]}"
+    [ -z "$ZSH_VERSION" ] || module="${COMP_WORDS[1]}"
 }
 
 ___x_cmd_advise__comp_from_x(){
@@ -110,6 +105,7 @@ ___x_cmd_advise__comp_from_x(){
 
     # Generate the advise json file.
     if [ -z "$main_func" ]; then
+        [ -z "$ZSH_VERSION" ] || setopt aliases
         ___x_cmd_xrc_source_file_main "$which_one_result"
         main_func="$(___x_cmd_ldict_get ___X_CMD_XRC_SET_MAIN_DICT "$which_one_result")"
     fi
