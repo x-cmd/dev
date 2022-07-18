@@ -23,7 +23,7 @@ function testcase( description, ok ){
 function testcase_assert( ok, errmsg ){
     if (ok != true) {
         TESTC_EXIT_CODE = 1
-        if (errmsg == "") {
+        if (errmsg != "") {
             testcase_panic( errmsg )
         } else {
             testcase_panic( ok )
@@ -32,12 +32,3 @@ function testcase_assert( ok, errmsg ){
     }
     return 1
 }
-
-function ttt(){
-
-    testcase( "IP Address Test", "IP Not Match", re_match("192.168.1.1", "^[:IP:]$") )
-    testcase( "IP Address Test", "IP Not Match", ! re_match("266.168.1.1", "^[:IP:]$") )
-    testcase( "IP Address Test", "IP Not Match", ! re_match("266.168.1.1", "^[:IP:]$") )
-}
-
-

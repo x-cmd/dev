@@ -50,9 +50,9 @@ function assert_arr_regex(optarg_id, arg_name, value, sep,
 
 function param_assert_range_inner( number, range_str,       l, a, b, e, d ){
     l = split(range_str, a, ":")
-    if (l == 1) {               b = 1;      d = a[1];   e = 1;  }
-    else if (l == 2) {          b = a[1];   d = a[2];   e = 1;  }
-    else {                      b = a[1];   d = a[2];   e = a[3]; }
+    if (l == 1)      {          b = 1;      d =   1;    e = a[1];   }
+    else if (l == 2) {          b = a[1];   d =   1 ;   e = a[2];   }
+    else             {          b = a[1];   d = a[2];   e = a[3];   }
     return ( (number >=b) && (number <= e) && ( 0 == (number - b) % d ) )
 }
 
@@ -119,11 +119,15 @@ function assert(optarg_id, arg_name, arg_val,
         }
     } else if (match(op, "^=url:.+")) {      # =url:http   =url:https    =url:ftp
         _tmp = substr(op, 6)
-        if (! match(arg_val, "(" _tmp "://)?(www.)?([^.\\.]([a-zA-Z0-9][-a-zA-Z0-9]{0,62}(.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\\w+)*(\\/\\w+.\\w+)*([\\?&]\\w+=\\w*)*$))") ) {    # float is: /[+-]?[0-9]+(.[0-9]+)?/
+        if (_tmp = ""){
+            if(! match(arg_val,"(www.)?([^.\\.]([a-zA-Z0-9][-a-zA-Z0-9]{0,62}(.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\\w+)*(\\/\\w+.\\w+)*([\\?&]\\w+=\\w*)*$))") ) {
+                return "Arg: [" arg_name "] value is [" arg_val "]\n  Is NOT an Url."
+            }
+        }else if (! match(arg_val, "(" _tmp "://)?(www.)?([^.\\.]([a-zA-Z0-9][-a-zA-Z0-9]{0,62}(.[a-zA-Z0-9][-a-zA-Z0-9]{0,62})+(:\\w+)*(\\/\\w+.\\w+)*([\\?&]\\w+=\\w*)*$))") ) {    # float is: /[+-]?[0-9]+(.[0-9]+)?/
             return "Arg: [" arg_name "] value is [" arg_val "]\n  Is NOT an Url."
         }
     } else if (op ~ /=int\[(\+|-)?[0-9]+(:(\+|-)?[0-9]+(:(\+|-)?[0-9]+))\]/) {
-        if ( ! param_assert_range_inner( argval,  substr(op, 5) ) ){
+        if ( ! param_assert_range_inner( argval,  substr(op, 6) ) ){
             return "Arg: [" arg_name "] value is Not within the range: " substr(op, 5)
         }
     } else if (op == "") {

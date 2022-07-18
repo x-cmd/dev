@@ -63,7 +63,7 @@ function var_set(name, value){
 # Section: jqu
 
 function juq( str ){
-    if (str !~ /^".*"$/) return str         # TODO: remove in the future
+    # if (str !~ /^".*"$/) return str         # TODO: remove in the future
 
     str = substr( str, 2, length(str)-2 )
     gsub( /\\\\/, "\001", str )
@@ -90,21 +90,3 @@ function jqu( str ){
     return "\"" str "\""
 }
 
-# Single Quote
-function shuq(str){
-    if (str !~ /^'.*'$/) return str
-
-    str = substr( str, 2, length(str)-2 )
-
-    gsub("\\\\", "\\", str)
-    gsub("\\'", "'", str)
-    return str
-}
-
-function shqu(str){
-    gsub(/\\/, "\\\\", str)
-    gsub(/'/, "'\\''", str)
-    return "'" str "'"
-}
-
-# EndSection
