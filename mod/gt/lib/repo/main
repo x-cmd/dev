@@ -181,6 +181,7 @@ option:
         can_comment=^no_comment         auto_init=^^no_auto_init)"
 
     for name in "$@"; do
+        # x tmpl "$gen_gt_json"  "${name##%/}" | \
         printf "%s" "${gen_gt_json}" | sed s/%%name%%/"${name##%/}"/g | \
             ___x_cmd_gt_http post "/v5/enterprises/${enterprise##*/}/repos" - | \
             ___x_cmd_gt_enterprise_repo_create_status_handler
@@ -382,7 +383,7 @@ options:
     local gen_gt_json
     gen_gt_json="$(param:option2json)"
 
-    ___x_cmd_gt_http put "/v5/repos/${owner_repo}/reviewer" "$gen_gt_json" | ___x_cmd_gt_repo_review_status_handler
+    ___x_cmd_gt_http put "/v5/repos/${owner_repo}/reviewer" -- "$gen_gt_json" | ___x_cmd_gt_repo_review_status_handler
 }
 
 # shellcheck disable=SC2154
