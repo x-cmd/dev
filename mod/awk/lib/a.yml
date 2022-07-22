@@ -8,3 +8,6 @@
   aaa: e
       a aaaa
          aaa
+  json:
+    - de: f
+      c: d

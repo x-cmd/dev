@@ -16,6 +16,7 @@ ___x_cmd_jo(){
         t|tokenize)                                 shift; ___x_cmd_ja_tokenize         "$@" ;;
         f|fmt)                                      shift; ___x_cmd_ja_fmt              "$@" ;;
         color)                                      shift; ___x_cmd_ja_color            "$@" ;;
+        2y|toyml)                                   shift; ___x_cmd_ja_toyml            "$@" ;;
 
         "")                                         ___x_cmd_ja___normalize_stream           ;;
         \{*|\[*)                                    ___x_cmd_ja___normalize_argstring   "$@" ;;
@@ -54,7 +55,7 @@ else
     . "$___X_CMD_ROOT_MOD/jo/lib/list_dict_posix"       # xrc jo/lib/list_dict_posix
 fi
 
-xrc:mod jo/lib/query jo/lib/env advise
+xrc:mod jo/lib/query jo/lib/env advise/latest
 # EndSection
 
 

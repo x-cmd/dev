@@ -46,7 +46,7 @@ options:
     local gen_gt_json
     gen_gt_json="$(param:option2json security_hole=^^security issue_type=type -security -type)"
 
-    ___x_cmd_gt_http post "/v5/repos/${repo##*/}/issues" -- "$gen_gt_json" | \
+    ___x_cmd_gt_http post "/v5/repos/${repo##*/}/issues" "$gen_gt_json" | \
     {
         ___x_cmd_git_json_query_rename id=.number title=.title html_url=.html_url
         if [ -n "$id" ]; then
@@ -85,7 +85,7 @@ options:
     local gen_gt_json
     gen_gt_json="$(param:option2json issue_type=type security_hole=^^security -security -type)"
 
-    ___x_cmd_gt_http patch "/v5/repos/${owner##*/}/issues/${number}" -- "$gen_gt_json" | \
+    ___x_cmd_gt_http patch "/v5/repos/${owner##*/}/issues/${number}" "$gen_gt_json" | \
     {
         ___x_cmd_git_json_query_rename id=.number state=.state html_url=.html_url
         if [ -n "$id" ]; then
@@ -133,11 +133,11 @@ options:
     --assignee      "assignee"                                                           <>=""
     --creator       "creator"                                                            <>=""
     --program       "program"                                                            <>=""
-    --page          "page"                                                               <>:NatureNumber=1
-    --per_page      "per_page"                                                           <>:NatureNumber=20
     --sort          "sort"                                                               <>="created"
     --direction     "direction"                                                          <>="desc"
     --number        "repo issue number"                                                  <>=""
+    --page          "page"                                                               <>=""
+    --per_page      "per_page"                                                           <>=""
 '
     param:run
     ___x_cmd_gt_param_init_owner_repo
@@ -178,8 +178,8 @@ options:
     --labels        "labels"                                       <>=""
     --sort          "sort(created,updated)"                        <>="created"
     --direction     "direction(asc、desc)"                         <>="desc"
-    --page          "page"                                         <>:NatureNumber=1
-    --per_page      "per_page"                                     <>:NatureNumber=20
+    --page          "page"                                         <>=""
+    --per_page      "per_page"                                     <>=""
 '
     param:run
 
@@ -210,8 +210,8 @@ options:
     --assignee      "assignee"                                     <>=""
     --creator       "creator"                                      <>=""
     --program       "program"                                      <>=""
-    --page          "page"                                         <>:NatureNumber=1
-    --per_page      "per_page"                                     <>:NatureNumber=50
+    --page          "page"                                         <>=""
+    --per_page      "per_page"                                     <>=""
 '
     param:run
 
@@ -250,8 +250,8 @@ options:
     --number        "issue number"                                                       <>
     --repo          "Provide owner name and repo name.(default:the current user repo)"   <>:RepoName
     --since         "since"                                                              <>=""
-    --page          "page"                                                               <>=1
-    --per_page      "per_page"                                                           <>=100
+    --page          "page"                                                               <>=""
+    --per_page      "per_page"                                                           <>=""
     --order         "order(asc、desc)"                                                   <>="asc"
 '
     param:run
@@ -278,7 +278,7 @@ options:
     local gen_gt_json
     gen_gt_json="$(param:option2json -repo -number)"
 
-    ___x_cmd_gt_http post "/v5/repos/${owner##*/}/${repo##*/}/issues/$number/comments" -- "$gen_gt_json" | \
+    ___x_cmd_gt_http post "/v5/repos/${owner##*/}/${repo##*/}/issues/$number/comments" "$gen_gt_json" | \
     {
         ___x_cmd_git_json_query_rename "$data" id=.target.issue.number title=.target.issue.title body=.body
         if [ -n "$id" ]; then
