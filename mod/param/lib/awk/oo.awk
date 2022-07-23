@@ -163,10 +163,8 @@ function option_exist_by_alias( alias ){
     return ( option_alias_2_option_id[ alias ] != "" )
 }
 
-function option_assign_count_inc( option_id,    _counter ){
-    _counter = option_assignment_count[ option_id ] + 1      # option_assignment_count[ _option_id ] can be ""
-    option_assignment_count[ option_id ] = _counter
-    return _counter
+function option_assign_count_inc( option_id ){
+    return option_assignment_count[ option_id ] = option_assignment_count[ option_id ] + 1      # option_assignment_count[ _option_id ] can be ""
 }
 
 function option_assign_count_get( option_id     ){
