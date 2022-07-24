@@ -1,0 +1,20 @@
+# Author:       Li Junhao           l@x-cmd.com
+# shellcheck    shell=sh            disable=SC3043      # xrc
+
+# maintainer:   Li Junhao
+
+___X_CMD_DOCKER_BIN="$(command -v docker)"
+
+xrc:mod:lib xdk     subcmd quick
+
+___x_cmd_xdk(){
+    local op="${1}";    shift
+    case "$op" in
+        alias|run|exec)         "___x_cmd_xdk_${op}" "$@" ;;
+        emp|empower)            ___x_cmd_xdk_empower "$@" ;;
+        _x_cmd_advise_json)     cat "$___X_CMD_ROOT_MOD/xdk/lib/xdk.advise.json" ;;
+        *)                      ___x_cmd_xdk___quick "${op#:}" "$@" ;;
+    esac
+}
+
+xrc setmain ___x_cmd_xdk
