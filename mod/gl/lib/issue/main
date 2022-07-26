@@ -1,9 +1,9 @@
 # shellcheck shell=sh
 # shellcheck disable=SC2039,3043
 
-___x_cmd_gitlab_issue(){
-    param:scope         ___x_cmd_gitlab
-    param:subcmd ___x_cmd_gitlab_issue              \
+___x_cmd_gl_issue(){
+    param:scope         ___x_cmd_gl
+    param:subcmd ___x_cmd_gl_issue              \
         ls              "issue list"                \
         create          "create issue"              \
         update          "update issue"              \
@@ -11,13 +11,13 @@ ___x_cmd_gitlab_issue(){
     param:subcmd:try
     param:run
 
-    ___x_cmd_gitlab_issue _param_help_doc
+    ___x_cmd_gl_issue _param_help_doc
     gitlab_log warn "Subcmd Not Found."
     return 1
 }
 
-___x_cmd_gitlab_issue_ls(){
-    param:scope     ___x_cmd_gitlab
+___x_cmd_gl_issue_ls(){
+    param:scope     ___x_cmd_gl
     param:dsl       '
 options:
    --assignee_id                           "Return issues assigned to the given user id."                                                                                                                                     <>:Number=""
@@ -52,14 +52,14 @@ options:
 '
  param:run
 
-    ___gitlab_ui_mutual  ___x_cmd_gitlab_get_multi  "/issues" sort order_by search state  <<A
+    ___gitlab_ui_mutual  ___x_cmd_gl_get_multi  "/issues" sort order_by search state  <<A
         ___ui_table_json Id=.id iid=.iid project_id=.project_id title=.title state=.state web_url=.web_url -- \$@
 A
 }
 
 # shellcheck disable=SC2154,SC2034
-___x_cmd_gitlab_issue_create(){
-    param:scope     ___x_cmd_gitlab
+___x_cmd_gl_issue_create(){
+    param:scope     ___x_cmd_gl
     param:dsl       '
 options:
    --id                                         "The ID or URL-encoded path of the project owned by the authenticated user"              <>
@@ -84,7 +84,7 @@ options:
 
     local gen_gitlab_json
     gen_gitlab_json="$(param:option2json )"
-    ___x_cmd_gitlab_http post "/projects/$id/issues" "$gen_gitlab_json" | \
+    ___x_cmd_gl_http post "/projects/$id/issues" "$gen_gitlab_json" | \
     {
         if [ -n "$id" ]; then
             ___x_cmd_ui_tf true  "Success" "id: $id" "title: $title" "url: $html_url"
@@ -97,8 +97,8 @@ options:
 }
 
 # shellcheck disable=SC2154,SC2034
-___x_cmd_gitlab_issue_update(){
-    param:scope     ___x_cmd_gitlab
+___x_cmd_gl_issue_update(){
+    param:scope     ___x_cmd_gl
     param:dsl       '
 options:
    --add_labels         "Comma-separated label names to add to an issue."                                       <>=""
@@ -123,7 +123,7 @@ options:
     param:run
     local gen_gitlab_json
     gen_gitlab_json="$(param:option2json)"
-    ___x_cmd_gitlab_http put "/projects/$project/issues/$issue_iid" "$gen_gitlab_json" | \
+    ___x_cmd_gl_http put "/projects/$project/issues/$issue_iid" "$gen_gitlab_json" | \
     {
         ___x_cmd_git_json_query_rename iid=.iid state=.state web_url=.web_url title=.title
         if [ -n "$iid" ]; then
@@ -136,8 +136,8 @@ options:
     }
 }
 
-___x_cmd_gitlab_issue_rm(){
-    param:scope     ___x_cmd_gitlab
+___x_cmd_gl_issue_rm(){
+    param:scope     ___x_cmd_gl
     param:dsl       '
 options:
    --project                               "The ID or URL-encoded path of the project owned by the authenticated user."                                                         <>
@@ -145,7 +145,7 @@ options:
 
 '
     param:run
-    if ___x_cmd_gitlab_http delete "/projects/$project/issues/$issue_iid" >/dev/null; then
+    if ___x_cmd_gl_http delete "/projects/$project/issues/$issue_iid" >/dev/null; then
         ___x_cmd_ui_tf true  "Deleted comment successfully"
     else
         ___x_cmd_ui_tf false "Deleting comment failure by ${owner_repo} $id."

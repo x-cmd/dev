@@ -1,9 +1,9 @@
 # shellcheck shell=sh
 # shellcheck disable=SC2039,3043
 
-___x_cmd_gitlab_project(){
-    param:scope         ___x_cmd_gitlab
-    param:subcmd ___x_cmd_gitlab_project                                   \
+___x_cmd_gl_project(){
+    param:scope         ___x_cmd_gl
+    param:subcmd ___x_cmd_gl_project                                   \
         create          "Create project"                                   \
         ls              "List project of owner"                            \
         info            "Show detailed information of project"             \
@@ -14,15 +14,15 @@ ___x_cmd_gitlab_project(){
     param:subcmd:try
     param:run
 
-    ___x_cmd_gitlab_project _param_help_doc
+    ___x_cmd_gl_project _param_help_doc
     gitlab_log warn "Subcmd Not Found."
     return 1
 }
 
 # Section: create
 # shellcheck disable=SC2154
-___x_cmd_gitlab_project_create(){
-    param:scope     ___x_cmd_gitlab
+___x_cmd_gl_project_create(){
+    param:scope     ___x_cmd_gl
     param:dsl       '
 option:
     #1                                                  "project names"                                                                     <>:RepoName
@@ -96,11 +96,11 @@ option:
     local name="$1"
     local gen_gitlab_json
     gen_gitlab_json="$(param:option2json +name -p path=gitlab_path)"
-    ___x_cmd_gitlab_http post "/projects" "$gen_gitlab_json" | ___x_cmd_gitlab_project_create_status_handler
+    ___x_cmd_gl_http post "/projects" "$gen_gitlab_json" | ___x_cmd_gl_project_create_status_handler
 }
 
 # shellcheck disable=SC2154
-___x_cmd_gitlab_project_create_status_handler(){
+___x_cmd_gl_project_create_status_handler(){
     if [ ! -t 1 ] || [ -n "$ENFORCE_JSON" ]; then
         cat
         return
@@ -118,15 +118,15 @@ ___x_cmd_gitlab_project_create_status_handler(){
 
 # Section: list
 # shellcheck disable=SC2154,SC2145
-___x_cmd_gitlab_project_ls(){
-    param:scope     ___x_cmd_gitlab
+___x_cmd_gl_project_ls(){
+    param:scope     ___x_cmd_gl
     param:dsl       '
 options:
 
 '
     param:run
-    ___x_cmd_gitlab_current_owner 1>/dev/null
-    ___gitlab_ui_mutual  ___x_cmd_gitlab_get_multi "/users/$___X_CMD_GITLAB_DEFAULT_OWNER/projects"  <<A
+    ___x_cmd_gl_current_owner 1>/dev/null
+    ___gitlab_ui_mutual  ___x_cmd_gl_get_multi "/users/$___x_cmd_gl_DEFAULT_OWNER/projects"  <<A
     ___ui_table_json Id=.id Name=.name Owner=.owner.username Url=.web_url -- \$@
 A
 }
@@ -135,8 +135,8 @@ A
 # Section: update
 
 # shellcheck disable=SC2154,SC2034
-___x_cmd_gitlab_project_update(){
-    param:scope     ___x_cmd_gitlab
+___x_cmd_gl_project_update(){
+    param:scope     ___x_cmd_gl
     param:dsl       '
 options:
     #1|--project|--id                                      "The ID or URL-encoded path of the project."      <>:RepoName
@@ -209,14 +209,14 @@ options:
     --wiki_enabled                                      "(Deprecated) Enable wiki for this project. Use instead. wiki_access_level"                                                                     <>
 '
     param:run
-    ___x_cmd_gitlab_param_init_owner_project
+    ___x_cmd_gl_param_init_owner_project
     local gen_gitlab_json
     gen_gitlab_json="$(param:option2json -project)"
     # project name urlecode
-    ___x_cmd_gitlab_http put "/projects/$1" "$gen_gitlab_json" | ___x_cmd_gitlab_project_update_status_handler
+    ___x_cmd_gl_http put "/projects/$1" "$gen_gitlab_json" | ___x_cmd_gl_project_update_status_handler
 }
 
-___x_cmd_gitlab_project_update_status_handler(){
+___x_cmd_gl_project_update_status_handler(){
     if [ ! -t 1 ] || [ -n "$ENFORCE_JSON" ]; then
         cat
         return
@@ -234,8 +234,8 @@ ___x_cmd_gitlab_project_update_status_handler(){
 
 # Section: info
 # shellcheck disable=SC2154
-___x_cmd_gitlab_project_info(){
-    param:scope     ___x_cmd_gitlab
+___x_cmd_gl_project_info(){
+    param:scope     ___x_cmd_gl
     param:dsl       '
 options:
     #1|--id                                 "The ID or URL-encoded path of the project."    <>
@@ -244,10 +244,10 @@ options:
     --with_custom_attributes                "Include custom attributes in response. (administrator only)"
 '
  param:run
-   ___x_cmd_gitlab_http get "/projects/$id"| ___x_cmd_gitlab_repo_info_status_handler
+   ___x_cmd_gl_http get "/projects/$id"| ___x_cmd_gl_repo_info_status_handler
 }
 
-___x_cmd_gitlab_repo_info_status_handler() {
+___x_cmd_gl_repo_info_status_handler() {
     if [ ! -t 1 ] || [ -n "$ENFORCE_JSON" ]; then
         cat
         return
@@ -265,15 +265,15 @@ ___x_cmd_gitlab_repo_info_status_handler() {
 
 # Section: del
 # shellcheck disable=SC2181,SC2154
-___x_cmd_gitlab_project_rm(){
-    param:scope     ___x_cmd_gitlab
+___x_cmd_gl_project_rm(){
+    param:scope     ___x_cmd_gl
     param:dsl       '
 options:
     #1|--id                                    "The ID or URL-encoded path of the project."   <>                                                                            <>
 '
  param:run
 
-    if ___x_cmd_gitlab_http delete "/projects/$1" >/dev/null; then
+    if ___x_cmd_gl_http delete "/projects/$1" >/dev/null; then
         ___x_cmd_ui_tf true  "Deleting repo $1 successfully"
     else
         ___x_cmd_ui_tf false "Deleting repo failure: $1. Probably because it desn't exists."
@@ -283,8 +283,8 @@ options:
 # EndSection
 
 # Section: project issue ls
-___x_cmd_gitlab_project_issue(){
-    param:scope     ___x_cmd_gitlab
+___x_cmd_gl_project_issue(){
+    param:scope     ___x_cmd_gl
     param:dsl       '
 options:
    --assignee_id                           "Return issues assigned to the given user id."                                                                               <>:Number=""
@@ -317,7 +317,7 @@ options:
 '
  param:run
 
-  ___gitlab_ui_mutual  ___x_cmd_gitlab_get_multi  "/projects/$id/issues" sort order_by search state  <<A
+  ___gitlab_ui_mutual  ___x_cmd_gl_get_multi  "/projects/$id/issues" sort order_by search state  <<A
         ___ui_table_json Id=.id iid=.iid project_id=.project_id title=.title state=.state web_url=.web_url -- \$@
 A
 }
