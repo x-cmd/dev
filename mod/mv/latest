@@ -22,9 +22,8 @@ ___x_cmd_mv(){
         return
     fi
 
-    local lastarg
-    eval 'lastarg="$'$#'"'
-    x mkdirp "${lastarg%/*}"
+    local lastarg;  eval 'lastarg="$'$#'"'
+    ___x_cmd_ensurefp "$lastarg"
 
     ___x_cmd_inner_mv "$@"
 }
