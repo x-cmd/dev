@@ -26,9 +26,12 @@ ___x_cmd_yanfa_xb_foreach()(
     yanfa:info "Execute concurrently(con=$___X_CMD_YANFA_CONCURRENCY): $*"
 
     x mcd "$dir" || return 1
+    yanfa:info "Donwload location: $dir"
 
-    local ___X_CMD_JOB_WRAPPER=report
-    ___x_cmd_yanfa_xb_ls | \
+    local ___X_CMD_JOB_WRAPPER="${___X_CMD_JOB_WRAPPER:-report}"
+    if [ "$1" = - ]; then   cat
+    else                    ___x_cmd_yanfa_xb_ls
+    fi | \
         x readl mod -- eval interval=1 \
             x job put "$___X_CMD_YANFA_CONCURRENCY" \
                 eval org=x-bash name="\$mod" x retry "$@" |\

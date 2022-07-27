@@ -54,7 +54,7 @@ options:
 }
 
 # shellcheck disable=SC2181,SC2154
-# https://gitee.com/api/swagger#/putV5projectsOwnerprojectCollaboratorsUsername
+# https://gitlab.com/api/swagger#/putV5projectsOwnerprojectCollaboratorsUsername
 ___x_cmd_gl_project_tag_create(){
     param:scope     ___x_cmd_gl
     param:dsl       '
@@ -97,7 +97,7 @@ ___x_cmd_gl_project_tag_add_json_status_handler(){
 }
 
 # shellcheck disable=SC2181
-# https://gitee.com/api/swagger#/deleteV5projectsOwnerprojectCollaboratorsUsername
+# https://gitlab.com/api/swagger#/deleteV5projectsOwnerprojectCollaboratorsUsername
 ___x_cmd_gl_project_tag_rm(){
     param:scope     ___x_cmd_gl
     param:dsl       '

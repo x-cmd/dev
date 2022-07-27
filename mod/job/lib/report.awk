@@ -1,4 +1,4 @@
-$1=="sart:"{
+$1=="start:"{
     $1=""
     log_debug("job", "Start: " $0)
     next

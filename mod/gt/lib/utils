@@ -39,7 +39,7 @@ ___x_cmd_gt_get_multi() {
 }
 
 _____x_cmd_gt_next_url(){
-    next_url="$(___x_cmd_gt_resp_header "link")"
+    next_url="$(___x_cmd_gt_resp_header "Link")"
     next_url="${next_url#*"rel='prev', <"}"
     local tmp_url="${next_url%%">; rel='next'"*}"
     if [ "$next_url" != "$tmp_url" ];then

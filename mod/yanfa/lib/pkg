@@ -81,21 +81,11 @@ ___x_cmd_yanfa_pkg_add()(
 
 ___x_cmd_yanfa_pkg_update(){
     param:void
-
     x:trace yanfa/relesae/update
 
-    local ___X_CMD_YANFA_CONCURRENCY="${1:-$___X_CMD_YANFA_CONCURRENCY}"
-    local IFS=" "; yanfa:info "[concurrency=$___X_CMD_YANFA_CONCURRENCY]: $*"
+    x rmrf "$___X_CMD_YANFA_PKG_TMP";   x mkdirp "$___X_CMD_YANFA_PKG_TMP"
 
-    x rmrf "$___X_CMD_YANFA_PKG_TMP"
-    x mkdirp "$___X_CMD_YANFA_PKG_TMP"
-
-    local ___X_CMD_JOB_WRAPPER=log # report
-    ___x_cmd_yanfa_pkg_lsmod | {
-        local mod; while read -r mod; do
-            x job put "${1:-7}" ___x_cmd_yanfa_pkg_add "$mod"
-        done
-    } | cat # x job report
+    ___x_cmd_yanfa_pkg_lsmod | ___x_cmd_yanfa_xb_update "$___X_CMD_YANFA_PKG_TMP"
 }
 
 # EndSection
@@ -168,20 +158,17 @@ ___x_cmd_yanfa_pkg_cpfile(){
     yanfa:debug "exit: $?"
 }
 
-___x_cmd_yanfa_pkg_meta(){
+___x_cmd_yanfa_pkg_meta()(
     local tgt
     tgt="$(x wsroot)/mod"
 
     local mod
     ___x_cmd_yanfa_pkg_lsmod | while read -r mod; do
-        (
-            x cd "$___X_CMD_YANFA_PKG_TMP/$mod" || exit 1
-            local id; id=$(x git meta id)
-            local branch; branch=$(x git meta branch);  branch="${branch:-NULL}"
-            local tag; tag=$(x git meta tag);           tag="${tag:-NULL}"
-
-            printf "%s %s %s %s\n" "$id" "$mod" "$branch" "$tag"
-        )
+        x cd "$___X_CMD_YANFA_PKG_TMP/$mod" || exit 1
+        local id; id=$(x git meta id)
+        local branch; branch=$(x git meta branch);  branch="${branch:-NULL}"
+        local tag; tag=$(x git meta tag);           tag="${tag:-NULL}"
+        printf "%s %s %s %s\n" "$id" "$mod" "$branch" "$tag"
     done >"$tgt/mod.txt"
 
     {
@@ -189,14 +176,14 @@ ___x_cmd_yanfa_pkg_meta(){
         printf "sha256: %s\n" "$(x sha256 "$tgt/mod.txt")"
         printf "sha512: %s\n" "$(x sha512 "$tgt/mod.txt")"
     } >"$tgt/hashsum.txt"
-}
+)
 
-___x_cmd_yanfa_pkg_wc(){
+___x_cmd_yanfa_pkg_wc()(
     param:void
     x:trace yanfa/relesae/wc
-    cd "$(x wsroot)/mod" &&
+    x cd "$(x wsroot)/mod" &&
         ___x_cmd_yanfa_pkg_lsfile "$@" | xargs wc | sort -n -r | less
-}
+)
 
 # EndSection
 

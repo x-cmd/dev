@@ -114,14 +114,11 @@ A
 
 ___x_cmd_yanfa_mod_tgz(){
     param:void
-    WSROOT="$(x wsroot)"
+    local WSROOT;   WSROOT="$(x wsroot)"
 
-    local scope
-    scope="$(___x_cmd_yanfa_ws_name)"
-    scope="${scope#*/}"
+    local scope;    scope="$(___x_cmd_yanfa_ws_name)";  scope="${scope#*/}"
 
-    mkdir -p "$WSROOT/dist" &&
-        eval "tar czvf $scope.tgz $(___x_cmd_yanfa_mod_lsfile | sort | uniq | tr '\n' ' ')" &&
+    ___x_cmd_yanfa_mod_lsfile | sort | uniq | x z "$scope.tgz" 2>/dev/null &&
         mv "$scope.tgz" "$WSROOT/dist/$scope.tgz" &&
         ls -alh "$WSROOT/dist/$scope.tgz"
 }
