@@ -5,12 +5,12 @@
 # Section 2: Wrapping std/http module with object naming changing
 ############################
 ___x_cmd_gl_resp_header(){
-    O="${O:-___X_BASH_HTTP____x_cmd_gl_GITLAB_DEFAULT}" ___x_cmd_http_resp header "$@"
+    O="${O:-___X_BASH_HTTP____x_cmd_gl_GL_DEFAULT}" ___x_cmd_http_resp header "$@"
 }
 
 # TODO: Not supported yet
 ___x_cmd_gl_resp_body(){
-    O="${O:-___X_BASH_HTTP____x_cmd_gl_GITLAB_DEFAULT}" ___x_cmd_http_resp body "$@"
+    O="${O:-___X_BASH_HTTP____x_cmd_gl_GL_DEFAULT}" ___x_cmd_http_resp body "$@"
 }
 
 ___x_cmd_gl_get_multi() {
@@ -51,10 +51,10 @@ _____x_cmd_gl_next_url(){
 }
 
 ___x_cmd_gl_http(){
-    if ! O="${O:-___x_cmd_gl_GITLAB_DEFAULT}" ___x_cmd_http header get Content-Type 1>/dev/null 2>&1; then
-         O="${O:-___x_cmd_gl_GITLAB_DEFAULT}" ___x_cmd_http header put Content-Type application/json
+    if ! O="${O:-___x_cmd_gl_GL_DEFAULT}" ___x_cmd_http header get Content-Type 1>/dev/null 2>&1; then
+         O="${O:-___x_cmd_gl_GL_DEFAULT}" ___x_cmd_http header put Content-Type application/json
     fi
-    O="${O:-___x_cmd_gl_GITLAB_DEFAULT}" ___x_cmd_http "$@"
+    O="${O:-___x_cmd_gl_GL_DEFAULT}" ___x_cmd_http "$@"
 }
 
 ############################
@@ -78,10 +78,10 @@ ___x_cmd_gl_param_normalize_repo(){
         ;;
     *)
         ___x_cmd_gl_current_owner 1>/dev/null
-        if [ -z "$___x_cmd_gl_DEFAULT_OWNER" ]; then
+        if [ -z "$___X_CMD_GL_DEFAULT_OWNER" ]; then
             printf "No owner provided. Default owner not set.\n" >&2
         fi
-        owner_project="$(printf "%s" "$___x_cmd_gl_DEFAULT_OWNER/$op")"
+        owner_project="$(printf "%s" "$___X_CMD_GL_DEFAULT_OWNER/$op")"
         ;;
     esac
     printf "%s" "$owner_project" | sed s:'/':'%2F':g
@@ -90,7 +90,7 @@ ___x_cmd_gl_param_normalize_repo(){
 ### Repo #1
 
 ___x_cmd_gl_parse_owner_repo(){
-    local O="${O:-___x_cmd_gl_GITLAB_DEFAULT}"
+    local O="${O:-___x_cmd_gl_GL_DEFAULT}"
     if [ -z "$repo" ]; then
         repo="$(___x_cmd_gl_current_repo)"
     fi
@@ -116,7 +116,7 @@ _____x_cmd_git_repo(){
     repo="${repo%.*}"
     printf "%s" "$repo"
 }
-___gitlab_ui_mutual(){
+___gl_ui_mutual(){
     if [ ! -t 1 ] || [ -n "$ENFORCE_JSON" ] ; then
         "$@"
     else
@@ -124,7 +124,7 @@ ___gitlab_ui_mutual(){
         eval "$(cat)"
     fi
 
-    local ___gitlab_exit_code="$?"
-    [ "$___gitlab_exit_code" -eq 0 ] || gitlab_log error "${___gitlab_error_msg:-"Couldn't find any data"}"
-    return "$___gitlab_exit_code"
+    local ___gl_exit_code="$?"
+    [ "$___gl_exit_code" -eq 0 ] || gl_log error "${___gl_error_msg:-"Couldn't find any data"}"
+    return "$___gl_exit_code"
 }

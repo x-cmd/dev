@@ -2,7 +2,7 @@
 # shellcheck disable=SC2039,3043
 
 # define lazy loader
-# ___x_cmd_definelazyloader   ___x_cmd_gl_repo_ls             gitlab/lib/repo/main
+# ___x_cmd_definelazyloader   ___x_cmd_gl_repo_ls             gl/lib/repo/main
 
 ___x_cmd_gl_user(){
     param:scope     ___x_cmd_gl
@@ -14,7 +14,7 @@ ___x_cmd_gl_user(){
     param:run
 
     ___x_cmd_gl_user _param_help_doc
-    gitlab_log warn "Subcmd Not Found."
+    gl_log warn "Subcmd Not Found."
     return 1
 }
 
@@ -60,10 +60,10 @@ options:
     local data
 
     if [ $# -eq 0 ];then
-        gitlab_log error "Please provide a username to query"
+        gl_log error "Please provide a username to query"
         return 1
     fi
-    ___gitlab_ui_mutual ___x_cmd_gl_http get "/users" username="$1"<<A
+    ___gl_ui_mutual ___x_cmd_gl_http get "/users" username="$1"<<A
         ___ui_table_json Id=.id Name=.username Url=.web_url State=.state -- \$@
 A
 }

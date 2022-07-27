@@ -49,7 +49,8 @@ option:
         public)     private=false   ;;
         private)    private=true    ;;
     esac
-    local name="%%name%%"
+
+    local name="${___X_CMD_TX}"
     local gen_gt_json
     gen_gt_json="$(
         param:option2json +name +private -access \
@@ -57,7 +58,7 @@ option:
             can_comment=^no_comment     auto_init=^^no_auto_init)"
 
     for name in "$@"; do
-        printf "%s" "${gen_gt_json}" | sed s/%%name%%/"${name##%/}"/g | \
+        x tmpl "$gen_gt_json" "${name##%/}" | \
             ___x_cmd_gt_http post "/v5/user/repos" - | \
             ___x_cmd_gt_repo_create_status_handler
     done
@@ -110,7 +111,7 @@ option:
         innerSource)    private=2 ;;
     esac
 
-    local name="%%name%%"
+    local name="${___X_CMD_TX}"
     local gen_gt_json
     gen_gt_json="$(
         param:option2json +name +private -access \
@@ -119,7 +120,7 @@ option:
 
     # TODO: owner may be personal
     for name in "$@"; do
-        printf "%s" "${gen_gt_json}" | sed s/%%name%%/"${name##%/}"/g | \
+        x tmpl "$gen_gt_json" "${name##%/}" | \
             ___x_cmd_gt_http post "/v5/orgs/$org/repos" - | \
             ___x_cmd_gt_org_repo_create_status_handler
     done
@@ -172,7 +173,7 @@ option:
         public)         private=1 ;;
         innerSource)    private=2 ;;
     esac
-    local name="%%name%%"
+    local name="${___X_CMD_TX}"
     local outsourced="${outsourced:-false}"
     local gen_gt_json
     gen_gt_json="$(
@@ -181,8 +182,7 @@ option:
         can_comment=^no_comment         auto_init=^^no_auto_init)"
 
     for name in "$@"; do
-        # x tmpl "$gen_gt_json"  "${name##%/}" | \
-        printf "%s" "${gen_gt_json}" | sed s/%%name%%/"${name##%/}"/g | \
+        x tmpl "$gen_gt_json" "${name##%/}" | \
             ___x_cmd_gt_http post "/v5/enterprises/${enterprise##*/}/repos" - | \
             ___x_cmd_gt_enterprise_repo_create_status_handler
     done

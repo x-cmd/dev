@@ -34,39 +34,20 @@ ___x_cmd_yanfa_pkg(){
 }
 # EndSection
 
-___x_cmd_run_or_fail(){
-    local start_msg="${1:?Provide start msg}"
-    local fail_msg="${2:?Provide failure msg}"
-    shift 2
-
-    yanfa:debug "$start_msg"
-    "$@"
-    local code=$?
-    if [ "$code" -eq 0 ]; then
-        yanfa:debug "Exit=$code. Success"
-    else
-        yanfa:debug "Exit=$code: $fail_msg"
-    fi
-    return "$code"
-}
 
 # Section: pub
 ___x_cmd_yanfa_pkg_pub()(
     param:void
     x:trace yanfa/relesae/pub
-    # set -o errexit
-    if  ___x_cmd_run_or_fail "Start update"             "Update fail."              ___x_cmd_yanfa_pkg_update   "${CONCURRENCY:-7}" && \
-        ___x_cmd_run_or_fail "Start CPFILE"             "CPFILE fail."              ___x_cmd_yanfa_pkg_cpfile   "${CONCURRENCY:-7}" && \
-        ___x_cmd_run_or_fail "Start Generate Meta"      "Generate Meta fail."       ___x_cmd_yanfa_pkg_meta     "${CONCURRENCY:-7}" && \
-        ___x_cmd_run_or_fail "Start tgz"                "tgz fail."                 ___x_cmd_yanfa_pkg_tgz                          && \
-        ___x_cmd_yanfa_upload ;
-    then
-        yanfa:info "OK"
-    else
-        yanfa:error "Fail"
-        return 1
-    fi
+    flow:init   "Publish the pkg"  yanfa
+    flow:step   "update"      ___x_cmd_yanfa_pkg_update   "${CONCURRENCY:-7}"
+    flow:step   "CPFILE"      ___x_cmd_yanfa_pkg_cpfile   "${CONCURRENCY:-7}"
+    flow:step   "Meta"        ___x_cmd_yanfa_pkg_meta     "${CONCURRENCY:-7}"
+    flow:step   "tgz"         ___x_cmd_yanfa_pkg_tgz
+    flow:step   "upload"      ___x_cmd_yanfa_upload
+    flow:fini
 )
+
 # EndSection
 
 # Section: module add pull update
@@ -194,16 +175,19 @@ ___x_cmd_yanfa_pkg_meta(){
     local mod
     ___x_cmd_yanfa_pkg_lsmod | while read -r mod; do
         (
-            cd "$___X_CMD_YANFA_PKG_TMP/$mod"
-            printf "%s\t" "$mod"
-            git rev-parse head
+            x cd "$___X_CMD_YANFA_PKG_TMP/$mod" || exit 1
+            local id; id=$(x git meta id)
+            local branch; branch=$(x git meta branch);  branch="${branch:-NULL}"
+            local tag; tag=$(x git meta tag);           tag="${tag:-NULL}"
+
+            printf "%s %s %s %s\n" "$id" "$mod" "$branch" "$tag"
         )
-    done >"$tgt/repo.txt"
+    done >"$tgt/mod.txt"
 
     {
-        printf "md5:%s\n" "$(x md5 "$tgt/repo.txt")"
-        printf "sha256:%s\n" "$(x sha256 "$tgt/repo.txt")"
-        printf "sha512:%s\n" "$(x sha512 "$tgt/repo.txt")"
+        printf "md5: %s\n" "$(x md5 "$tgt/mod.txt")"
+        printf "sha256: %s\n" "$(x sha256 "$tgt/mod.txt")"
+        printf "sha512: %s\n" "$(x sha512 "$tgt/mod.txt")"
     } >"$tgt/hashsum.txt"
 }
 

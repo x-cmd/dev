@@ -2,7 +2,7 @@
 # shellcheck disable=SC2039,3043
 
 # define lazy loader
-# ___x_cmd_definelazyloader   ___x_cmd_gl_groups_member           gitlab/lib/groups/member
+# ___x_cmd_definelazyloader   ___x_cmd_gl_groups_member           gl/lib/groups/member
 
 ___x_cmd_gl_groups(){
     param:scope     ___x_cmd_gl
@@ -18,7 +18,7 @@ ___x_cmd_gl_groups(){
     param:run
 
     ___x_cmd_gl_groups _param_help_doc
-    gitlab_log warn "Subcmd Not Found."
+    gl_log warn "Subcmd Not Found."
     return 1
 }
 
@@ -31,7 +31,7 @@ ___x_cmd_gl_subgroup(){
     param:run
 
     ___x_cmd_gl_subgroup _param_help_doc
-    gitlab_log warn "Subcmd Not Found."
+    gl_log warn "Subcmd Not Found."
     return 1
 }
 
@@ -60,7 +60,7 @@ options:
 '
     param:run
 
-    ___gitlab_ui_mutual ___x_cmd_gl_get_multi "/groups" per_page  page <<A
+    ___gl_ui_mutual ___x_cmd_gl_get_multi "/groups" per_page  page <<A
         ___ui_table_json Id=.id Name=.name Path=.path Visibility=.visibility Url=.web_url -- \$@
 A
 }
@@ -86,7 +86,7 @@ options:
 '
     param:run
 
-    ___gitlab_ui_mutual ___x_cmd_gl_get_multi "/groups/$1/subgroups" <<A
+    ___gl_ui_mutual ___x_cmd_gl_get_multi "/groups/$1/subgroups" <<A
         ___ui_table_json Id=.id Name=.name Path=.path Visibility=.visibility Url=.web_url -- \$@
 A
 }
@@ -117,7 +117,7 @@ options:
 
 # Section: create
 # shellcheck disable=SC2181
-# TODO:On GitLab SaaS, you must use the GitLab UI to create groups without a parent group. You cannot use the API to do this.???
+# TODO:On gl SaaS, you must use the gl UI to create groups without a parent group. You cannot use the API to do this.???
 ___x_cmd_gl_groups_create(){
     param:scope     ___x_cmd_gl
     param:dsl       '
@@ -131,13 +131,13 @@ options:
     param:run
     local name
     name="$1"
-    [ $# -ne 0 ] || { gitlab_log error "Please provide groups name"; return 1; }
-    local gitlab_path="$name"
-    [ -z "$p" ] || gitlab_path="$p"
-    local gen_gitlab_json
-    gen_gitlab_json="$(param:option2json -p +name path=gitlab_path)"
+    [ $# -ne 0 ] || { gl_log error "Please provide groups name"; return 1; }
+    local gl_path="$name"
+    [ -z "$p" ] || gl_path="$p"
+    local gen_gl_json
+    gen_gl_json="$(param:option2json -p +name path=gl_path)"
 
-    ___x_cmd_gl_http post "/groups" "$gen_gitlab_json" | \
+    ___x_cmd_gl_http post "/groups" "$gen_gl_json" | \
     {
         ___x_cmd_git_json_query_rename id=.id
         if [ -n "$id" ]; then
@@ -152,7 +152,7 @@ options:
 
 # Section: create subgroup
 # shellcheck disable=SC2181
-# TODO:On GitLab SaaS, you must use the GitLab UI to create groups without a parent group. You cannot use the API to do this.???
+# TODO:On gl SaaS, you must use the gl UI to create groups without a parent group. You cannot use the API to do this.???
 ___x_cmd_gl_subgroup_create(){
     param:scope     ___x_cmd_gl
     param:dsl       '
@@ -164,8 +164,8 @@ options:
     param:run
     local group_path="$subgroup_path"
     [ -n "$group_path" ] || group_path="$name"
-    gen_gitlab_json="$(param:option2json -subgroup_path path=group_path)"
-    ___x_cmd_gl_http post "/groups" "$gen_gitlab_json"| \
+    gen_gl_json="$(param:option2json -subgroup_path path=group_path)"
+    ___x_cmd_gl_http post "/groups" "$gen_gl_json"| \
     {
         ___x_cmd_git_json_query_rename id=.id
         if [ -n "$id" ]; then
@@ -191,13 +191,13 @@ options:
     #1                          "The ID of the group."
 '
     param:run
-    [ $# -ne 0 ] || { gitlab_log error "Please provide groups ID"; return 1; }
-    local gitlab_path="$p"
-    local gen_gitlab_json
-    # path=gitlab_path
-    gen_gitlab_json="$(param:option2json -p path=gitlab_path)"
+    [ $# -ne 0 ] || { gl_log error "Please provide groups ID"; return 1; }
+    local gl_path="$p"
+    local gen_gl_json
+    # path=gl_path
+    gen_gl_json="$(param:option2json -p path=gl_path)"
 
-    ___x_cmd_gl_http put "/groups/$1" "$gen_gitlab_json" | \
+    ___x_cmd_gl_http put "/groups/$1" "$gen_gl_json" | \
     {
         ___x_cmd_git_json_query_rename id=.id
         if [ -n "$id" ]; then
@@ -219,7 +219,7 @@ ___x_cmd_gl_groups_repo(){
     param:run
 
     ___x_cmd_gl_groups_repo _param_help_doc
-    gitlab_log warn "Subcmd Not Found."
+    gl_log warn "Subcmd Not Found."
     return 1
 }
 
@@ -235,7 +235,7 @@ options:
 '
     param:run
 
-    ___gitlab_ui_mutual ___x_cmd_gl_get_multi "/groups/$id/projects" page per_page visibility archived <<A
+    ___gl_ui_mutual ___x_cmd_gl_get_multi "/groups/$id/projects" page per_page visibility archived <<A
         ___ui_table_json Id=.id Name=.name path=.path visibility=.visibility web_url=.web_url -- \$@
 A
 }
@@ -280,7 +280,7 @@ options:
 '
  param:run
 
-  ___gitlab_ui_mutual  ___x_cmd_gl_get_multi  "/groups/$id/issues" sort order_by search state  <<A
+  ___gl_ui_mutual  ___x_cmd_gl_get_multi  "/groups/$id/issues" sort order_by search state  <<A
         ___ui_table_json Id=.id iid=.iid project_id=.project_id title=.title state=.state web_url=.web_url -- \$@
 A
 }

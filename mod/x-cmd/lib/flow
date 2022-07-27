@@ -1,0 +1,102 @@
+
+___x_cmd_flow_init(){
+    ___X_CMD_FLOW_LAST_CODE=0
+    ___X_CMD_FLOW_DESC="${1:?Provide description}"
+    ___X_CMD_FLOW_LOGGER="${2:-x}"
+}
+
+___x_cmd_flow_fini(){
+    if [ "$___X_CMD_FLOW_LAST_CODE" = 0 ]; then     x log ":${___X_CMD_FLOW_LOGGER}" "Success: $___X_CMD_FLOW_DESC"
+    else                                            x log ":${___X_CMD_FLOW_LOGGER}" error "Fail[code:$___X_CMD_FLOW_LAST_CODE]: $___X_CMD_FLOW_DESC"
+    fi
+}
+
+___x_cmd_flow_panic(){
+    if [ "$___X_CMD_FLOW_LAST_CODE" != 0 ]; then
+        x log ":${___X_CMD_FLOW_LOGGER}" error "Fail[code:$___X_CMD_FLOW_LAST_CODE]: $___X_CMD_FLOW_DESC"
+        return 1
+    fi
+}
+
+___x_cmd_flow_run(){
+    local mission="${1:?Provide mission msg}";  shift 1
+
+    x log ":${___X_CMD_FLOW_LOGGER}" "Start: $mission"
+    "$@"
+    ___X_CMD_FLOW_LAST_CODE=$?
+    if [ "$___X_CMD_FLOW_LAST_CODE" -eq 0 ]; then       x log ":${___X_CMD_FLOW_LOGGER}" debug "Success: $mission"
+    else                                                x log ":${___X_CMD_FLOW_LOGGER}" error "Exit=$code: $mission"
+    fi
+    return "$___X_CMD_FLOW_LAST_CODE"
+}
+
+alias flow:init='
+    local ___X_CMD_FLOW_LAST_CODE 2>/dev/null;
+    local ___X_CMD_FLOW_LAST_MSG 2>/dev/null;
+    local ___X_CMD_FLOW_LOGGER 2>/dev/null;
+    ___x_cmd_flow_init '
+
+alias flow:fini="___x_cmd_flow_fini"
+alias flow:step='
+    [ "$___X_CMD_FLOW_LAST_CODE" -eq 0 ] || {
+        ___x_cmd_flow_panic || { return $___X_CMD_FLOW_LAST_CODE 2>/dev/null; exit $___X_CMD_FLOW_LAST_CODE; }
+    };
+    ___x_cmd_flow_run'
+
+# testa(){
+#     flow:init   "Preplare the App"  yanfa
+#     flow:step   "Echo " echo 1
+#     flow:step   "Echo"  echo a
+#     flow:step   "Wrong" echo c
+#     flow:fini
+
+# }
+
+# testa
+
+# ___x_cmd_yanfa_pkg_pub()(
+#     param:void
+#     x:trace yanfa/relesae/pub
+#     {
+#         @flow   "update"           ___x_cmd_yanfa_pkg_update   "${CONCURRENCY:-7}"  && \
+#         @flow   "CPFILE"           ___x_cmd_yanfa_pkg_cpfile   "${CONCURRENCY:-7}"  && \
+#         @flow   "Generate Meta"    ___x_cmd_yanfa_pkg_meta     "${CONCURRENCY:-7}"  && \
+#         @flow   "tgz"              ___x_cmd_yanfa_pkg_tgz                           && \
+#         @flow   "upload"           ___x_cmd_yanfa_upload                            && \
+#         yanfa:info "OK"
+#     } || {
+#         local code=$?
+#         yanfa:error "Fail: Exit Code=$code"
+#         return "$code"
+#     }
+# )
+
+# ___x_cmd_yanfa_pkg_pub()(
+#     param:void
+#     x:trace yanfa/relesae/pub
+#     @flow:begin     "Start publishing"
+#     @flow           "update"           ___x_cmd_yanfa_pkg_update   "${CONCURRENCY:-7}"
+#     @flow           "CPFILE"           ___x_cmd_yanfa_pkg_cpfile   "${CONCURRENCY:-7}"
+#     @flow           "Generate Meta"    ___x_cmd_yanfa_pkg_meta     "${CONCURRENCY:-7}"
+#     @flow           "tgz"              ___x_cmd_yanfa_pkg_tgz
+#     @flow           "upload"           ___x_cmd_yanfa_upload
+#     @flow:end
+# )
+
+
+# ___x_cmd_yanfa_pkg_pub()(
+#     param:void
+#     x:trace yanfa/relesae/pub
+#     local LOG=yanfa
+#     {
+#         run:flow  "update"      ___x_cmd_yanfa_pkg_update   "${CONCURRENCY:-7}" && \
+#         run:flow  "CPFILE"      ___x_cmd_yanfa_pkg_cpfile   "${CONCURRENCY:-7}" && \
+#         run:flow  "Meta"        ___x_cmd_yanfa_pkg_meta     "${CONCURRENCY:-7}" && \
+#         run:flow  "tgz"         ___x_cmd_yanfa_pkg_tgz                          && \
+#         run:flow  "upload"      ___x_cmd_yanfa_upload                           && \
+#                                 yanfa:info "OK"
+#     } || {
+#         local code=$?;          yanfa:error "Fail: $code"; return 1
+#     }
+# )
+

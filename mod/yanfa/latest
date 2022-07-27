@@ -5,7 +5,7 @@ xrc param/latest
 
 x log init yanfa
 
-xrc:mod:lib yanfa   ws mod pkg init try git release xb xc
+xrc:mod:lib yanfa   ws mod pkg init try git xb xc
 
 # git config --worktree --get-regexp "remote[a-z\.]+.url"
 

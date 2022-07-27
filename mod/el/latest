@@ -1,7 +1,7 @@
 # Author:       Li Junhao      l@x-cmd.com      # xrc
 # shellcheck    shell=sh       disable=SC3043
 
-xrc:mod:lib el  alpine code container git k8s udpn utils wubi alphabet a2
+xrc:mod:lib el  alpine code container git k8s udpn wubi alphabet a2
 
 + yanfa
 

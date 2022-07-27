@@ -30,7 +30,9 @@ ___x_cmd_gt_current_owner(){
         fi
         return
     elif [ -z "$___X_CMD_GITEE_DEFAULT_OWNER" ]; then
-        ___x_cmd_gt_http get "/v5/user" | x jo env . ___X_CMD_GITEE_DEFAULT_OWNER=.login
+         x jo env . ___X_CMD_GITEE_DEFAULT_OWNER=.login<<A
+         $(___x_cmd_gt_http get "/v5/user")
+A
         if [ -z "$___X_CMD_GITEE_DEFAULT_OWNER" ]; then
             gt_log error "get current owner fail"
             return 1

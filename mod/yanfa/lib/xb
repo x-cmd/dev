@@ -17,15 +17,15 @@ ___x_cmd_yanfa_xb_ls(){
     ___x_cmd_yanfa_mod_ls "$@"
 }
 
-___x_cmd_yanfa_xb_commit(){         param:void;     ___x_cmd_yanfa_xb_foreach "${1:-$HOME}" ___x_cmd_yanfa_git_commit;     }
-___x_cmd_yanfa_xb_update(){         param:void;     ___x_cmd_yanfa_xb_foreach "${1:-$HOME}" ___x_cmd_yanfa_git_update;     }
-___x_cmd_yanfa_xb_push(){           param:void;     ___x_cmd_yanfa_xb_foreach "${1:-$HOME}" ___x_cmd_yanfa_git_push;       }
+___x_cmd_yanfa_xb_update(){         param:void;     ___x_cmd_yanfa_xb_foreach "${1:-$HOME/x-bash}" ___x_cmd_yanfa_git_update;     }
+___x_cmd_yanfa_xb_commit(){         param:void;     ___x_cmd_yanfa_xb_foreach "${1:-$HOME/x-bash}" ___x_cmd_yanfa_git_commit;     }
+___x_cmd_yanfa_xb_push(){           param:void;     ___x_cmd_yanfa_xb_foreach "${1:-$HOME/x-bash}" ___x_cmd_yanfa_git_push;       }
 
 ___x_cmd_yanfa_xb_foreach()(
-    local dir="${1:-$HOME}"; shift
+    local dir="${1:-$HOME/x-bash}"; shift
     yanfa:info "Execute concurrently(con=$___X_CMD_YANFA_CONCURRENCY): $*"
 
-    x mcd "$dir/x-bash" || return 1
+    x mcd "$dir" || return 1
 
     local ___X_CMD_JOB_WRAPPER=report
     ___x_cmd_yanfa_xb_ls | \

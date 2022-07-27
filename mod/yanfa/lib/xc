@@ -12,12 +12,12 @@ ___x_cmd_yanfa_xc(){
     ___x_cmd_yanfa_xc_update
 }
 
-___x_cmd_yanfa_xc_commit(){         param:void;     ___x_cmd_yanfa_xc_foreach "${1:-$HOME}" ___x_cmd_yanfa_git_commit;     }
-___x_cmd_yanfa_xc_update()(         param:void;     ___x_cmd_yanfa_xc_foreach "${1:-$HOME}" ___x_cmd_yanfa_git_update;     )
-___x_cmd_yanfa_xc_push(){           param:void;     ___x_cmd_yanfa_xc_foreach "${1:-$HOME}" ___x_cmd_yanfa_git_push;       }
+___x_cmd_yanfa_xc_update()(         param:void;     ___x_cmd_yanfa_xc_foreach "${1:-$HOME/x-cmd}" ___x_cmd_yanfa_git_update;     )
+___x_cmd_yanfa_xc_commit(){         param:void;     ___x_cmd_yanfa_xc_foreach "${1:-$HOME/x-cmd}" ___x_cmd_yanfa_git_commit;     }
+___x_cmd_yanfa_xc_push(){           param:void;     ___x_cmd_yanfa_xc_foreach "${1:-$HOME/x-cmd}" ___x_cmd_yanfa_git_push;       }
 
 ___x_cmd_yanfa_xc_foreach()(
-    local dir="${1:-$HOME}"; shift
+    local dir="${1:-$HOME/x-cmd}"; shift
 
     x mcd "$dir/x-cmd" || return 1
 
