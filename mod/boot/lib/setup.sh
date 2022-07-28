@@ -3,7 +3,9 @@
 ___X_CMD_ADVISE_ENABLE=1
 if command -v xrc >/dev/null 2>&1; then
     return 0
-elif [ -f "$HOME/.x-cmd/xrc/latest" ]; then
+elif [ -f "$___X_CMD_ROOT_MOD/xrc/latest" ]; then
+    . "$___X_CMD_ROOT_MOD/xrc/latest"
+elif [ -f "$HOME/.x-cmd/xrc/latest" ]; then # Will removed.
     . "$HOME/.x-cmd/xrc/latest"
 else
     printf "%s\n  %s" 'xrc/latest not found. You can reinstall using:' 'eval "\$(curl https://get.x-cmd.com)"'

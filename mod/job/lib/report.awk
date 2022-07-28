@@ -1,16 +1,21 @@
+BEGIN{
+    if (LOG_LEVEL == "") LOG_LEVEL = 2
+}
 $1=="start:"{
     $1=""
-    log_debug("job", "Start: " $0)
+    if (LOG_LEVEL <= 1) {
+        log_debug("job", "Start: " $0)
+    }
     next
 }
 
 $1=="exit:"{
     code=$2;            $1=$2=""
     if (code == 0) {
-        log_info("job", "Success: " $0)
+        if (LOG_LEVEL <= 2) log_info("job", "Success: " $0)
         success ++
     } else {
-        log_warn("job", sprintf("Fail: [code=%s] %s", code, $0))
+        if (LOG_LEVEL <= 3) log_warn("job", sprintf("Fail: [code=%s] %s", code, $0))
         failure ++
     }
     next
@@ -23,10 +28,10 @@ $1=="exit:"{
 END{
     if (failure > 0) {
         total = success + failure
-        log_warn( "job", sprintf( "Total: %s  Pass: %s   Fail: %s", total, success, failure ) )
+        if (LOG_LEVEL <= 3) log_warn( "job", sprintf( "Total: %s  Pass: %s   Fail: %s", total, success, failure ) )
         exit( 1 )
     } else {
-        log_info( "job", sprintf( "Total: %s  All Passed!", total ) )
+        if (LOG_LEVEL <= 2) log_info( "job", sprintf( "Total: %s  All Passed!", total ) )
         exit( 0 )
     }
 

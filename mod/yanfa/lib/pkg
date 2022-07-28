@@ -163,7 +163,7 @@ ___x_cmd_yanfa_pkg_meta()(
     tgt="$(x wsroot)/mod"
 
     local mod
-    ___x_cmd_yanfa_pkg_lsmod | while read -r mod; do
+    ___x_cmd_yanfa_pkg_lsmod | sort | while read -r mod; do
         x cd "$___X_CMD_YANFA_PKG_TMP/$mod" || exit 1
         local id; id=$(x git meta id)
         local branch; branch=$(x git meta branch);  branch="${branch:-NULL}"
@@ -171,11 +171,18 @@ ___x_cmd_yanfa_pkg_meta()(
         printf "%s %s %s %s\n" "$id" "$mod" "$branch" "$tag"
     done >"$tgt/mod.txt"
 
+    local t; t="$(< "$tgt/mod.txt" awk '{print $1 " " $2}')"
+    {
+        printf "%s\n" "$t" | x md5
+        printf "%s\n" "$t" | x sha256
+        printf "%s\n" "$t" | x sha512
+    } >"$tgt/commitid-name.hashsum.txt"
+
     {
         printf "md5: %s\n" "$(x md5 "$tgt/mod.txt")"
         printf "sha256: %s\n" "$(x sha256 "$tgt/mod.txt")"
         printf "sha512: %s\n" "$(x sha512 "$tgt/mod.txt")"
-    } >"$tgt/hashsum.txt"
+    } >"$tgt/mod.hashsum.txt"
 )
 
 ___x_cmd_yanfa_pkg_wc()(

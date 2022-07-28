@@ -3,29 +3,30 @@ alias b=""
 alias c="config"    #
 alias d=""
 alias e="ed"
-alias f="file"
-alias g="___x_cmd_grep"          # rg   # git == git
+alias f="find"                  #! find -- file
+alias g="___x_cmd_grep"         # rg   # git == git
 
-alias h="history"               # history
+alias h="history"               # http  # history
 alias i="info"
-alias j="x jq"                  # cd
-alias k="kubectl"               # sure
-alias l="___x_cmd_ls"           # sure
-alias m=""                      # mv modify
+alias j="x jq"                  #! json -- cd
+alias k="kubectl"               #! kubectl -- sure
+alias l="___x_cmd_ls"           #! ls -- sure
+alias m="x mv"                  #! mv modify
 alias n=""
 
 alias o="___x_cmd_open"         # sure # open if it is a folder. Provide short name
 alias p=""
-alias q="query"     # sql
+alias q="query"                 # query --- sql
 alias r=""
 alias s=""
 alias t=""
 
 alias u=""
 alias v=""
-alias w="who"
+alias w="who"                   # who what when which why
 
-# alias x="___x_cmd_main"         # sure
+# alias x="___x_cmd_main"       #! x --- sure
 alias y="yml"
 alias z=""
 
+alias ..=cd

@@ -64,7 +64,7 @@ options:
         url="/user/repos"
     fi
 
-    ___gh_ui_mutual ___x_cmd_gh_http get "$url" visibility affiliation sort direction <<A
+    ___gh_ui_mutual ___x_cmd_gh_get_multi "$url" visibility affiliation sort direction <<A
         ___ui_table_json Id=.id Name=.name Owner=.owner.login Url=.html_url -- \$@
 A
 
