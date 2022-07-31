@@ -9,22 +9,23 @@ ___x_cmd_yanfa_pkg(){
 
     x:trace yanfa/relesae "$@"
 
-    param:subcmd    ___x_cmd_yanfa                  \
-        init        "init"
+    param:subcmd        ___x_cmd_yanfa                  \
+        init            "init"
     param:subcmd:try
 
-    param:subcmd    ___x_cmd_yanfa_ws               \
-        pull        "pull"                          \
-        push        "push"                          \
-        name        "get workspace name from git config"
+    param:subcmd        ___x_cmd_yanfa_ws               \
+        pull            "pull"                          \
+        push            "push"                          \
+        name            "get workspace name from git config"
     param:subcmd:try
 
-    param:subcmd    ___x_cmd_yanfa_pkg          \
-        update          "update or add module"      \
-        pub             "publish the package"       \
-        lsmod           "ls module"                 \
-        lsfile          "ls file"                   \
-        wc              "count"                     \
+    param:subcmd        ___x_cmd_yanfa_pkg              \
+        update          "update or add module"          \
+        pub             "publish the package"           \
+        pubyanfa        "publish the yanfa pkg"         \
+        lsmod           "ls module"                     \
+        lsfile          "ls file"                       \
+        wc              "count"                         \
         tgz             "compress modules of core/all/<special-release> into <name>.tgz"    \
         7z              "compress modules of 7z"
     param:subcmd:try
@@ -39,12 +40,23 @@ ___x_cmd_yanfa_pkg(){
 ___x_cmd_yanfa_pkg_pub()(
     param:void
     x:trace yanfa/relesae/pub
-    flow:init   "Publish the pkg"  yanfa
+    flow:init   "Publish the pkg."  yanfa
     flow:step   "update"      ___x_cmd_yanfa_pkg_update   "${CONCURRENCY:-7}"
     flow:step   "CPFILE"      ___x_cmd_yanfa_pkg_cpfile   "${CONCURRENCY:-7}"
     flow:step   "Meta"        ___x_cmd_yanfa_pkg_meta     "${CONCURRENCY:-7}"
     flow:step   "tgz"         ___x_cmd_yanfa_pkg_tgz
     flow:step   "upload"      ___x_cmd_yanfa_upload
+    flow:fini
+)
+
+___x_cmd_yanfa_pkg_pubyanfa()(
+    param:void
+    x:trace yanfa/relesae/pub
+    flow:init   "Publish the pkg for the yanfa distribution."  yanfa
+    flow:step   "update"      ___x_cmd_yanfa_pkg_update   "${CONCURRENCY:-7}"
+    flow:step   "CPFILE"      ___x_cmd_yanfa_pkg_cpfile   "${CONCURRENCY:-7}"
+    flow:step   "Meta"        ___x_cmd_yanfa_pkg_meta     "${CONCURRENCY:-7}"
+    flow:step   "upload"      ___x_cmd_yanfa_upload_force
     flow:fini
 )
 
@@ -168,21 +180,31 @@ ___x_cmd_yanfa_pkg_meta()(
         local id; id=$(x git meta id)
         local branch; branch=$(x git meta branch);  branch="${branch:-NULL}"
         local tag; tag=$(x git meta tag);           tag="${tag:-NULL}"
-        printf "%s %s %s %s\n" "$id" "$mod" "$branch" "$tag"
-    done >"$tgt/mod.txt"
 
-    local t; t="$(< "$tgt/mod.txt" awk '{print $1 " " $2}')"
-    {
-        printf "%s\n" "$t" | x md5
-        printf "%s\n" "$t" | x sha256
-        printf "%s\n" "$t" | x sha512
-    } >"$tgt/commitid-name.hashsum.txt"
+        x cd "$tgt/$mod" || exit 1
+        local sha512; sha512=$(find . -type file | xargs cat | x sha512)
 
-    {
-        printf "md5: %s\n" "$(x md5 "$tgt/mod.txt")"
-        printf "sha256: %s\n" "$(x sha256 "$tgt/mod.txt")"
-        printf "sha512: %s\n" "$(x sha512 "$tgt/mod.txt")"
-    } >"$tgt/mod.hashsum.txt"
+        printf "%s %s %s %s %s\n" "$id" "$sha512" "$mod" "$branch" "$tag"
+    done >"$tgt/modlist.txt"
+
+    # (
+    #     x cd "$tgt" || exit 1
+    #     x fd . -t f | sort | while read -r srcfile; do
+    #         printf "%s %s\n" "$srcfile" "$(x sha512 "$srcfile")"
+    #     done >"$tgt/filelist.sha521sum.txt"
+    # ) || return
+
+
+    # (
+    #     x cd "$tgt" || exit 1
+    #     printf "___x_cmd_pkgsum=%s\n" "$(x fd . -t f | sort | xargs cat | x sha512)" >"$tgt/meta.sha512sum.txt"
+    # ) || return
+
+    # {
+    #     printf "___x_cmd_pkgsum_modcommit=%s\n"       "$(< "$tgt/modlist.txt" awk '{print $1 " " $2}' | x sha512)"
+    #     printf "___x_cmd_pkgsum_modlist=%s\n"         "$(x sha512 "$tgt/modlist.txt")"
+    #     printf "___x_cmd_pkgsum_filelist=%s\n"        "$(x sha512 "$tgt/filelist.sha521sum.txt")"
+    # } >>"$tgt/meta.sha512sum.txt"
 )
 
 ___x_cmd_yanfa_pkg_wc()(
@@ -234,11 +256,19 @@ ___x_cmd_yanfa_upload(){
         yanfa:info "No Upload. Skip Add && Commit && Push"
     else
         yanfa:info "Add && Commit && Push"
-        git add . && git commit -m ... && ___x_cmd_yanfa_ws_push;
+        {
+            if [ -z "$FORCE" ]; then            git add .
+            else                                git add -f .
+            fi
+        } && git commit -m ... && ___x_cmd_yanfa_ws_push;
         local code=$?
         if [ "$code" = 0 ]; then            yanfa:info "Success"
         else                                yanfa:error "Add && Commit && Push exit: $code"
         fi
         return "$code"
     fi
+}
+
+___x_cmd_yanfa_upload_force(){
+    FORCE=1 ___x_cmd_yanfa_upload "$@"
 }

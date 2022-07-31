@@ -51,7 +51,7 @@ ___x_cmd_test___cycle_exec_file(){
 
     local err; err="$(
         ___X_CMD_TEST_CURRENT_TESTCASE="$testcase"
-        source "$testcase" 2>/dev/stdout
+        . ./"$testcase" 2>/dev/stdout
     )"
 
     local code="$?"

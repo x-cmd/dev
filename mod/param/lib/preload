@@ -6,7 +6,7 @@ ___X_CMD_PARAM_ARG_SEP="$___X_CMD_UNSEENCHAR_005"         # ARG_SEP in awk scrip
 # Section 1: scope plugin dsl
 alias param:scope='local ___X_CMD_PARAM_SCOPE; ___x_cmd_param_scope_set_id'
 alias param:plugin="local ___X_CMD_PARAM_PLUGIN_ID; ___x_cmd_param_plugin_set_id"
-alias param:dsl="local ___X_CMD_PARAM_DSL 1>&/dev/null; ___x_cmd_param_dsl_set "
+alias param:dsl="local ___X_CMD_PARAM_DSL 1>/dev/null; ___x_cmd_param_dsl_set "
 
 ___x_cmd_param_scope_set_id(){          ___X_CMD_PARAM_SCOPE="${1:?Please provide scope}";      }
 ___x_cmd_param_plugin_set_id(){         ___X_CMD_PARAM_PLUGIN_ID="${1:?Please provide scope}";  }
@@ -41,7 +41,7 @@ alias param:void='[ "$1" != _x_cmd_advise_json ] || { ___x_cmd_param___void_json
 
 # Section 3: param:subcmd param:subcmd:try
 
-alias param:subcmd='local PARAM_EXEC=""; [ -n "$PARAM_SUBCMD_DEF" ] || local PARAM_SUBCMD_DEF; local ___X_CMD_PARAM_DSL 1>&/dev/null; FIRST_ARG="$1" ___x_cmd_param_define_subcmd'
+alias param:subcmd='local PARAM_EXEC=""; [ -n "$PARAM_SUBCMD_DEF" ] || local PARAM_SUBCMD_DEF; local ___X_CMD_PARAM_DSL 1>/dev/null; FIRST_ARG="$1" ___x_cmd_param_define_subcmd'
 ___x_cmd_param_define_subcmd(){
     PARAM_FUNCNAME="${1:?Provide prefix}"; shift
     PARAM_SUBCMD_DEF="$PARAM_SUBCMD_DEF

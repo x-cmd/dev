@@ -74,6 +74,10 @@ ___x_cmd_job_wait_until_finished(){
 
 ___x_cmd_job_report(){
     command awk \
+        -v ___X_CMD_LOG_C_DEBUG="$___X_CMD_LOG_C_DEBUG" \
+        -v ___X_CMD_LOG_C_INFO="$___X_CMD_LOG_C_INFO" \
+        -v ___X_CMD_LOG_C_WARN="$___X_CMD_LOG_C_WARN" \
+        -v ___X_CMD_LOG_C_ERROR="$___X_CMD_LOG_C_ERROR" \
         -v "LOG_LEVEL=$___X_CMD_LOG__job"          \
         -f "$___X_CMD_ROOT_MOD/awk/lib/log.awk"     \
         -f "$___X_CMD_ROOT_MOD/job/lib/report.awk"

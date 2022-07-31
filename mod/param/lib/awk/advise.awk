@@ -4,7 +4,7 @@ function CDADD( s ){    CODE = CODE s "\n"; }
 
 function swrap( s ){  return "\"" s "\""; }
 
-function generate_advise_json_value_candidates_by_rules( optarg_id, advise_map,        op, _default ){
+function generate_advise_json_value_candidates_by_rules( optarg_id, advise_map,        op, _default, i, l ){
     AJADD("{");
     AJADD( swrap("#desc") ); AJADD( ":" ); AJADD( swrap(option_desc_get( optarg_id )) );
 
@@ -14,7 +14,11 @@ function generate_advise_json_value_candidates_by_rules( optarg_id, advise_map, 
 
     op = oparr_get( optarg_id, 1 )
     if (op == "=~") {
-        AJADD(","); AJADD( swrap("#cand_regex") ); AJADD(":")                   AJADD("["); AJADD( oparr_join_wrap( optarg_id, SSS "," SSS ) ); AJADD("]")
+        AJADD(","); AJADD( swrap("#regex") ); AJADD(":")
+        l = oparr_len( optarg_id ); AJADD("{")
+        if (2 <= l)          { AJADD( swrap(oparr_get( optarg_id, 2 )) ); AJADD(":"); AJADD("\"\""); }
+        for (i=3; i<=l; ++i) { AJADD(","); AJADD( swrap(oparr_get( optarg_id, i )) ); AJADD(":"); AJADD("\"\""); }
+        AJADD("}")
     }
 
     if (op == "=") {

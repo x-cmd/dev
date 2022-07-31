@@ -1,9 +1,8 @@
-
 BEGIN{
-    LOG_COLOR_INFO  = "\033[32;1m"
-    LOG_COLOR_WARN  = "\033[33;1m"
-    LOG_COLOR_ERROR = "\033[31;1m"
-    LOG_COLOR_DEBUG = "\033[31;2m"
+    LOG_COLOR_INFO  = ( ___X_CMD_LOG_C_INFO != "" )  ? ___X_CMD_LOG_C_INFO  : "\033[1;36m"
+    LOG_COLOR_WARN  = ( ___X_CMD_LOG_C_WARN != "" )  ? ___X_CMD_LOG_C_WARN  : "\033[1;33m"
+    LOG_COLOR_ERROR = ( ___X_CMD_LOG_C_ERROR != "" ) ? ___X_CMD_LOG_C_ERROR : "\033[1;31m"
+    LOG_COLOR_DEBUG = ( ___X_CMD_LOG_C_DEBUG != "" ) ? ___X_CMD_LOG_C_DEBUG : "\033[2;35m"
 }
 
 function log_info( mod, msg ){
