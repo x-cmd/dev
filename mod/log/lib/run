@@ -4,10 +4,10 @@ ___x_cmd_log_run(){
         case "$1" in
             --)     shift;                              break    ;;
 
-            */*)    eval "local ${1%/*}" 2>/dev/null;   ___x_cmd_log_set_level "${1%/*}" "${1#*/}" ;;
-            +*)     eval "local ${1#+}" 2>/dev/null;    ___x_cmd_log_set_level "${1#+}" debug ;;
-            -*)     eval "local ${1#-}" 2>/dev/null;    ___x_cmd_log_set_level "${1#-}" info ;;
-            *)      eval "local ${1}" 2>/dev/null;      ___x_cmd_log_set_level "$1" info ;;
+            */*)    eval "local ___X_CMD_LOG__${1%/*}" 2>/dev/null; ___x_cmd_log_set_level "${1%/*}" "${1#*/}" ;;
+            +*)     eval "local ___X_CMD_LOG__${1#+}" 2>/dev/null;  ___x_cmd_log_set_level "${1#+}" debug ;;
+            -*)     eval "local ___X_CMD_LOG__${1#-}" 2>/dev/null;  ___x_cmd_log_set_level "${1#-}" info ;;
+            *)      eval "local ___X_CMD_LOG__${1}" 2>/dev/null;    ___x_cmd_log_set_level "$1" info
         esac
         shift
     done

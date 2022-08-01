@@ -238,7 +238,7 @@ ___X_CMD_LOG_C_TIMESTAMP_END="${___X_CMD_LOG_C_WARN:-"]"}"
 ___x_cmd_log_pr(){
     case "${2:?Provide level}" in
         debug)      eval "test -z \"\$___X_CMD_LOG_DEBUG\" -a 1 -lt \"\${___X_CMD_LOG__${1#:}:-2}\"" || { local O="${1#:}"; shift 2; L=DBG C="$___X_CMD_LOG_C_DEBUG"  ___x_cmd_log_0 "$@"; } ;;
-        INFO)       eval "test -z \"\$___X_CMD_LOG_DEBUG\" -a 2 -lt \"\${___X_CMD_LOG__${1#:}:-2}\"" || { local O="${1#:}"; shift 2; L=INF C="$___X_CMD_LOG_C_INFO"   ___x_cmd_log_0 "$@"; } ;;
+        info)       eval "test -z \"\$___X_CMD_LOG_DEBUG\" -a 2 -lt \"\${___X_CMD_LOG__${1#:}:-2}\"" || { local O="${1#:}"; shift 2; L=INF C="$___X_CMD_LOG_C_INFO"   ___x_cmd_log_0 "$@"; } ;;
         warn)       eval "test -z \"\$___X_CMD_LOG_DEBUG\" -a 3 -lt \"\${___X_CMD_LOG__${1#:}:-2}\"" || { local O="${1#:}"; shift 2; L=WRN C="$___X_CMD_LOG_C_WARN"   ___x_cmd_log_0 "$@"; } ;;
         error)      eval "test -z \"\$___X_CMD_LOG_DEBUG\" -a 4 -lt \"\${___X_CMD_LOG__${1#:}:-2}\"" || { local O="${1#:}"; shift 2; L=ERR C="$___X_CMD_LOG_C_ERROR"  ___x_cmd_log_0 "$@"; } ;;
         *)          eval "test -z \"\$___X_CMD_LOG_DEBUG\" -a 3 -lt \"\${___X_CMD_LOG__${1#:}:-2}\"" || { local O="${1#:}"; shift 1; L=INF C="$___X_CMD_LOG_C_INFO"   ___x_cmd_log_0 "$@"; } ;;

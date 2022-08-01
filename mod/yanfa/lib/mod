@@ -232,6 +232,21 @@ ___x_cmd_yanfa_mod_ls(){
 
 # EndSection
 
+___x_cmd_yanfa_mod_build()(
+    x cd "$(x wsroot)" || return 1
+    local name; name=$(___x_cmd_yanfa_ws_name); name="${name#*/}"
+    . ./latest
+    local main_func
+    main_func="$(___x_cmd_ldict_get ___X_CMD_XRC_SET_MAIN_DICT "$(xrc which "$name")")"
+    local content
+    if ! content="$(X_CMD_ADVISE_FUNC_NAME="$main_func" "$main_func" _x_cmd_advise_json)"; then
+        x log :yanfa "Fail generate $name advise.t.json"
+        return
+    fi
+    printf "%s" "$content" | x ja t > "$(x wsroot)/advise.t.json"
+    x log :yanfa "Success generate $name advise.t.json"
+)
+
 ___x_cmd_yanfa_mod(){
     if [ -f "$(x wsroot)/.x-cmd/$1" ]; then
         x ws execfile "$@"
@@ -251,6 +266,7 @@ ___x_cmd_yanfa_mod(){
     param:subcmd ___x_cmd_yanfa_mod                         \
         ls          "ls mod"                                \
         wc          "wc"                                    \
+        build       "advise_t_json"                         \
         devi        "container"                             \
         tgz         "package"                               \
         test        "test"                                  \

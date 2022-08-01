@@ -11,9 +11,3 @@ else
     printf "%s\n  %s" 'xrc/latest not found. You can reinstall using:' 'eval "\$(curl https://get.x-cmd.com)"'
     return 1
 fi
-
-! ___x_cmd_is_interative_tty || {
-    xrc env/latest
-    [ ! -f "$HOME/.x-cmd/.boot/mod" ]   || . "$___X_CMD_ROOT/.boot/mod"
-    [ ! -f "$HOME/.x-cmd/.boot/rc" ]    || . "$___X_CMD_ROOT/.boot/rc"
-}

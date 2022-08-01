@@ -1,7 +1,6 @@
 # shellcheck shell=sh disable=SC3043,SC2164
 
-# author:       Li Junhao           l@x-cmd.com    edwinjhlee.github.io
-# maintainer:   Li Junhao
+# author:       Li Junhao           l@x-cmd.com
 # license:      GPLv3
 
 # linux

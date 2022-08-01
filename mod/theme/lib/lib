@@ -136,7 +136,7 @@ ___x_cmd_theme_prompt_comp_exit_code() {
 }
 
 ___x_cmd_theme_prompt_comp_username(){
-    if [ -n "$SSH_CONNECTION" ] || [ -f "/.dockerenv" ]; then
+    if [ -n "$SSH_CONNECTION" ] || ___x_cmd_lenv_type___is_container 2>/dev/null; then
         printf "%s" "${___X_CMD_THEME_USER}${SEP:-@}${___X_CMD_THEME_HOST}"
     else
         printf "%s" "${___X_CMD_THEME_USER}"

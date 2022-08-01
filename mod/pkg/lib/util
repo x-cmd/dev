@@ -25,7 +25,6 @@ ___x_cmd_pkg___attr_code(){
     ___x_cmd_pkg___all_info "$@" | awk \
         -v QUERY="$QUERY" \
         -f "$___X_CMD_ROOT_MOD/awk/lib/default.awk" \
-        -f "$___X_CMD_ROOT_MOD/awk/lib/sh.awk" \
         -f "$___X_CMD_ROOT_MOD/awk/lib/jqparse.awk" \
         -f "$___X_CMD_ROOT_MOD/awk/lib/sh.awk" \
         -f "$___X_CMD_ROOT_MOD/pkg/lib/awk/util.awk" \

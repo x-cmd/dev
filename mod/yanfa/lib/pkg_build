@@ -1,0 +1,22 @@
+# ___X_CMD_ROOT="$(x wsroot)"
+# ___X_CMD_ROOT_MOD="$(x wsroot)/mod"
+
+. "${___X_CMD_ROOT_MOD}/xrc/latest"
+
+x cd "$___X_CMD_ROOT_MOD" || exit 1
+
+ls  | while read -r mod; do
+    [ ! -f "$___X_CMD_ROOT_MOD/$mod/advise.t.json" ] || {
+        x:warn "Skipping for advise.t.json existed: $mod"
+        continue
+    }
+    (
+        x:info "Module for $mod"
+        x cd "$___X_CMD_ROOT_MOD/$mod" || exit 1
+        x:info "Generate advise.json for mod: $mod"
+        if ! xws build; then
+            x:error "Building advise.t.json fails: $mod"
+            exit 1
+        fi
+    ) || exit 1
+done

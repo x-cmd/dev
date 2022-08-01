@@ -21,6 +21,8 @@ ___x_cmd_yanfa_pkg(){
 
     param:subcmd        ___x_cmd_yanfa_pkg              \
         update          "update or add module"          \
+        build           "build"                         \
+        cpfile          "cpfile"                        \
         pub             "publish the package"           \
         pubyanfa        "publish the yanfa pkg"         \
         lsmod           "ls module"                     \
@@ -55,7 +57,8 @@ ___x_cmd_yanfa_pkg_pubyanfa()(
     flow:init   "Publish the pkg for the yanfa distribution."  yanfa
     flow:step   "update"      ___x_cmd_yanfa_pkg_update   "${CONCURRENCY:-7}"
     flow:step   "CPFILE"      ___x_cmd_yanfa_pkg_cpfile   "${CONCURRENCY:-7}"
-    flow:step   "Meta"        ___x_cmd_yanfa_pkg_meta     "${CONCURRENCY:-7}"
+    flow:step   "Build"       ___x_cmd_yanfa_pkg_build
+    flow:step   "Meta"        ___x_cmd_yanfa_pkg_meta
     flow:step   "upload"      ___x_cmd_yanfa_upload_force
     flow:fini
 )
@@ -123,6 +126,9 @@ ___x_cmd_yanfa_pkg_lsfile()(
         cd "$___X_CMD_YANFA_PKG_TMP" && \
         while read -r line; do
             (
+                local advise_t_json_path="$line/advise.t.json"
+                [ ! -f "$advise_t_json_path" ] || printf "%s\n" "$advise_t_json_path"
+
                 if ! cd "$line"; then
                     yanfa:error "___x_cmd_yanfa_pkg_lsfile while-loop: fail to cd - $line"
                     exit 1
@@ -170,9 +176,19 @@ ___x_cmd_yanfa_pkg_cpfile(){
     yanfa:debug "exit: $?"
 }
 
-___x_cmd_yanfa_pkg_meta()(
+___x_cmd_yanfa_pkg_build(){
+    x:trace yanfa/relesae/build
     local tgt
     tgt="$(x wsroot)/mod"
+    ___X_CMD_ROOT_MOD="$tgt" bash "${tgt}/yanfa/lib/pkg_build"
+}
+
+___x_cmd_yanfa_pkg_meta()(
+
+    local wsroot="$(x wsroot)"
+
+    local tgt
+    tgt="${wsroot}/mod"
 
     local mod
     ___x_cmd_yanfa_pkg_lsmod | sort | while read -r mod; do
@@ -185,7 +201,7 @@ ___x_cmd_yanfa_pkg_meta()(
         local sha512; sha512=$(find . -type file | xargs cat | x sha512)
 
         printf "%s %s %s %s %s\n" "$id" "$sha512" "$mod" "$branch" "$tag"
-    done >"$tgt/modlist.txt"
+    done >"${wsroot}/modlist.txt"
 
     # (
     #     x cd "$tgt" || exit 1
